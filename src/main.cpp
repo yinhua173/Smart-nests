@@ -1,56 +1,72 @@
 #include <Arduino.h>
-
 /*
-  程序： 绝对任务延迟
+  程序： Software Timer
   公众号：孤独的二进制
   API：
-    vTaskDelayUntil(&xLastWakeTime, xFrequency)
-      最后一次的唤醒时间是指针类型。
-      本函数会自动更新xLastWakeTime为最后一次唤醒的时间
-      所以无需手动在while循环内对其手动赋值
-    xTaskGetTickCount()
-      Tick Coun 和 Arduino Millis一样
-      uint32_t类型 49天后overflow
+    xTimerCreate //创建时间
+    xTimerStart //时间开始
+    到时间后，会运行callback函数
 */
 
-void showStockTask(void *ptParam) {
-  static float stockPrice = 99.57; //股票价格
+TimerHandle_t lockHandle, checkHandle;
 
-  //最后一次唤醒的tick count，第一次使用需要赋值
-  //以后此变量会由vTaskDelayUntil自动更新
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-
-  const TickType_t xFrequency = 3000; // 间隔 3000 ticks = 3 seconds
+void carKey(void *ptParam) {
+  byte lockPin = 23;
+  pinMode(lockPin, INPUT_PULLUP);
 
   for (;;) {
-    //恰恰算算，经过思考，既然我们叫做LastWakeTime，那么 vTaskDelayUntil 应该放在循环的第一句话
-    //如果放在循环的最后一句话，应该改为xLastSleepTime 才更加合适
-    // 看懂的朋友， 请鼓掌
-    // 哦，我无法听到掌声，干脆帮我按住 点赞三秒 对我的视频进行强力推荐吧
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    if (digitalRead(lockPin) == LOW) {
+      //timeout 3000 ticks
+      //xTimerStart 只是开启时间而已，而不是创造时间对象
+      //所以如果多次按按钮的话，不会有多个时间对象生成
+      //多次按按钮相当于每次对timer进行reset xTimerReset()
+      if (xTimerStart(lockHandle, 3000) == pdPASS) {
+        Serial.println("About to lock the car");
+      } else {
+        Serial.println("Unable to lock the car");
+      };
+      vTaskDelay(100); //very rude Button Debounce
+    }
 
-    //验证当前唤醒的时刻tick count
-    Serial.println(xTaskGetTickCount());
-    //验证xLastWake Time是否被vTaskDelayUntil更新
-    //Serial.println(xLastWakeTime);
-
-    // ------- 很复杂的交易股票计算，时间不定 ---------
-    stockPrice = stockPrice * (1 + random(1, 20) / 100.0); vTaskDelay(random(500, 2000));
-
-    Serial.print("Stock Price : $");
-    Serial.println(stockPrice);
-
-    //使用vTaskDelay试试看会如何
-    //vTaskDelay(xFrequency);
   }
+}
 
+void lockCarCallback(TimerHandle_t xTimer) {
+  Serial.println("Timer CallBack: Car is Locked");
+}
+
+void checkCallback(TimerHandle_t xTimer) {
+  // ------- 很复杂的检测汽车Sensors的方法，时间不定 ---------
+  Serial.print(xTaskGetTickCount());Serial.println("  -  All Sensors are working."); vTaskDelay(random(10, 90));
 }
 
 void setup() {
   Serial.begin(115200);
-  xTaskCreate(showStockTask, "Show Stock Price", 1024 * 6, NULL, 1, NULL);
+  xTaskCreate(carKey,
+              "Check If Owner Press Lock Button",
+              1024 * 1,
+              NULL,
+              1,
+              NULL);
+
+  lockHandle = xTimerCreate("Lock Car",
+                            2000,
+                            pdFALSE,
+                            (void *)0,
+                            lockCarCallback);
+
+  checkHandle = xTimerCreate("Sensors Check",
+                             100,
+                             pdTRUE,
+                             (void *)1,
+                             checkCallback);
+
+  //必须要在 portMAX_DELAY 内开启 timer start
+  //portMAX_DELAY is listed as value for waiting indefinitely
+  //实际上0xFFFFFFFF 2^32-1  49天 7周
+  //在此期间，此task进入Block状态
+  xTimerStart(checkHandle, portMAX_DELAY);
 }
 
 void loop() {
-
 }
