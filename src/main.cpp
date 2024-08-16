@@ -1,72 +1,72 @@
 #include <Arduino.h>
 /*
-  程序： Software Timer
+  程序： 内存管理
   公众号：孤独的二进制
   API：
-    xTimerCreate //创建时间
-    xTimerStart //时间开始
-    到时间后，会运行callback函数
+    ESP.getHeapSize() //本程序Heap最大尺寸
+    ESP.getFreeHeap() //当前Free Heap最大尺寸
+    uxTaskGetStackHighWaterMark(taskHandle) //Task内存使用最大水位线，内存是水
+     
+    What is the Highest Water Mark?
+    the minimum amount of remaining stack space that was available to the task 
+    since the task started executing - that is the amount of stack that remained 
+    unused when the task stack was at its greatest (deepest) value. This is what 
+    is referred to as the stack 'high water mark'.
 */
+TaskHandle_t taskHandle;
+int taskMem = 1024;
 
-TimerHandle_t lockHandle, checkHandle;
+void task(void *ptParam) {
+  //volatile char hello[1000] = {0}; //必须要用volatile修饰语，否则会被编译器优化掉
+  while (1) {
 
-void carKey(void *ptParam) {
-  byte lockPin = 23;
-  pinMode(lockPin, INPUT_PULLUP);
-
-  for (;;) {
-    if (digitalRead(lockPin) == LOW) {
-      //timeout 3000 ticks
-      //xTimerStart 只是开启时间而已，而不是创造时间对象
-      //所以如果多次按按钮的话，不会有多个时间对象生成
-      //多次按按钮相当于每次对timer进行reset xTimerReset()
-      if (xTimerStart(lockHandle, 3000) == pdPASS) {
-        Serial.println("About to lock the car");
-      } else {
-        Serial.println("Unable to lock the car");
-      };
-      vTaskDelay(100); //very rude Button Debounce
-    }
+    //不推荐在task中执行，因为Serial.print也会消耗内存
+    // vTaskDelay(2000);
+    // int waterMark = uxTaskGetStackHighWaterMark(nullptr);
+    // Serial.print("Task Free Memory: ");
+    // Serial.print(waterMark);
+    // Serial.println(" Bytes");
+    // Serial.print("Task Used Memory: ");
+    // Serial.print(taskMem - waterMark);
+    // Serial.println(" Bytes");
+    // Serial.println("");
 
   }
 }
-
-void lockCarCallback(TimerHandle_t xTimer) {
-  Serial.println("Timer CallBack: Car is Locked");
-}
-
-void checkCallback(TimerHandle_t xTimer) {
-  // ------- 很复杂的检测汽车Sensors的方法，时间不定 ---------
-  Serial.print(xTaskGetTickCount());Serial.println("  -  All Sensors are working."); vTaskDelay(random(10, 90));
-}
-
 void setup() {
   Serial.begin(115200);
-  xTaskCreate(carKey,
-              "Check If Owner Press Lock Button",
-              1024 * 1,
-              NULL,
-              1,
-              NULL);
 
-  lockHandle = xTimerCreate("Lock Car",
-                            2000,
-                            pdFALSE,
-                            (void *)0,
-                            lockCarCallback);
+  int heapSize = ESP.getHeapSize();
+  Serial.print("Total Heap Size:  ");
+  Serial.print(heapSize);
+  Serial.println(" Bytes");
 
-  checkHandle = xTimerCreate("Sensors Check",
-                             100,
-                             pdTRUE,
-                             (void *)1,
-                             checkCallback);
+  int heapFree = ESP.getFreeHeap();
+  Serial.print("Free Heap Size:  ");
+  Serial.print(heapFree);
+  Serial.println(" Bytes");
+  Serial.println("");
 
-  //必须要在 portMAX_DELAY 内开启 timer start
-  //portMAX_DELAY is listed as value for waiting indefinitely
-  //实际上0xFFFFFFFF 2^32-1  49天 7周
-  //在此期间，此task进入Block状态
-  xTimerStart(checkHandle, portMAX_DELAY);
+
+  Serial.println("Create Task ...");
+  xTaskCreate(task, "", taskMem, NULL, 1, &taskHandle);
+
+  Serial.print("Free Heap Size:  ");
+  Serial.print(ESP.getFreeHeap());
+  Serial.println(" Bytes");
+  Serial.println("");
+
+  vTaskDelay(2000);
+  int waterMark = uxTaskGetStackHighWaterMark(taskHandle);
+  Serial.print("Task Free Memory: ");
+  Serial.print(waterMark);
+  Serial.println(" Bytes");
+  Serial.print("Task Used Memory: ");
+  Serial.print(taskMem - waterMark);
+  Serial.println(" Bytes");
+
 }
 
 void loop() {
+
 }
