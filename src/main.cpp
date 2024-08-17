@@ -1,122 +1,94 @@
 #include <Arduino.h>
 /*
-  程序： 任务管理
+  程序： 任务优先级
   公众号：孤独的二进制
+
+  说明：高优先级的任务就像是救护车，低优先级的任务就是普通车辆
+       如同公路上所有普通车辆需要让救护车一样
+       高优先级任务永远会比低优先级任务优先执行
+
+  问题：高优先级任务不进入Block或者Suspend状态
+       低优先级任务就永远不会被执行
+       这就是著名的任务 《吃撑和饿死》 的问题
+
   API：
-    BaseType_t xTaskCreate(,,,,,); //任务创建
-    void vTaskDelete( TaskHandle_t xTask ); //任务删除 
-    void vTaskSuspend( TaskHandle_t xTaskToSuspend ); //任务暂停
-    void vTaskResume( TaskHandle_t xTaskToResume ); //任务恢复
+    设置优先级
+    void vTaskPrioritySet( TaskHandle_t xTask,
+                       UBaseType_t uxNewPriority );
+    
+    获取TashHandle任务优先级
+    UBaseType_t uxTaskPriorityGet( TaskHandle_t xTask );
+
+    获取当前任务优先级
+    UBaseType_t uxTaskPriorityGet(NULL);
+
+    退让资源，任务调度器会重新评估任务，将资源分配给同等级或者更高等级任务
+    注意不会把资源给低等级任务
+    tastYIELD() yield()
 */
-//#include <LiquidCrystal_I2C.h>
-//LiquidCrystal_I2C lcd(0x27, 20, 4);
+TaskHandle_t xFirstClassHandle = NULL;
 
-TaskHandle_t biliHandle = NULL; //Task Handler
-
-void control(void *ptParam) {  //按钮控制
-  
-  pinMode(32, INPUT_PULLUP);
-  pinMode(33, INPUT_PULLUP);
-  pinMode(25, INPUT_PULLUP);
-  pinMode(26, INPUT_PULLUP);
-
+void firstClass(void *ptParam) {
   while (1) {
-    // 创建任务
-    if (digitalRead(32) == LOW) {
-      //判断是否之前已经创建了Bilibili channel task， 如果没有创建，则创建该Task
-      if (biliHandle == NULL) {
-        if (xTaskCreate(radioBilibili, "Bilibili Channel", 1024 * 8, NULL, 1, &biliHandle) == pdPASS) {
-          Serial.print(xTaskGetTickCount());
-          Serial.println(" - LOG: Task is Created.");
-        } else {
-          Serial.print(xTaskGetTickCount());
-          Serial.println(" - WARNING: Unable to Create Task.");
+    Serial.print("头等舱客户 - 等级");
+    UBaseType_t uTaskPriority =  //显示本任务当前等级
+      uxTaskPriorityGet(NULL);
+    Serial.println(uTaskPriority);
+    taskYIELD(); //资源退让给同等级或者更高级的任务
+  }
+}
+
+void ecoClass(void *ptParam) {
+  while (1) {
+    Serial.print("经济舱客户 - 等级");
+    UBaseType_t uTaskPriority = //显示本任务当前等级
+      uxTaskPriorityGet(NULL);
+    Serial.println(uTaskPriority);
+    taskYIELD(); //资源退让给同等级或者更高级的任务
+  }
+}
+
+void controlPanel(void *ptParam) {
+  pinMode(23, INPUT_PULLUP);
+  while (1) {
+    if (digitalRead(23) == LOW) {
+      
+      //获取头等舱任务的当前等级
+      if (xFirstClassHandle != NULL) {
+        UBaseType_t uFirstClassPriority =
+          uxTaskPriorityGet(xFirstClassHandle);
+
+        switch (uFirstClassPriority) {
+          case 2: //降级
+            vTaskPrioritySet(xFirstClassHandle, 1);
+            break;
+          case 1: //升级
+            vTaskPrioritySet(xFirstClassHandle, 2);
+            break;
+          default:
+            break;
         }
-      } else {
-        Serial.print(xTaskGetTickCount());
-        Serial.println(" - WARNING: Task **WAS** Created.");
       }
-      vTaskDelay(120); //粗暴的Button Debounce
+      vTaskDelay(120); //粗暴的防止按钮抖动
     }
 
-    //任务删除
-    if (digitalRead(33) == LOW) {
-      //注意在删除任务前，一定要确保任务是存在的
-      //删除不存在的任务，比如连续删除两次，自动重启
-      if (biliHandle != NULL) {
-        vTaskDelete( biliHandle );
-        lcdClear(); //清空LCD
-        biliHandle = NULL; //手动将handler设置为空
-      }
-
-      if (biliHandle != NULL) {
-        Serial.print(xTaskGetTickCount());
-        Serial.println(" - WARNING: Unable to Delete Task.");
-      } else {
-        Serial.print(xTaskGetTickCount());
-        Serial.println(" - LOG: Task is Deleted.");
-      }
-      vTaskDelay(120);  //粗暴的Button Debounce
-    }
-
-    // 任务暂停
-    if (digitalRead(25) == LOW) {
-      if (biliHandle != NULL) {
-        vTaskSuspend(biliHandle);
-        Serial.print(xTaskGetTickCount());
-        Serial.println(" - LOG: Task is suspended.");
-      } else {
-        Serial.print(xTaskGetTickCount());
-        Serial.println(" - WARNING: Unable to Suspend Task.");
-      }
-      vTaskDelay(120);  //粗暴的Button Debounce
-    }
-
-    // 任务恢复
-    if (digitalRead(26) == LOW) { 
-      if (biliHandle != NULL) {
-        vTaskResume(biliHandle);
-        Serial.print(xTaskGetTickCount());
-        Serial.println(" - LOG: Task is resumed.");
-      } else {
-        Serial.print(xTaskGetTickCount());
-        Serial.println(" - WARNING: Unable to Resume Task.");
-      }
-      vTaskDelay(120);  //粗暴的Button Debounce
-    }
   }
 }
 
-void radioBilibili(void *ptParam) {  //任务主体
+void setup() {
 
-  // lcd.init();
-  // lcd.backlight();
-  // lcd.setCursor(0, 0);
-  // lcd.print(" Bilibili   Channel ");
-  // lcd.setCursor(0, 1);
-  // lcd.print("-FreeRTOS on EPS32- ");
-  // lcd.setCursor(0, 2);
-  // lcd.print("Study Hard  &  Smart");
-
-  while (1) {
-    // lcd.setCursor(9, 3);
-    // lcd.print(xTaskGetTickCount() / 100);
-    vTaskDelay(100);
-  }
-}
-
-void lcdClear() { //清空LCD
-  // lcd.clear();
-  // lcd.noBacklight();
-  // lcd.setCursor(0, 0);
-  // lcd.print("                                                                                                    ");
-}
-
-void setup()
-{
   Serial.begin(115200);
-  xTaskCreate(control, "control panel", 1024 * 8, NULL, 1, NULL);
+
+  /*
+  三个任务都放在Core1
+  任务优先等级：普通舱1级， 头等舱2级， 控制台3级
+  */
+
+  xTaskCreatePinnedToCore(ecoClass, "ecoClass", 1024 * 2, NULL, 1, NULL, 1);
+  xTaskCreatePinnedToCore(firstClass, "firstClass", 1024 * 2, NULL, 2, &xFirstClassHandle, 1);
+  xTaskCreatePinnedToCore(controlPanel, "controlPanel", 1024 * 2, NULL, 3, NULL, 1);
+
 }
 
-
-void loop() {}
+void loop() {
+}
