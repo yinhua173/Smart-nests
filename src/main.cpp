@@ -1,7 +1,9 @@
 #include <Arduino.h>
 /*
-   程序：  消息队列
+   程序：  多种消息的队列
    公众号：孤独的二进制
+   说明：本实例使用结构体巧妙的通过当个队列传输多个设备多种数据类型
+        在接收方，我们通过deviceID来判断数据来源和value的意义
 
    API：
     QueueHandle_t xQueueCreate( UBaseType_t uxQueueLength,
@@ -19,133 +21,123 @@
                             );
 
 */
+//#include "DHTesp.h"
 //#include <LiquidCrystal_I2C.h>
 //LiquidCrystal_I2C lcd(0x27, 20, 4);
 
-QueueHandle_t queueMsg = xQueueCreate(8, sizeof(char[20]));
+#define DHT22_ID 0
+#define LDR_ID 1
 
-//返回随机的文字
-String randomMsg() {
-  String myStrings[] = {
-    "Nice to meet you",
-    "Where are U from?",
-    "What do you do?",
-    "What do U like?",
-    "What is UR num?",
-    "Do U have FB?",
-    "Thanks so much.",
-    "I am Chinese.",
-    "I do not KNOW.",
-    "Thank you.",
-    "That helps.",
-    "I Love U",
-    "Do U miss me?",
-    "Be careful.",
-    "Don't worry.",
-    "Good idea.",
-    "He's right.",
-    "I ate already.",
-    "More than that.",
-    "Nothing else.",
-    "See you later.",
-    "Take it outside.",
-  };
-  return myStrings[random(0, 22)];
-}
+typedef struct {
+  byte deviceID;
+  float value1;
+  float value2;
+} SENSOR;
 
-void userA(void *ptParam) {
-  char msg[20];
-  String userID = "A: ";
+QueueHandle_t queueSensor = xQueueCreate(8, sizeof(SENSOR));
 
-  while (1) {
-    (userID  + randomMsg()).toCharArray(msg, 20);
+void dht22(void *ptParam) {
 
-    TickType_t timeOut = portMAX_DELAY;
-    //TickType_t timeOut = 10;
-    if (xQueueSend(queueMsg, &msg, timeOut) != pdPASS)  {
-      Serial.print(userID);
-      Serial.println("Queue is full.");
-    };
+  const byte dhtPin = 32;
+  //DHTesp dhtSensor;
+  //dhtSensor.setup(dhtPin, DHTesp::DHT22);
 
-    vTaskDelay(2000);
+  SENSOR dht22Sensor;
+  dht22Sensor.deviceID = DHT22_ID;
+
+  while (1 ) {
+    //TempAndHumidity  data = dhtSensor.getTempAndHumidity();
+
+    // Serial.println("Temp: " + String(data.temperature, 2) + "°C");
+    // Serial.println("Humidity: " + String(data.humidity, 1) + "%");
+
+    //dht22Sensor.value1 = data.temperature;
+    //dht22Sensor.value2 = data.humidity;
+
+    // TickType_t timeOut = portMAX_DELAY;
+    TickType_t timeOut = 2000;
+    if (xQueueSend(queueSensor, &dht22Sensor, timeOut) != pdPASS) {
+      Serial.println("DHT22: Queue is full.");
+    }
+
+    vTaskDelay(1000);
   }
+
 }
 
-void userB(void *ptParam) {
-  char msg[20];
-  String userID = "B: ";
+void ldr(void *ptParam) {
+  const float GAMMA = 0.7;
+  const float RL10 = 50;
+  const byte ldrPIN = 27;
+  pinMode(ldrPIN, INPUT);
 
-  while (1) {
-    (userID  + randomMsg()).toCharArray(msg, 20);
+  SENSOR ldrSensor;
+  ldrSensor.deviceID = LDR_ID;
 
-    //portMAX_DELAY - 无限Block
-    TickType_t timeOut = portMAX_DELAY;
-    //TickType_t timeOut = 10;
-    if (xQueueSend(queueMsg, &msg, timeOut) != pdPASS)  {
-      Serial.print(userID);
-      Serial.println("Queue is full.");
-    };
+  while (1 ) {
+    int analogValue = analogRead(ldrPIN);
 
-    vTaskDelay(2000);
+    float voltage = analogValue / 4095. * 5;
+    float resistance = 2000 * voltage / (1 - voltage / 5);
+    float lux = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
+
+    // Serial.print("LDR Light Sensor lux : ");
+    // Serial.println(lux);
+
+    ldrSensor.value1 = lux;
+    ldrSensor.value2 = 0.0;
+
+    // TickType_t timeOut = portMAX_DELAY;
+    TickType_t timeOut = 2000;
+    if (xQueueSend(queueSensor, &ldrSensor, timeOut) != pdPASS) {
+      Serial.println("LDR: Queue is full.");
+    }
+
+    vTaskDelay(1000);
   }
+
 }
-
-void userC(void *ptParam) {
-  char msg[20];
-  String userID = "C: ";
-
-  while (1) {
-    (userID  + randomMsg()).toCharArray(msg, 20);
-
-    //portMAX_DELAY - 无限Block
-    TickType_t timeOut = portMAX_DELAY;
-    //TickType_t timeOut = 10;
-    if (xQueueSend(queueMsg, &msg, timeOut) != pdPASS)  {
-      Serial.print(userID);
-      Serial.println("Queue is full.");
-    };
-
-    vTaskDelay(2000);
-  }
-}
-
-
-
 
 void lcdTask(void *ptParam) {  //LCD任务主体
 
   //lcd.init();
   //lcd.backlight();
 
-  char line0[20] = {' '};
-  char line1[20] = {' '};
-  char line2[20] = {' '};
-  char line3[20] = {' '};
-  char * lines[] = { line0, line1, line2, line3 };
+  //lcd.setCursor(0, 0);
+  //lcd.print("   LONELY  BINARY  ");
 
+  SENSOR data;
   while (1) {
-    //文字向上滚动
-    strcpy(line0, line1);
-    strcpy(line1, line2);
-    strcpy(line2, line3);
-
     //TickType_t timeOut = portMAX_DELAY;
-    TickType_t timeOut = 10;
-    if (xQueueReceive(queueMsg, lines[3], timeOut) == pdPASS) {
-      //显示所有的4行文字
-      for (int i = 3; i >= 0; i--) {
-        //lcd.setCursor(0, i);
-        //lcd.print("                    "); //clear this line
-        //lcd.setCursor(0, i);
-        //lcd.print(lines[i]);
+    TickType_t timeOut = 2000;
+    if (xQueueReceive(queueSensor, &data, timeOut) == pdPASS) {
+
+      switch (data.deviceID) {
+        case DHT22_ID:
+          //lcd.setCursor(0, 1);
+          //lcd.print("Temp: " + String(data.value1, 2) + "c");
+          //lcd.setCursor(0, 2);
+          //lcd.print("Humidity: " + String(data.value2, 1) + "%");
+          break;
+        case LDR_ID:
+          //lcd.setCursor(0, 3);
+          if (data.value1 > 50) {
+            //lcd.print("Bright ");
+          } else {
+            //lcd.print("Dark ");
+          }
+          //lcd.setCursor(0, 3);
+          //lcd.print(String(data.value1, 2) + " lux");
+          break;
+        default:
+          Serial.println("LCD: Unkown Device");
+          break;
       }
     }  else {
-      Serial.println("Message Queue is Empty");
+      Serial.println("LCD: Message Queue is Empty");
     };
 
-
-
-    vTaskDelay(10);
+    vTaskDelay(2000);
   }
 }
 
@@ -153,11 +145,10 @@ void setup()
 {
   Serial.begin(115200);
 
-  xTaskCreate(userA, "User A", 1024 * 8, NULL, 1, NULL);
-  xTaskCreate(userB, "User B", 1024 * 8, NULL, 1, NULL);
-  xTaskCreate(userC, "User C", 1024 * 8, NULL, 1, NULL);
-
+  xTaskCreate(dht22, "DHT22", 1024 * 4, NULL, 1, NULL);
+  xTaskCreate(ldr, "LDR LIGHT", 1024 * 4, NULL, 1, NULL);
   xTaskCreate(lcdTask, "lcd", 1024 * 8, NULL, 1, NULL);
+
 }
 
 
