@@ -1,6 +1,6 @@
 #include <Arduino.h>
 /*
-  程序：  Binary Semaphore 是一种信号机制
+  程序：  Binary Semaphore 是一种信号机制 在中断中的用法
          一个任务(生产者)发出信号。另外一个任务(消费者)接受信号
   公众号：孤独的二进制
 
@@ -17,8 +17,12 @@
   Take的时候如果这个整数是0的话，就等待一直到timeout
 */
 
+volatile bool btnPressed = true;
+volatile bool btnReleased = false;
+volatile int counter = 0;
 
 SemaphoreHandle_t xSemaLED = NULL; //创建信号量Handler
+volatile TickType_t btnDeounce = 0; //用于button Debounce
 
 TickType_t timeOut = 1000; //用于获取信号量的Timeout 1000 ticks
 
@@ -28,8 +32,10 @@ void flashLED(void *pvParam) {
   while (1) {
     if (xSemaphoreTake( xSemaLED, timeOut) == pdTRUE )
     {
+      if ((xTaskGetTickCount() - btnDeounce) < 100) { //用于button debounce
         digitalWrite(23, !digitalRead(23));
         vTaskDelay(1000);
+      }
     }
   }
 }
@@ -41,11 +47,16 @@ void readBtn(void *pvParam) {
   while (1) {
     if (digitalRead(22) == LOW) {
       xSemaphoreGive(xSemaLED);
-      vTaskDelay(120); //button debounce
     }
   }
 }
 
+
+void IRAM_ATTR ISR() {
+  btnDeounce = xTaskGetTickCountFromISR();
+  xSemaphoreGiveFromISR(xSemaLED, NULL);
+
+}
 
 void setup() {
   // put your setup code here, to run once:
@@ -62,17 +73,20 @@ void setup() {
                 NULL,
                 1,
                 NULL);
-    xTaskCreate(readBtn,
-                "Read Button",
-                1024 * 4,
-                NULL,
-                1,
-                NULL);
+    // xTaskCreate(readBtn,
+    //             "Read Button",
+    //             1024 * 4,
+    //             NULL,
+    //             1,
+    //             NULL);
   }
 
+  pinMode(22, INPUT_PULLUP);
+  attachInterrupt(22, ISR, FALLING);
 }
 
 
 
 void loop() {
 }
+
