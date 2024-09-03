@@ -1,36 +1,31 @@
 #include <Arduino.h>
-#include <BH1750.h>
 #include <Wire.h>
 
-/*
-  BH1750 can be physically configured to use two I2C addresses:
-    - 0x23 (most common) (if ADD pin had < 0.7VCC voltage)
-    - 0x5C (if ADD pin had > 0.7VCC voltage)
-
-  Library uses 0x23 address as default, but you can define any other address.
-  If you had troubles with default value - try to change it to 0x5C.
-
-*/
-BH1750 lightMeter(0x23);
-volatile float lux = 0;
-void lightTask(void *parameter) {
-  Serial.begin(9600);
-
-  // Initialize the I2C bus (BH1750 library doesn't do this automatically)
-  Wire.begin();
-  // On esp8266 you can select SCL and SDA pins using Wire.begin(D4, D3);
-  if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
-    Serial.println(F("BH1750 Advanced begin"));
-  } else {
-    Serial.println(F("Error initialising BH1750"));
+typedef struct{
+  void init(int A,int B){
+    pinMode(A,INPUT);
+    pinMode(B,OUTPUT);
   }
-  while (true) {
-    // After setting up the sensor, you should wait a bit before
-    // using it, or else you'll get a zero reading
-    if (lightMeter.measurementReady()) {
-      lux = lightMeter.readLightLevel();
+  void run(int A,int B){
+    if(!digitalRead(A)){
+      digitalWrite(B,HIGH);
+      vTaskDelay(100);
+    }else{
+      digitalWrite(B,LOW);
+      vTaskDelay(100);
     }
-    vTaskDelay(200);
+  }
+  volatile bool nin = 0;
+}begin;
+begin smoke;
+begin fire;
+begin rain;
+begin pir;
+begin touch;
+void lightTask(void *parameter) {
+  smoke.init(2,3);
+  while (true) {
+    smoke.run(2,3);
   }
 }
 void setup() {
