@@ -7,26 +7,26 @@ void smokeTask(void *parameter) {
   }
 }
 void fireTask(void *parameter) {
-  fire.init(2,3);
+  fire.init(4,5);
   while (true) {
-    fire.run(2,3);
+    fire.run(4,5);
   }
 }
 void rainTask(void *parameter) {
-  rain.init(2,3);
+  rain.init(6,7);
   while (true) {
-    rain.run(2,3);
+    rain.run(6,7);
   }
 }
 void pirTask(void *parameter) {
-  pir.init(2,3);
+  pir.init(8,9);
   while (true) {
-    pir.run(2,3);
+    pir.run(8,9);
   }
 }
 void touchTask(void *parameter) {
-  touch.init(2,3);
+  touch.init(10,11);
   while (true) {
-    touch.run(2,3);
+    touch.run(10,11);
   }
 }
