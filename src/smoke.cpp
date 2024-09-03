@@ -1,5 +1,9 @@
 #include "smoke.h"
-
+begin smoke;
+begin fire;
+begin rain;
+begin pir;
+begin touch;
 void smokeTask(void *parameter) {
   smoke.init(2,3);
   while (true) {

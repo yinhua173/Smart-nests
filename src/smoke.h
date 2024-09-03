@@ -21,11 +21,7 @@ typedef struct{
   volatile bool nin = 0;
 }begin;
 
-begin smoke;
-begin fire;
-begin rain;
-begin pir;
-begin touch;
+
 
 void smokeTask(void *parameter);
 void fireTask(void *parameter);
