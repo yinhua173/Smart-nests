@@ -9,8 +9,17 @@ typedef struct{
     pinMode(A,INPUT);
     pinMode(B,OUTPUT);
   }
-  void run(int A,int B){
+  void run(int A,int B){//数字量
     if(!digitalRead(A)){
+      digitalWrite(B,HIGH);
+      vTaskDelay(100);
+    }else{
+      digitalWrite(B,LOW);
+      vTaskDelay(100);
+    }
+  }
+  void Arun(int value,int B){//模拟量
+    if(value<3000){
       digitalWrite(B,HIGH);
       vTaskDelay(100);
     }else{
@@ -20,7 +29,6 @@ typedef struct{
   }
   volatile bool nin = 0;
 }begin;
-
 
 
 void smokeTask(void *parameter);

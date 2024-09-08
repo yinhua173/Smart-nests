@@ -17,9 +17,9 @@ void BH1750Task(void *parameter) {
   Wire.begin();
   // On esp8266 you can select SCL and SDA pins using Wire.begin(D4, D3);
   if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
-    Serial.println(F("BH1750 Advanced begin"));
+    //Serial.println(F("BH1750 Advanced begin"));
   } else {
-    Serial.println(F("Error initialising BH1750"));
+    //Serial.println(F("Error initialising BH1750"));
   }
   while (true) {
     // After setting up the sensor, you should wait a bit before

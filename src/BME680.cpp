@@ -1,4 +1,7 @@
 #include "BME680.h"
+#include "BH1750.h"
+extern float lux;
+
 Adafruit_BME680 bme;
 #define SEALEVELPRESSURE_HPA (1013.25)
 SemaphoreHandle_t xMutexBME680 = NULL; //创建信号量Handler
@@ -68,6 +71,11 @@ void printTask(void *ptParam) {  //LCD任务主体
     Serial.print(F("Approx. Altitude = "));
     Serial.print(bme680.alti);
     Serial.println(F(" m"));
+    Serial.println(F("-----------------------------------"));
+    Serial.print(F("lux = "));
+    Serial.print(lux);
+    Serial.println(F(" lux"));
+    Serial.println(F("-----------------------------------"));
         xSemaphoreGive(xMutexBME680); //释放钥匙
       } else {
         //Unable to obtain MUTEX
