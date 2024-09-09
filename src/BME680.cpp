@@ -1,5 +1,6 @@
 #include "BME680.h"
 #include "BH1750.h"
+#include "smoke.h"
 extern float lux;
 
 Adafruit_BME680 bme;
@@ -8,6 +9,11 @@ SemaphoreHandle_t xMutexBME680 = NULL; //创建信号量Handler
 TickType_t timeOut = 1000; //用于获取信号量的Timeout 1000 ticks
 
 BME680 bme680;
+extern begin smoke;
+extern begin fire;
+extern begin rain;
+extern begin pir;
+extern begin touch;
 void bme680Task(void *pvParam) {
   xMutexBME680 = xSemaphoreCreateMutex(); //创建MUTEX信号量
   bme.begin();
@@ -76,6 +82,12 @@ void printTask(void *ptParam) {  //LCD任务主体
     Serial.print(lux);
     Serial.println(F(" lux"));
     Serial.println(F("-----------------------------------"));
+    Serial.println(smoke.status);
+    Serial.println(fire.status);
+    Serial.println(rain.status);//亮了为0
+    Serial.println(pir.status);
+    Serial.println(touch.status);
+    Serial.println("*******************************");
         xSemaphoreGive(xMutexBME680); //释放钥匙
       } else {
         //Unable to obtain MUTEX

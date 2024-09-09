@@ -5,29 +5,33 @@
 #define SMOKE_HH
 
 typedef struct{
+  volatile bool status = false;
+  volatile float value = 0;
   void init(int A,int B){
     pinMode(A,INPUT);
     pinMode(B,OUTPUT);
+    digitalWrite(B,HIGH);
   }
   void run(int A,int B){//数字量
     if(!digitalRead(A)){
+      status = false;
       digitalWrite(B,HIGH);
-      vTaskDelay(100);
     }else{
+      status = true;
       digitalWrite(B,LOW);
-      vTaskDelay(100);
     }
+    vTaskDelay(100);
   }
-  void Arun(int value,int B){//模拟量
+  void Arun(float value,int B){//模拟量
     if(value<3000){
+      status = false;
       digitalWrite(B,HIGH);
-      vTaskDelay(100);
     }else{
+      status = true;
       digitalWrite(B,LOW);
-      vTaskDelay(100);
     }
+    vTaskDelay(100);
   }
-  volatile bool nin = 0;
 }begin;
 
 
