@@ -5,9 +5,10 @@
 #include "BME680.h"
 #include "wifi_connect.h"
 #include "fingermain.h"
+#include "button.h"
 
 // TaskHandle_t taskHandle;
-// int taskMem = 1024*2;
+// int taskMem = 1024;
 
 void setup() {
   Serial.begin(9600);
@@ -20,7 +21,9 @@ void setup() {
   //xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 1, NULL, 1);//创建光照任务
   //xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 2, NULL, 1, NULL,1);//创建温湿度任务
   //xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 2, NULL, 1, &taskHandle,1);//创建指纹任务
-  vTaskDelay(1000); //让MPU6050提前先运行一秒获取第一笔数据
+  xTaskCreatePinnedToCore(buttonTask, "buttonTask", 1024*2, NULL, 1, NULL, 1);//创建按键任务
+  //xTaskCreatePinnedToCore(ledTask, "ledTask", 1024 * 2, NULL, 1, NULL, 1);//创建led任务
+  //vTaskDelay(1000); //提前先运行一秒获取第一笔数据
   //xTaskCreatePinnedToCore(printTask, "print", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
 
   // int heapSize = ESP.getHeapSize();
