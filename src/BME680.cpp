@@ -16,6 +16,7 @@ extern begin pir;
 extern begin touch;
 void bme680Task(void *pvParam) {
   xMutexBME680 = xSemaphoreCreateMutex(); //创建MUTEX信号量
+  Wire.begin();
   bme.begin();
 
   bme.setTemperatureOversampling(BME680_OS_8X);

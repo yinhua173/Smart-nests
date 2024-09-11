@@ -22,7 +22,7 @@ void buttonTask(void *pvParam){
         // Serial.print(button4.flag);
         // Serial.println(button5.flag);
         // Serial.println("");
-        vTaskDelay(100);
+        vTaskDelay(10);
     }
 }
 void ledTask(void *pvParam){
