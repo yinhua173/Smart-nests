@@ -24,8 +24,18 @@ unsigned long lastMs = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-float soil_data=72.1;
-float tep=25.6;
+
+extern BME680 bme680;
+extern float lux;
+extern begin smoke;
+extern begin fire;
+extern begin rain;
+extern begin pir;
+extern begin touch;
+float  *humi = &bme680.humi;     // 读取湿度
+float  *temp = &bme680.temp;     // 读取温度
+float soil_data=*humi;
+float tep=*temp;
 
 // mqtt连接
 void mqttCheckConnect(){
@@ -49,7 +59,7 @@ void mqttIntervalPost(){
 
     // upload humidity
     //soil_data = dht.readHumidity();//读取湿度
-    sprintf(param, "{\"humidity\":%2f}", soil_data);
+    sprintf(param, "{\"humidity\":%2f}", *humi);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
     Serial.println(jsonBuf);
     boolean b = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
@@ -61,7 +71,7 @@ void mqttIntervalPost(){
 
     // Upload temperature
     //tep = dht.readTemperature();//读取温度
-    sprintf(param, "{\"temperature\":%2f}", tep);
+    sprintf(param, "{\"temperature\":%2f}", *temp);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
     Serial.println(jsonBuf);
     boolean c = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
@@ -70,6 +80,67 @@ void mqttIntervalPost(){
     }else{
         Serial.println("publish Temperature fail");
     }
+
+    // Upload LUX
+    //tep = dht.readTemperature();//读取亮度
+    sprintf(param, "{\"lux\":%2f}", lux);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean d = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(d){
+        Serial.println("publish lux success");
+    }else{
+        Serial.println("publish lux fail");
+    }
+
+    // Upload smoke
+    //烟雾
+    sprintf(param, "{\"smoke\":%d}", smoke.status);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean smoke = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(smoke){
+        Serial.println("publish smoke success");
+    }else{
+        Serial.println("publish smoke fail");
+    }
+
+    // Upload fire
+    //火焰
+    sprintf(param, "{\"fire\":%d}", fire.status);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean fire = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(fire){
+        Serial.println("publish fire success");
+    }else{
+        Serial.println("publish fire fail");
+    }
+
+    // Upload rain
+    //雨滴
+    sprintf(param, "{\"rain\":%d}", rain.status);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean rain = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(rain){
+        Serial.println("publish rain success");
+    }else{
+        Serial.println("publish rain fail");
+    }
+
+    // Upload PIR
+    //人体红外
+    sprintf(param, "{\"PIR\":%d}", pir.status);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean pir = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(pir){
+        Serial.println("publish pir success");
+    }else{
+        Serial.println("publish pir fail");
+    }
+
 }
 
 // 回调函数
@@ -89,7 +160,15 @@ void callback(char *topic, byte *payload, unsigned int length){
 
     if(doc["params"].containsKey("LED1")){
         Serial.println("GOT LED1 CMD");
-        //digitalWrite(LED1, doc["params"]["LED1"]);//受控端读取与写入
+        digitalWrite(LED1, doc["params"]["LED1"]);//受控端读取与写入
+    }
+    if(doc["params"].containsKey("LED2")){
+        Serial.println("GOT LED2 CMD");
+        digitalWrite(LED2, doc["params"]["LED2"]);//受控端读取与写入
+    }
+    if(doc["params"].containsKey("LED3")){
+        Serial.println("GOT LED3 CMD");
+        digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
     }
 }
 

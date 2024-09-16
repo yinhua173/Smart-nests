@@ -1,5 +1,11 @@
 #include <Arduino.h>
 
+#define LED1 27
+#define LED2 26
+#define LED3 25
+#define LED4 33
+#define LED5 32
+
 #ifndef BUTTON_HH
 #define BUTTON_HH
 

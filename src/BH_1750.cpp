@@ -9,6 +9,18 @@
   If you had troubles with default value - try to change it to 0x5C.
 
 */
+
+/*
+光亮度数据参考：
+晚上： 0.001-0.02；
+月夜： 0.02-0.3；
+多云室内： 5-50；
+多云室外： 50-500；
+晴天室内： 100-1000；
+夏天中午光照下： 大约10*6能量；
+阅读书籍时的照明度：50-60；
+家庭录像标准照明度：1400
+*/
 BH1750 lightMeter(0x23);
 volatile float lux = 0;
 void BH1750Task(void *parameter) {

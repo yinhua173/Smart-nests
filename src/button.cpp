@@ -5,6 +5,9 @@ KEY button2;
 KEY button3;
 KEY button4;
 KEY button5;
+
+
+
 void buttonTask(void *pvParam){
     pinMode(4,INPUT);
     volatile float value=0;
@@ -26,34 +29,34 @@ void buttonTask(void *pvParam){
     }
 }
 void ledTask(void *pvParam){
-    pinMode(27,OUTPUT);
-    pinMode(26,OUTPUT);
-    pinMode(25,OUTPUT);
-    pinMode(33,OUTPUT);
-    pinMode(32,OUTPUT);
-    digitalWrite(27,HIGH);
-    digitalWrite(26,HIGH);
-    digitalWrite(25,HIGH);
-    digitalWrite(33,HIGH);
-    digitalWrite(32,HIGH);
+    pinMode(LED1,OUTPUT);
+    pinMode(LED2,OUTPUT);
+    pinMode(LED3,OUTPUT);
+    pinMode(LED4,OUTPUT);
+    pinMode(LED5,OUTPUT);
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,HIGH);
+    digitalWrite(LED4,HIGH);
+    digitalWrite(LED5,HIGH);
     while(1){
-        if(button1.flag){
-            digitalWrite(27,LOW);
-        }else if(button2.flag){
-            digitalWrite(26,LOW);
-        }else if(button3.flag){
-            digitalWrite(25,LOW);
-        }else if(button4.flag){
-            digitalWrite(33,LOW);
-        }else if(button5.flag){
-            digitalWrite(32,LOW);
-        }else{
-            digitalWrite(27,HIGH);
-            digitalWrite(26,HIGH);
-            digitalWrite(25,HIGH);
-            digitalWrite(33,HIGH);
-            digitalWrite(32,HIGH);
-        }
-        vTaskDelay(100);
+        // if(button1.flag){
+        //     digitalWrite(LED1,LOW);
+        // }else if(button2.flag){
+        //     digitalWrite(LED2,LOW);
+        // }else if(button3.flag){
+        //     digitalWrite(LED3,LOW);
+        // }else if(button4.flag){
+        //     digitalWrite(LED4,LOW);
+        // }else if(button5.flag){
+        //     digitalWrite(LED5,LOW);
+        // }else{
+        //     digitalWrite(LED1,HIGH);
+        //     digitalWrite(LED2,HIGH);
+        //     digitalWrite(LED3,HIGH);
+        //     digitalWrite(LED4,HIGH);
+        //     digitalWrite(LED5,HIGH);
+        // }
+        // vTaskDelay(100);
     }
 }
