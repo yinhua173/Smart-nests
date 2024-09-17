@@ -4,30 +4,45 @@ KEY button1;
 KEY button2;
 KEY button3;
 KEY button4;
-KEY button5;
 
+#define BUTTON_1 36
+#define BUTTON_2 39
+#define BUTTON_3 32
+#define BUTTON_4 33
 
 
 void buttonTask(void *pvParam){
+    // 配置输入按键
+    pinMode(BUTTON_1, INPUT_PULLUP);
+    pinMode(BUTTON_2, INPUT_PULLUP);
+    pinMode(BUTTON_3, INPUT_PULLUP);
+    pinMode(BUTTON_4, INPUT_PULLUP);
+    // 配置中断引脚
+    attachInterrupt(digitalPinToInterrupt(BUTTON_1), handle_interrupt1, FALLING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_2), handle_interrupt2, FALLING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_3), handle_interrupt3, FALLING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_4), handle_interrupt4, FALLING);
     pinMode(4,INPUT);
     volatile float value=0;
     while(1){
-        value=analogRead(4);
-        //Serial.println(value);
-        button1.read(2700,2900,value);
-        button2.read(2250,2450,value);
-        button3.read(1950,2150,value);
-        button4.read(1550,1750,value);
-        button5.read(1200,1400,value);
-        // Serial.print(button1.flag);
-        // Serial.print(button2.flag);
-        // Serial.print(button3.flag);
-        // Serial.print(button4.flag);
-        // Serial.println(button5.flag);
-        // Serial.println("");
         vTaskDelay(10);
     }
 }
+
+// 定义外部中断函数
+void handle_interrupt1() {
+  button1.flag = true;
+}
+void handle_interrupt2() {
+  button2.flag = true;
+}
+void handle_interrupt3() {
+  button3.flag = true;
+}
+void handle_interrupt4() {
+  button4.flag = true;
+}
+
 void ledTask(void *pvParam){
     pinMode(LED1,OUTPUT);
     pinMode(LED2,OUTPUT);
