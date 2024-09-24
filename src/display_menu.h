@@ -9,6 +9,7 @@
 #include "BME680.h"
 #include "BH1750.h"
 #include "smoke.h"
+#include "fingermain.h"
 //#include "yun.h"
 
 #define SDA 23
@@ -19,7 +20,8 @@ extern bool key2_flag;
 extern bool key3_flag;
 extern bool key4_flag;
 extern bool key5_flag;
-
+extern volatile bool finger_flag;
+extern volatile bool finger_error_flag;
 
 extern BME680 bme680;
 

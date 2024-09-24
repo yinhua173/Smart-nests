@@ -179,10 +179,25 @@ void menu_xuan(){
 }
 void menu_loop(){
   menu_key();
-
+  
   menu_xuan();
 }
-
+void zhiwen_menkong(){
+  if (finger_flag){
+    // 设置光标位置
+    u8g2.setCursor(64, 12);
+    // 显示文字
+    u8g2.print("门已开");
+    finger_flag = !finger_flag;
+  }
+  if (finger_error_flag){
+    // 设置光标位置
+    u8g2.setCursor(64, 12);
+    // 显示文字
+    u8g2.print("指纹错误");
+    finger_error_flag = !finger_error_flag;
+  }
+}
 void display_menu0(unsigned int index){//主页
   // 进入第一页
   u8g2.firstPage();
@@ -192,7 +207,7 @@ void display_menu0(unsigned int index){//主页
     u8g2.setCursor(0, 12);
     // 显示文字
     u8g2.print("菜单");
-    // 绘制页面内容
+    zhiwen_menkong();
     u8g2.drawHLine(0, 14, 128);
     for (int i = 0; i < MENU_SIZE; i++)
     {
@@ -327,11 +342,15 @@ void display_menu12(unsigned int index){//"室内状态"
       // 绘制页面内容
     u8g2.drawUTF8(0, 12, "室内状态");
     u8g2.drawHLine(0, 14, 128);
-    u8g2.setCursor(0, 27);
+    u8g2.setCursor(0, 26);
     u8g2.printf("温度: %.1f ℃", bme680.temp);
-    u8g2.setCursor(0, 40);
-    u8g2.printf("湿度: %d ", bme680.humi);
+    u8g2.setCursor(0, 38);
+    u8g2.printf("湿度: %.1f ", bme680.humi);
     u8g2.print("%");
+    u8g2.setCursor(0, 50);
+    u8g2.printf("气压: %.1f hPa", bme680.pres);
+    u8g2.setCursor(0, 62);
+    u8g2.printf("海拔: %.1f m", bme680.alti);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu13(unsigned int index){//"室内温度历史"

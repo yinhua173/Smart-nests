@@ -29,11 +29,11 @@ void bme680Task(void *pvParam) {
 
     if (xSemaphoreTake(xMutexBME680, timeOut) == pdPASS) {
 
-      bme680.temp = bme.temperature;
-      bme680.humi = bme.humidity;
-      bme680.pres = bme.pressure;
-      bme680.gas_res = bme.gas_resistance;
-      bme680.alti = bme.readAltitude(SEALEVELPRESSURE_HPA);
+      bme680.temp = bme.temperature;//温度
+      bme680.humi = bme.humidity;//湿度
+      bme680.pres = bme.pressure / 100.0;//气压
+      //bme680.gas_res = bme.gas_resistance;//气阻
+      bme680.alti = bme.readAltitude(SEALEVELPRESSURE_HPA);//海拔
 
       xSemaphoreGive(xMutexBME680); //释放钥匙
     } else {
@@ -67,14 +67,14 @@ void printTask(void *ptParam) {  //LCD任务主体
     Serial.print(bme680.temp);
     Serial.println(F(" *C"));
     Serial.print(F("Pressure = "));
-    Serial.print(bme680.pres / 100.0);
+    Serial.print(bme680.pres);
     Serial.println(F(" hPa"));
     Serial.print(F("Humidity = "));
     Serial.print(bme680.humi);
     Serial.println(F(" %"));
-    Serial.print(F("Gas = "));
-    Serial.print(bme680.gas_res / 1000.0);
-    Serial.println(F(" KOhms"));
+    // Serial.print(F("Gas = "));
+    // Serial.print(bme680.gas_res / 1000.0);
+    // Serial.println(F(" KOhms"));
     Serial.print(F("Approx. Altitude = "));
     Serial.print(bme680.alti);
     Serial.println(F(" m"));
