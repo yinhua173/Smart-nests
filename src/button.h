@@ -1,19 +1,22 @@
 #include <Arduino.h>
 
-#define LED1 27
-#define LED2 26
-#define LED3 25
-#define LED4 33
-#define LED5 32
+#define LED1 26
+#define LED2 25
+#define LED3 14
+#define LED4 13
+#define LED5 5
+#define LED6 2
 
-#ifndef BUTTON_HH
-#define BUTTON_HH
+#ifndef BUTTON_H
+#define BUTTON_H
+// 定义外部中断函数
 
-typedef struct {
-  //volatile float value=0;
-  volatile bool flag=false;
-}KEY;
+void handle_interrupt4();
+void handle_interrupt5();
+void handle_interrupt6();
+void handle_interrupt7();
 
-void buttonTask(void *pvParam);
+
+void buttonTask();
 void ledTask(void *pvParam);
 #endif

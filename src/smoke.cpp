@@ -5,34 +5,34 @@ begin rain;
 begin pir;
 begin touch;
 void smokeTask(void *parameter) {//模拟信号
-  smoke.init(17,27);
+  smoke.init(34,2);
   while (1) {
-    //smoke.value=analogRead(17);
-    //smoke.Arun(smoke.value,27);
+    smoke.value=analogRead(34);
+    smoke.Arun(smoke.value,2);
   }
 }
 void fireTask(void *parameter) {//模拟信号
-  fire.init(16,26);
+  fire.init(35,5);
   while (1) {
-    fire.value=analogRead(16);
-    fire.Arun(fire.value,26);
+    fire.value=analogRead(35);
+    fire.Arun(fire.value,5);
   }
 }
 void rainTask(void *parameter) {//数字信号
-  rain.init(18,25);
+  rain.init(18,13);
   while (1) {
-    rain.run(18,25);
+    rain.run(18,13);
   }
 }
 void pirTask(void *parameter) {//数字信号
-  pir.init(23,33);
+  pir.init(23,14);
   while (1) {
-    pir.run(23,33);
+    pir.run(23,14);
   }
 }
 void touchTask(void *parameter) {//数字信号
-  touch.init(19,32);
+  touch.init(19,25);
   while (1) {
-    touch.run(19,32);
+    touch.run(19,25);
   }
 }

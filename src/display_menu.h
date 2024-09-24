@@ -11,11 +11,15 @@
 #include "smoke.h"
 //#include "yun.h"
 
-extern KEY button1;
-extern KEY button2;
-extern KEY button3;
-extern KEY button4;
-extern KEY button5;
+#define SDA 23
+#define SCL 18
+
+extern bool key1_flag;
+extern bool key2_flag;
+extern bool key3_flag;
+extern bool key4_flag;
+extern bool key5_flag;
+
 
 extern BME680 bme680;
 

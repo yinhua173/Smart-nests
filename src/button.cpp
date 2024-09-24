@@ -1,59 +1,58 @@
 #include "button.h"
 
-KEY button1;
-KEY button2;
-KEY button3;
-KEY button4;
+bool key1_flag = false;
+bool key2_flag = false;
+bool key3_flag = false;
+bool key4_flag = false;
 
 #define BUTTON_1 36
 #define BUTTON_2 39
 #define BUTTON_3 32
 #define BUTTON_4 33
 
+// 定义外部中断函数
+void handle_interrupt4() {
+  key1_flag = true;
+}
+void handle_interrupt5() {
+  key2_flag = true;
+}
+void handle_interrupt6() {
+  key3_flag = true;
+}
+void handle_interrupt7() {
+  key4_flag = true;
+}
 
-void buttonTask(void *pvParam){
+void buttonTask(){
     // 配置输入按键
     pinMode(BUTTON_1, INPUT_PULLUP);
     pinMode(BUTTON_2, INPUT_PULLUP);
-    pinMode(BUTTON_3, INPUT_PULLUP);
-    pinMode(BUTTON_4, INPUT_PULLUP);
+    pinMode(BUTTON_3, INPUT_PULLDOWN);
+    pinMode(BUTTON_4, INPUT_PULLDOWN);
     // 配置中断引脚
-    attachInterrupt(digitalPinToInterrupt(BUTTON_1), handle_interrupt1, FALLING);
-    attachInterrupt(digitalPinToInterrupt(BUTTON_2), handle_interrupt2, FALLING);
-    attachInterrupt(digitalPinToInterrupt(BUTTON_3), handle_interrupt3, FALLING);
-    attachInterrupt(digitalPinToInterrupt(BUTTON_4), handle_interrupt4, FALLING);
-    pinMode(4,INPUT);
-    volatile float value=0;
-    while(1){
-        vTaskDelay(10);
-    }
+    attachInterrupt(digitalPinToInterrupt(BUTTON_1), handle_interrupt4, FALLING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_2), handle_interrupt5, FALLING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_3), handle_interrupt6, RISING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_4), handle_interrupt7, FALLING);
+    // while(1){
+    //     vTaskDelay(10);
+    // }
 }
 
-// 定义外部中断函数
-void handle_interrupt1() {
-  button1.flag = true;
-}
-void handle_interrupt2() {
-  button2.flag = true;
-}
-void handle_interrupt3() {
-  button3.flag = true;
-}
-void handle_interrupt4() {
-  button4.flag = true;
-}
+
 
 void ledTask(void *pvParam){
-    pinMode(LED1,OUTPUT);
-    pinMode(LED2,OUTPUT);
-    pinMode(LED3,OUTPUT);
-    pinMode(LED4,OUTPUT);
-    pinMode(LED5,OUTPUT);
-    digitalWrite(LED1,HIGH);
-    digitalWrite(LED2,HIGH);
-    digitalWrite(LED3,HIGH);
-    digitalWrite(LED4,HIGH);
-    digitalWrite(LED5,HIGH);
+    // pinMode(LED1,OUTPUT);
+    // pinMode(LED2,OUTPUT);
+    // pinMode(LED3,OUTPUT);
+    // pinMode(LED4,OUTPUT);
+    // pinMode(LED5,OUTPUT);
+    // digitalWrite(LED1,HIGH);
+    // digitalWrite(LED2,HIGH);
+    // digitalWrite(LED3,HIGH);
+    // digitalWrite(LED4,HIGH);
+    // digitalWrite(LED5,HIGH);
     while(1){
         // if(button1.flag){
         //     digitalWrite(LED1,LOW);

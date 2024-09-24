@@ -11,6 +11,7 @@ unsigned int  order = 0;
 unsigned int  yema = 0;
 uint8_t on = 0;
 void OLEDTask(void *pvParam){
+    Wire1.begin(SDA, SCL);
     // 初始化 OLED 对象
     u8g2.begin();
     // 开启中文字符集支持
@@ -25,15 +26,17 @@ void OLEDTask(void *pvParam){
 }
 
 void menu_key(){
-  if(button1.flag) //上
+  if(key1_flag) //上
   {
     order = (order - 1) % 4;
+    key1_flag = !key1_flag;
   }
-  if (button2.flag)//下
+  if (key2_flag)//下
   {
     order = (order + 1) % 4;
+    key2_flag = !key2_flag;
   }
-  if (button3.flag)//确认
+  if (key3_flag)//确认
   {
     switch (yema){
     
@@ -119,11 +122,13 @@ void menu_key(){
       break;
     }
     order = 0;
+    key3_flag = !key3_flag;
   }
-  if (button4.flag)//返回
+  if (key4_flag)//返回
   {
     yema = yema/10;
     order = 0;
+    key4_flag = !key4_flag;
   }
 }
 void menu_xuan(){
