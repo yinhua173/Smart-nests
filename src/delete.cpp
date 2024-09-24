@@ -6,7 +6,7 @@
 
 Adafruit_Fingerprint finger2 = Adafruit_Fingerprint(&mySerial);
 uint8_t delete_inti(){
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
   Serial.println("\n\nDelete Finger");

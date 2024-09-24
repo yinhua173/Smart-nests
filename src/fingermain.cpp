@@ -3,7 +3,7 @@
 #include "enroll.h"
 #include "delete.h"
 
-#define BUTTON_14  14//判断指纹按下
+#define BUTTON_14  27//判断指纹按下
 #define BUTTON_15  15//进入录入
 #define BUTTON_13  13//删除指纹
 // 定义可以在外部中断函数中使用的变量
@@ -22,7 +22,7 @@ void handle_interrupt3() {
 }
 uint8_t fingermain_init(){
   Fingerprint_inti();
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(BUTTON_14, INPUT_PULLDOWN);
   pinMode(BUTTON_15, INPUT_PULLUP);
   pinMode(BUTTON_13, INPUT_PULLUP);

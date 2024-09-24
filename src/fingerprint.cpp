@@ -5,7 +5,7 @@
 Adafruit_Fingerprint finger1 = Adafruit_Fingerprint(&mySerial);
 
 uint8_t Fingerprint_inti( ){
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
   Serial.println("\n\nAdafruit finger detect test");
