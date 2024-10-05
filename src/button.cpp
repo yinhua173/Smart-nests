@@ -5,10 +5,7 @@ bool key2_flag = false;
 bool key3_flag = false;
 bool key4_flag = false;
 
-#define BUTTON_1 36
-#define BUTTON_2 39
-#define BUTTON_3 32
-#define BUTTON_4 33
+
 
 // 定义外部中断函数
 void handle_interrupt4() {
@@ -43,16 +40,25 @@ void buttonTask(){
 
 
 void ledTask(void *pvParam){
-    // pinMode(LED1,OUTPUT);
-    // pinMode(LED2,OUTPUT);
-    // pinMode(LED3,OUTPUT);
-    // pinMode(LED4,OUTPUT);
-    // pinMode(LED5,OUTPUT);
-    // digitalWrite(LED1,HIGH);
-    // digitalWrite(LED2,HIGH);
-    // digitalWrite(LED3,HIGH);
-    // digitalWrite(LED4,HIGH);
-    // digitalWrite(LED5,HIGH);
+    pinMode(LED1,OUTPUT);
+    pinMode(LED2,OUTPUT);
+    pinMode(LED3,OUTPUT);
+    pinMode(LED4,OUTPUT);
+    pinMode(LED5,OUTPUT);
+    pinMode(LED6,OUTPUT);
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,HIGH);
+    digitalWrite(LED4,HIGH);
+    digitalWrite(LED5,HIGH);
+    digitalWrite(LED6,HIGH);
+    // digitalWrite(LED1,LOW);
+    // digitalWrite(LED2,LOW);
+    // digitalWrite(LED3,LOW);
+    // digitalWrite(LED4,LOW);
+    // digitalWrite(LED5,LOW);
+    // digitalWrite(LED6,LOW);
+    vTaskDelete(NULL);
     while(1){
         // if(button1.flag){
         //     digitalWrite(LED1,LOW);

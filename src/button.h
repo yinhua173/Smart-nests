@@ -7,6 +7,11 @@
 #define LED5 5
 #define LED6 2
 
+#define BUTTON_1 36
+#define BUTTON_2 39
+#define BUTTON_3 32
+#define BUTTON_4 33
+
 #ifndef BUTTON_H
 #define BUTTON_H
 // 定义外部中断函数

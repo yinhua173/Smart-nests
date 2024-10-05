@@ -26,109 +26,114 @@ void OLEDTask(void *pvParam){
 }
 
 void menu_key(){
-  if(key1_flag) //上
-  {
-    order = (order - 1) % 4;
-    key1_flag = !key1_flag;
-  }
-  if (key2_flag)//下
-  {
-    order = (order + 1) % 4;
-    key2_flag = !key2_flag;
-  }
-  if (key3_flag)//确认
-  {
-    switch (yema){
-    
-    case 0:
-      switch(order+1){
-          case 1:
-            yema=1;//天气查看
-            break;
-          case 2:
-            yema=2;//门口控制
-            break;
-          case 3:
-            yema=3;//窗户控制
-            break;
-          case 4:
-            yema=4;//报警查看
-            break;
+  if(key1_flag||key2_flag||key3_flag||key4_flag){
+    vTaskDelay(10);//消抖
+    // if(digitalRead(BUTTON_1)||digitalRead(BUTTON_2)||digitalRead(BUTTON_3)||digitalRead(BUTTON_4)){
+
+    // }else{
+    //   key1_flag = false;
+    //   key2_flag = false;
+    //   key3_flag = false;
+    //   key4_flag = false;
+    // }
+
+    if(key1_flag){ //上    
+      order = (order - 1) % 4;
+      key1_flag = !key1_flag;
+    }else if (key2_flag){//下    
+      order = (order + 1) % 4;
+      key2_flag = !key2_flag;
+    }else if (key3_flag){//确认
+      switch (yema){
+      
+      case 0:
+        switch(order+1){
+            case 1:
+              yema=1;//天气查看
+              break;
+            case 2:
+              yema=2;//门口控制
+              break;
+            case 3:
+              yema=3;//窗户控制
+              break;
+            case 4:
+              yema=4;//报警查看
+              break;
+        }
+        break;
+      case 1:
+        switch(order+1){
+            case 1:
+              yema=11;//天气预报
+              break;
+            case 2:
+              yema=12;//室内状况
+              break;
+            case 3:
+              yema=13;//室内温度历史数据
+              break;
+            case 4:
+              yema=14;//室内湿度历史数据
+              break;
+        }
+        break;
+      case 2:
+        switch(order+1){
+            case 1:
+              //yema=21;//
+              break;
+            case 2:
+              on=0;
+              break;
+            case 3:
+              on=1;;
+              break;
+            case 4:
+              yema=24;//历史数据
+              break;
+        }
+        break;
+      case 3:
+        switch(order+1){
+            case 1:
+              //yema=31;//
+              break;
+            case 2:
+              //yema=32;//
+              break;
+            case 3:
+              //yema=33;//
+              break;
+            case 4:
+              yema=34;//历史数据
+              break;
+        }
+        break;
+      case 4:
+        switch(order+1){
+            case 1:
+              //yema=41;//
+              break;
+            case 2:
+              yema=42;//
+              break;
+            case 3:
+              yema=43;//
+              break;
+            case 4:
+              yema=44;//历史数据
+              break;
+        }
+        break;
       }
-      break;
-    case 1:
-      switch(order+1){
-          case 1:
-            yema=11;//天气预报
-            break;
-          case 2:
-            yema=12;//室内状况
-            break;
-          case 3:
-            yema=13;//室内温度历史数据
-            break;
-          case 4:
-            yema=14;//室内湿度历史数据
-            break;
-      }
-      break;
-    case 2:
-      switch(order+1){
-          case 1:
-            //yema=21;//
-            break;
-          case 2:
-            on=0;
-            break;
-          case 3:
-            on=1;;
-            break;
-          case 4:
-            yema=24;//历史数据
-            break;
-      }
-      break;
-    case 3:
-      switch(order+1){
-          case 1:
-            //yema=31;//
-            break;
-          case 2:
-            //yema=32;//
-            break;
-          case 3:
-            //yema=33;//
-            break;
-          case 4:
-            yema=34;//历史数据
-            break;
-      }
-      break;
-    case 4:
-      switch(order+1){
-          case 1:
-            //yema=41;//
-            break;
-          case 2:
-            yema=42;//
-            break;
-          case 3:
-            yema=43;//
-            break;
-          case 4:
-            yema=44;//历史数据
-            break;
-      }
-      break;
-    }
-    order = 0;
-    key3_flag = !key3_flag;
-  }
-  if (key4_flag)//返回
-  {
+      order = 0;
+      key3_flag = !key3_flag;
+    }else if (key4_flag){//返回
     yema = yema/10;
     order = 0;
     key4_flag = !key4_flag;
+    }
   }
 }
 void menu_xuan(){
@@ -198,15 +203,26 @@ void zhiwen_menkong(){
     finger_error_flag = !finger_error_flag;
   }
 }
+void display_wifi(){
+  if(!wifi_state){
+    u8g2.drawLine(120, 0, 114,6);//X
+    u8g2.drawLine(114, 0, 120,6);
+  }
+  u8g2.drawCircle(127, 12, 1, U8G2_DRAW_UPPER_LEFT);//画出WiFi形状
+  u8g2.drawCircle(127, 12, 3, U8G2_DRAW_UPPER_LEFT);
+  u8g2.drawCircle(127, 12, 5, U8G2_DRAW_UPPER_LEFT);
+  u8g2.drawCircle(127, 12, 7, U8G2_DRAW_UPPER_LEFT);
+}
 void display_menu0(unsigned int index){//主页
   // 进入第一页
-  u8g2.firstPage();
-  do
-  {
+  u8g2.firstPage();//画wifi
+  do{
+    display_wifi();
     // 设置光标位置
     u8g2.setCursor(0, 12);
     // 显示文字
     u8g2.print("菜单");
+    //u8g2.print("24-03-29  12:30:50");
     zhiwen_menkong();
     u8g2.drawHLine(0, 14, 128);
     for (int i = 0; i < MENU_SIZE; i++)

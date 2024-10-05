@@ -10,7 +10,8 @@
 #include "BH1750.h"
 #include "smoke.h"
 #include "fingermain.h"
-//#include "yun.h"
+#include "wifi_connect.h"
+
 
 #define SDA 23
 #define SCL 18
@@ -22,6 +23,7 @@ extern bool key4_flag;
 extern bool key5_flag;
 extern volatile bool finger_flag;
 extern volatile bool finger_error_flag;
+extern volatile bool wifi_state;
 
 extern BME680 bme680;
 

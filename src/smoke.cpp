@@ -7,14 +7,14 @@ begin touch;
 void smokeTask(void *parameter) {//模拟信号
   smoke.init(34,2);
   while (1) {
-    smoke.value=analogRead(34);
+    smoke.value=analogRead(34)*(5000/4023);
     smoke.Arun(smoke.value,2);
   }
 }
 void fireTask(void *parameter) {//模拟信号
   fire.init(35,5);
   while (1) {
-    fire.value=analogRead(35);
+    fire.value=analogRead(35)*(5000/4023);
     fire.Arun(fire.value,5);
   }
 }
