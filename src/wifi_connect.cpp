@@ -15,7 +15,7 @@ void WiFi_connect(){//连接WiFi
     delay(1000);
     unlink_state++;
     wifi_state = false;
-    if(unlink_state>=100){
+    if(unlink_state>=200){
       ruanjianchongqi();
       unlink_state = 0;
     }
