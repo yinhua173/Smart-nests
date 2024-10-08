@@ -11,6 +11,7 @@
 #include "smoke.h"
 #include "fingermain.h"
 #include "wifi_connect.h"
+#include "http_api.h"
 
 
 #define SDA 23
@@ -32,6 +33,14 @@ extern begin fire;
 extern begin rain;
 extern begin pir;
 extern begin touch;
+
+extern tian_qi Tianqi;
+extern future Future0;
+extern future Future1;
+extern future Future2;
+extern future Future3;
+extern future Future4;
+
 #define MENU_SIZE 4
 void OLEDTask(void *pvParam);
 void menu_key();
@@ -44,6 +53,7 @@ void display_menu2(unsigned int index);
 void display_menu3(unsigned int index);
 void display_menu4(unsigned int index);
 void display_menu11(unsigned int index);
+void display_menu111(unsigned int index);
 void display_menu12(unsigned int index);
 void display_menu13(unsigned int index);
 void display_menu14(unsigned int index);

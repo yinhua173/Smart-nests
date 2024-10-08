@@ -2,6 +2,7 @@
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0,SCL,SDA,U8X8_PIN_NONE);
 char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "报警查看"};
 char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
+char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
 char *menkou[MENU_SIZE] = {"门口状态", "开门", "关门", "开门历史数据"};
 char *chuanghu[MENU_SIZE] = {"窗户状态", "打开", "关闭", "窗户历史数据"};
 char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
@@ -10,6 +11,7 @@ char *onoff[2] = {"开", "关"};
 unsigned int  order = 0;
 unsigned int  yema = 0;
 uint8_t on = 0;
+volatile uint8_t future_flag = 0;
 void OLEDTask(void *pvParam){
     Wire1.begin(SDA, SCL);
     // 初始化 OLED 对象
@@ -66,6 +68,24 @@ void menu_key(){
         switch(order+1){
             case 1:
               yema=11;//天气预报
+              switch(order+1){
+                case 1:
+                  future_flag = 1;
+                  yema=111;
+                  break;
+                case 2:
+                  future_flag = 2;
+                  yema=111;
+                  break;
+                case 3:
+                  future_flag = 3;
+                  yema=111;
+                  break;
+                case 4:
+                  future_flag = 4;
+                  yema=111;
+                  break;
+              }
               break;
             case 2:
               yema=12;//室内状况
@@ -179,6 +199,9 @@ void menu_xuan(){
       break;
     case 44:
       display_menu44(order);
+      break;
+    case 111:
+      display_menu111(order);
       break;
   }
 }
@@ -328,27 +351,129 @@ void display_menu4(unsigned int index){//"报警"
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
-void display_menu11(unsigned int index){//"天气预报"
+void display_menu11(unsigned int index){//"天气状况"
   // 进入第一页
   u8g2.firstPage();
     do{
       // 绘制页面内容
+    u8g2.drawUTF8(0, 12, "天气概况");
+    u8g2.drawHLine(0, 14, 128);
+    u8g2.drawUTF8(0, 26, "今天:");
+    u8g2.printf("%s", Future0.weather);
+    u8g2.drawUTF8(0, 38, "明天:");
+    u8g2.printf("%s", Future1.weather);
+    u8g2.drawUTF8(0, 50, "后天:");
+    u8g2.printf("%s", Future2.weather);
+    u8g2.drawUTF8(0, 62, "大后天:");
+    u8g2.printf("%s", Future3.weather);
+    for (int i = 0; i < MENU_SIZE; i++)
+    {
+      if (i == index)
+      {
+        // 设置光标位置
+        u8g2.setCursor(0, (i + 2) * 12 + 2);
+        u8g2.print(future_weather[i]);
+        switch (i){
+          case 0:
+            u8g2.printf("%s", Future0.weather);
+            break;
+          case 1:
+            u8g2.printf("%s", Future1.weather);
+            break;
+          case 2:
+            u8g2.printf("%s", Future2.weather);
+            break;
+          case 3:
+            u8g2.printf("%s", Future3.weather);
+            break;
+        }
+        u8g2.print(" <<");
+      }
+      else
+      {
+        u8g2.setCursor(0, (i + 2) * 12 + 2);
+        u8g2.print(future_weather[i]);
+        switch (i){
+          case 0:
+            u8g2.printf("%s", Future0.weather);
+            break;
+          case 1:
+            u8g2.printf("%s", Future1.weather);
+            break;
+          case 2:
+            u8g2.printf("%s", Future2.weather);
+            break;
+          case 3:
+            u8g2.printf("%s", Future3.weather);
+            break;
+        }
+      }
+    }
+    future_flag=order;
+  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
+}
+void display_menu111(unsigned int index){//"天气预报"
+  // 进入第一页
+  u8g2.firstPage();
+    do{
+    // 绘制页面内容
     u8g2.drawUTF8(0, 12, "天气预报");
     u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "明天");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("温度: %d", order);
-    u8g2.setCursor(42, 38);
-    u8g2.printf("天气: %d", order);
-    u8g2.setCursor(84, 38);
-    u8g2.printf("天气: %d", order);
-    u8g2.drawUTF8(0, 50, "后天");
-    u8g2.setCursor(0, 62);
-    u8g2.printf("温度: %d", order);
-    u8g2.setCursor(42, 62);
-    u8g2.printf("天气: %d", order);
-    u8g2.setCursor(84, 62);
-    u8g2.printf("天气: %d", order);
+    u8g2.drawUTF8(0, 38, "温度:");
+    u8g2.drawUTF8(0, 50, "风向:");
+    switch (future_flag)
+    {
+      case 1:
+        u8g2.drawUTF8(63, 12, "|今天");
+        u8g2.drawUTF8(63, 38, "|湿度:");
+        u8g2.drawUTF8(63, 50, "|风力:");
+        u8g2.drawUTF8(0, 62, "空气质量API:");
+        u8g2.printf("%d", Tianqi.aqi);
+        u8g2.setCursor(0, 26);
+        u8g2.printf("%s", Future0.weather);
+        u8g2.setCursor(15, 38);
+        u8g2.printf("%d~%d℃,当前%d℃", Future0.temp_min, Future0.temp_max,Tianqi.temp);
+        u8g2.setCursor(78, 38);
+        u8g2.printf("%d~%d,当前%d", Future0.humi_min, Future0.humi_max,Tianqi.humi);
+        u8g2.setCursor(15, 50);
+        u8g2.printf("%s", Tianqi.direct);
+        u8g2.setCursor(78, 50);
+        u8g2.printf("%s", Tianqi.power);
+        break;
+      case 2:
+        u8g2.drawUTF8(63, 12, "|明天");
+        u8g2.setCursor(0, 26);
+        u8g2.printf("%s", Future1.weather);
+        u8g2.setCursor(15, 38);
+        u8g2.printf("%d~%d℃", Future1.temp_min, Future1.temp_max);
+        u8g2.setCursor(78, 38);
+        u8g2.printf("%d~%d", Future1.humi_min, Future1.humi_max);
+        u8g2.setCursor(15, 50);
+        u8g2.printf("%s", Future1.direct);
+        break;
+      case 3:
+        u8g2.drawUTF8(63, 12, "|后天");
+        u8g2.setCursor(0, 26);
+        u8g2.printf("%s", Future2.weather);
+        u8g2.setCursor(15, 38);
+        u8g2.printf("%d~%d℃", Future2.temp_min, Future2.temp_max);
+        u8g2.setCursor(78, 38);
+        u8g2.printf("%d~%d", Future2.humi_min, Future2.humi_max);
+        u8g2.setCursor(15, 50);
+        u8g2.printf("%s", Future2.direct);
+        break;
+      case 4:
+        u8g2.drawUTF8(63, 12, "|大后天");
+        u8g2.setCursor(0, 26);
+        u8g2.printf("%s", Future2.weather);
+        u8g2.setCursor(15, 38);
+        u8g2.printf("%d~%d℃", Future2.temp_min, Future2.temp_max);
+        u8g2.setCursor(78, 38);
+        u8g2.printf("%d~%d", Future2.humi_min, Future2.humi_max);
+        u8g2.setCursor(15, 50);
+        u8g2.printf("%s", Future2.direct);
+        break;
+    }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu12(unsigned int index){//"室内状态"
