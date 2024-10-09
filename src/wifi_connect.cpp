@@ -12,7 +12,6 @@ void ruanjianchongqi(){
 void WiFi_connect(){//连接WiFi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
     unlink_state++;
     wifi_state = false;
     if(unlink_state>=200){
@@ -20,6 +19,7 @@ void WiFi_connect(){//连接WiFi
       unlink_state = 0;
     }
     Serial.println("Connecting to WiFi...");
+    vTaskDelay(10000);
   }
   wifi_state = true;
   Serial.println("Connected to WiFi");

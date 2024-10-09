@@ -43,10 +43,7 @@ typedef struct{
     String temp;
     int8_t temp_max;
     int8_t temp_min;
-    String humi;
-    uint8_t humi_max;
-    uint8_t humi_min;
-    void temp_humi_math(){
+    void temp_math(){
         char p[9];
         int i, j = temp.length();
         for (i = 0; i < j; i++){
@@ -54,15 +51,7 @@ typedef struct{
         }
         p[i] = '\0';
         temp_min = atoi(p);
-        temp_max = atoi(p + 4);
-        char q[9];
-        j = humi.length();
-        for (i = 0; i < j; i++){
-            q[i] = humi[i];
-        }
-        q[i] = '\0';
-        humi_min = atoi(q);
-        humi_max = atoi(q + 4);
+        temp_max = atoi(p + 3);
     }
     String weather;
     unsigned int day;

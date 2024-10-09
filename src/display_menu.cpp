@@ -68,24 +68,6 @@ void menu_key(){
         switch(order+1){
             case 1:
               yema=11;//天气预报
-              switch(order+1){
-                case 1:
-                  future_flag = 1;
-                  yema=111;
-                  break;
-                case 2:
-                  future_flag = 2;
-                  yema=111;
-                  break;
-                case 3:
-                  future_flag = 3;
-                  yema=111;
-                  break;
-                case 4:
-                  future_flag = 4;
-                  yema=111;
-                  break;
-              }
               break;
             case 2:
               yema=12;//室内状况
@@ -146,6 +128,25 @@ void menu_key(){
               break;
         }
         break;
+      case 11:
+        switch(order+1){
+          case 1:
+            future_flag = 1;
+            yema = 111;
+            break;
+          case 2:
+            future_flag = 2;
+            yema = 111;
+            break;
+          case 3:
+            future_flag = 3;
+            yema = 111;
+            break;
+          case 4:
+            future_flag = 4;
+            yema = 111;
+            break;
+        }
       }
       order = 0;
       key3_flag = !key3_flag;
@@ -359,13 +360,13 @@ void display_menu11(unsigned int index){//"天气状况"
     u8g2.drawUTF8(0, 12, "天气概况");
     u8g2.drawHLine(0, 14, 128);
     u8g2.drawUTF8(0, 26, "今天:");
-    u8g2.printf("%s", Future0.weather);
+    //u8g2.printf("%s", Future0.weather);
     u8g2.drawUTF8(0, 38, "明天:");
-    u8g2.printf("%s", Future1.weather);
+    //u8g2.printf("%s", Future1.weather);
     u8g2.drawUTF8(0, 50, "后天:");
-    u8g2.printf("%s", Future2.weather);
+    //u8g2.printf("%s", Future2.weather);
     u8g2.drawUTF8(0, 62, "大后天:");
-    u8g2.printf("%s", Future3.weather);
+    //u8g2.printf("%s", Future3.weather);
     for (int i = 0; i < MENU_SIZE; i++)
     {
       if (i == index)
@@ -425,53 +426,49 @@ void display_menu111(unsigned int index){//"天气预报"
     {
       case 1:
         u8g2.drawUTF8(63, 12, "|今天");
-        u8g2.drawUTF8(63, 38, "|湿度:");
+        u8g2.drawUTF8(63, 26, "|湿度:");
         u8g2.drawUTF8(63, 50, "|风力:");
         u8g2.drawUTF8(0, 62, "空气质量API:");
+        u8g2.setCursor(72, 62);
         u8g2.printf("%d", Tianqi.aqi);
         u8g2.setCursor(0, 26);
         u8g2.printf("%s", Future0.weather);
-        u8g2.setCursor(15, 38);
+        u8g2.setCursor(30, 38);
         u8g2.printf("%d~%d℃,当前%d℃", Future0.temp_min, Future0.temp_max,Tianqi.temp);
-        u8g2.setCursor(78, 38);
-        u8g2.printf("%d~%d,当前%d", Future0.humi_min, Future0.humi_max,Tianqi.humi);
-        u8g2.setCursor(15, 50);
+        u8g2.setCursor(95, 26);
+        u8g2.printf("%d",Tianqi.humi);
+        u8g2.print("%");
+        u8g2.setCursor(30, 50);
         u8g2.printf("%s", Tianqi.direct);
-        u8g2.setCursor(78, 50);
+        u8g2.setCursor(95, 50);
         u8g2.printf("%s", Tianqi.power);
         break;
       case 2:
         u8g2.drawUTF8(63, 12, "|明天");
         u8g2.setCursor(0, 26);
         u8g2.printf("%s", Future1.weather);
-        u8g2.setCursor(15, 38);
+        u8g2.setCursor(30, 38);
         u8g2.printf("%d~%d℃", Future1.temp_min, Future1.temp_max);
-        u8g2.setCursor(78, 38);
-        u8g2.printf("%d~%d", Future1.humi_min, Future1.humi_max);
-        u8g2.setCursor(15, 50);
+        u8g2.setCursor(30, 50);
         u8g2.printf("%s", Future1.direct);
         break;
       case 3:
         u8g2.drawUTF8(63, 12, "|后天");
         u8g2.setCursor(0, 26);
         u8g2.printf("%s", Future2.weather);
-        u8g2.setCursor(15, 38);
+        u8g2.setCursor(30, 38);
         u8g2.printf("%d~%d℃", Future2.temp_min, Future2.temp_max);
-        u8g2.setCursor(78, 38);
-        u8g2.printf("%d~%d", Future2.humi_min, Future2.humi_max);
-        u8g2.setCursor(15, 50);
+        u8g2.setCursor(30, 50);
         u8g2.printf("%s", Future2.direct);
         break;
       case 4:
         u8g2.drawUTF8(63, 12, "|大后天");
         u8g2.setCursor(0, 26);
-        u8g2.printf("%s", Future2.weather);
-        u8g2.setCursor(15, 38);
-        u8g2.printf("%d~%d℃", Future2.temp_min, Future2.temp_max);
-        u8g2.setCursor(78, 38);
-        u8g2.printf("%d~%d", Future2.humi_min, Future2.humi_max);
-        u8g2.setCursor(15, 50);
-        u8g2.printf("%s", Future2.direct);
+        u8g2.printf("%s", Future3.weather);
+        u8g2.setCursor(30, 38);
+        u8g2.printf("%d~%d℃", Future3.temp_min, Future3.temp_max);
+        u8g2.setCursor(30, 50);
+        u8g2.printf("%s", Future3.direct);
         break;
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
