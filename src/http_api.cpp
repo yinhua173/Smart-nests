@@ -3,7 +3,7 @@
 
 // 定义http请求
 String url = "http://apis.juhe.cn/simpleWeather/query";
-String city = "南宁";
+String city = "梧州";
 String key = "f7a00d7ed724ea602774412f227b894e";
 uint8_t http_api_state = 36;//http_api请求次数
 HTTPClient http;// 创建 HTTPClient 对象
@@ -128,80 +128,78 @@ void http_tianqi(){
   Serial.printf("空气指数: %d\n", Tianqi.aqi);
   Serial.printf("-------------------------");
   Serial.printf("-------------------------");
-  // 未来天气0
-  Future0.date = doc["result"]["future"][0]["date"].as<String>();         // 日期
-  Future0.temp = doc["result"]["future"][0]["temperature"].as<String>();  // 温度
-  //Future0.humi = doc["result"]["future"][0]["humidity"].as<String>();     // 湿度
-  Future0.weather = doc["result"]["future"][0]["weather"].as<String>();   // 天气
-  Future0.day = doc["result"]["future"][0]["day"].as<unsigned int>();     // 白天温度
-  Future0.night = doc["result"]["future"][0]["night"].as<unsigned int>(); // 夜间温度
-  Future0.direct = doc["result"]["future"][0]["direct"].as<String>();     // 风向
+  // // 未来天气0
+  // Future0.date = doc["result"]["future"][0]["date"].as<String>();         // 日期
+  // Future0.temp = doc["result"]["future"][0]["temperature"].as<String>();  // 温度
+  // //Future0.humi = doc["result"]["future"][0]["humidity"].as<String>();     // 湿度
+  // Future0.weather = doc["result"]["future"][0]["weather"].as<String>();   // 天气
+  // Future0.day = doc["result"]["future"][0]["day"].as<unsigned int>();     // 白天温度
+  // Future0.night = doc["result"]["future"][0]["night"].as<unsigned int>(); // 夜间温度
+  // Future0.direct = doc["result"]["future"][0]["direct"].as<char const *>();     // 风向
 
-  Serial.printf("日期: %s\n", Future0.date);
-  Serial.printf("温度: %s\n", Future0.temp);
-  Future0.temp_math();
-  Serial.printf("温度max: %d\n", Future0.temp_max);
-  Serial.printf("温度min: %d\n", Future0.temp_min);
+  // Serial.printf("日期: %s\n", Future0.date);
+  // Serial.printf("温度: %s\n", Future0.temp);
+  // Future0.temp_math();
+  // Serial.printf("温度max: %d\n", Future0.temp_max);
+  // Serial.printf("温度min: %d\n", Future0.temp_min);
 
-  // 未来天气1
-  Future1.date = doc["result"]["future"][1]["date"].as<String>();         // 日期
-  Future1.temp = doc["result"]["future"][1]["temperature"].as<String>();  // 温度
-  //Future1.humi = doc["result"]["future"][1]["humidity"].as<String>();     // 湿度
-  Future1.weather = doc["result"]["future"][1]["weather"].as<String>();   // 天气
-  Future1.day = doc["result"]["future"][1]["day"].as<unsigned int>();     // 白天温度
-  Future1.night = doc["result"]["future"][1]["night"].as<unsigned int>(); // 夜间温度
-  Future1.direct = doc["result"]["future"][1]["direct"].as<String>();     // 风向
-
-  Future1.direct="东北";
-  Serial.printf("日期: %s\n", Future1.date);
-  Serial.printf("温度: %s\n", Future1.temp);
-  Serial.printf("风向: %s\n", Future1.direct);
-  Future1.temp_math();
-
-  // 未来天气2
-  Future2.date = doc["result"]["future"][2]["date"].as<String>();         // 日期
-  Future2.temp = doc["result"]["future"][2]["temperature"].as<String>();  // 温度
-  //Future2.humi = doc["result"]["future"][2]["humidity"].as<String>();     // 湿度
-  Future2.weather = doc["result"]["future"][2]["weather"].as<String>();   // 天气
-  Future2.day = doc["result"]["future"][2]["day"].as<unsigned int>();     // 白天温度
-  Future2.night = doc["result"]["future"][2]["night"].as<unsigned int>(); // 夜间温度
-  Future2.direct = doc["result"]["future"][2]["direct"].as<String>();     // 风向
-
-  Future2.direct="东北风";
-  Serial.printf("日期: %s\n", Future2.date);
-  Serial.printf("温度: %s\n", Future2.temp);
-  Serial.printf("风向: %s\n", Future2.direct);
-  Future2.temp_math();
-
-  // 未来天气3
-  Future3.date = doc["result"]["future"][3]["date"].as<String>();         // 日期
-  Future3.temp = doc["result"]["future"][3]["temperature"].as<String>();  // 温度
-  //Future3.humi = doc["result"]["future"][3]["humidity"].as<String>();     // 湿度
-  Future3.weather = doc["result"]["future"][3]["weather"].as<String>();   // 天气
-  Future3.day = doc["result"]["future"][3]["day"].as<unsigned int>();     // 白天温度
-  Future3.night = doc["result"]["future"][3]["night"].as<unsigned int>(); // 夜间温度
-  Future3.direct = doc["result"]["future"][3]["direct"].as<String>();     // 风向
-
-  Future3.direct="东北风转";
-  Serial.printf("日期: %s\n", Future3.date);
-  Serial.printf("温度: %s\n", Future3.temp);
-  Serial.printf("风向: %s\n", Future3.direct);
-  Future3.temp_math();
-
-  // 未来天气4
-  Future4.date = doc["result"]["future"][4]["date"].as<String>();         // 日期
-  Future4.temp = doc["result"]["future"][4]["temperature"].as<String>();  // 温度
-  //Future4.humi = doc["result"]["future"][4]["humidity"].as<String>();     // 湿度
-  Future4.weather = doc["result"]["future"][4]["weather"].as<String>();   // 天气
-  Future4.day = doc["result"]["future"][4]["day"].as<unsigned int>();     // 白天温度
-  Future4.night = doc["result"]["future"][4]["night"].as<unsigned int>(); // 夜间温度
-  Future4.direct = doc["result"]["future"][4]["direct"].as<String>();     // 风向
+  // // 未来天气1
+  // Future1.date = doc["result"]["future"][1]["date"].as<String>();         // 日期
+  // Future1.temp = doc["result"]["future"][1]["temperature"].as<String>();  // 温度
+  // //Future1.humi = doc["result"]["future"][1]["humidity"].as<String>();     // 湿度
+  // Future1.weather = doc["result"]["future"][1]["weather"].as<String>();   // 天气
+  // Future1.day = doc["result"]["future"][1]["day"].as<unsigned int>();     // 白天温度
+  // Future1.night = doc["result"]["future"][1]["night"].as<unsigned int>(); // 夜间温度
+  // Future1.direct = doc["result"]["future"][1]["direct"].as<char const *>();     // 风向
   
-  Future4.direct="东北风转东风";
-  Serial.printf("日期: %s\n", Future4.date);
-  Serial.printf("温度: %s\n", Future4.temp);
-  Serial.printf("风向: %s\n", Future4.direct);
-  Future4.temp_math();
+  
+  // Serial.printf("日期: %s\n", Future1.date);
+  // Serial.printf("温度: %s\n", Future1.temp);
+  // Serial.printf("风向: %s\n", Future1.direct);
+  // Future1.temp_math();
+
+  // // 未来天气2
+  // Future2.date = doc["result"]["future"][2]["date"].as<String>();         // 日期
+  // Future2.temp = doc["result"]["future"][2]["temperature"].as<String>();  // 温度
+  // //Future2.humi = doc["result"]["future"][2]["humidity"].as<String>();     // 湿度
+  // Future2.weather = doc["result"]["future"][2]["weather"].as<String>();   // 天气
+  // Future2.day = doc["result"]["future"][2]["day"].as<unsigned int>();     // 白天温度
+  // Future2.night = doc["result"]["future"][2]["night"].as<unsigned int>(); // 夜间温度
+  // Future2.direct = doc["result"]["future"][2]["direct"].as<char const *>();     // 风向
+  
+  
+  // Serial.printf("日期: %s\n", Future2.date);
+  // Serial.printf("温度: %s\n", Future2.temp);
+  // Serial.printf("风向: %s\n", Future2.direct);
+  // Future2.temp_math();
+
+  // // 未来天气3
+  // Future3.date = doc["result"]["future"][3]["date"].as<String>();         // 日期
+  // Future3.temp = doc["result"]["future"][3]["temperature"].as<String>();  // 温度
+  // //Future3.humi = doc["result"]["future"][3]["humidity"].as<String>();     // 湿度
+  // Future3.weather = doc["result"]["future"][3]["weather"].as<String>();   // 天气
+  // Future3.day = doc["result"]["future"][3]["day"].as<unsigned int>();     // 白天温度
+  // Future3.night = doc["result"]["future"][3]["night"].as<unsigned int>(); // 夜间温度
+  // Future3.direct = doc["result"]["future"][3]["direct"].as<char const *>();     // 风向
+
+  // Serial.printf("日期: %s\n", Future3.date);
+  // Serial.printf("温度: %s\n", Future3.temp);
+  // Serial.printf("风向: %s\n", Future3.direct);
+  // Future3.temp_math();
+
+  // // 未来天气4
+  // Future4.date = doc["result"]["future"][4]["date"].as<String>();         // 日期
+  // Future4.temp = doc["result"]["future"][4]["temperature"].as<String>();  // 温度
+  // //Future4.humi = doc["result"]["future"][4]["humidity"].as<String>();     // 湿度
+  // Future4.weather = doc["result"]["future"][4]["weather"].as<String>();   // 天气
+  // Future4.day = doc["result"]["future"][4]["day"].as<unsigned int>();     // 白天温度
+  // Future4.night = doc["result"]["future"][4]["night"].as<unsigned int>(); // 夜间温度
+  // Future4.direct = doc["result"]["future"][4]["direct"].as<char const *>();     // 风向
+  
+  // Serial.printf("日期: %s\n", Future4.date);
+  // Serial.printf("温度: %s\n", Future4.temp);
+  // Serial.printf("风向: %s\n", Future4.direct);
+  // Future4.temp_math();
 }
 void http_time(){
   // 发送GET请求
@@ -260,7 +258,6 @@ void http_api(){
   }
 }
 void httpTask(void *parameter){
-  
   while(1){
     if(WiFi.status() == WL_CONNECTED){
       http_api();

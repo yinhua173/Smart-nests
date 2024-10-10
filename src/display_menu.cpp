@@ -1,12 +1,12 @@
 #include "display_menu.h"
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0,SCL,SDA,U8X8_PIN_NONE);
-char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "报警查看"};
-char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
-char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
-char *menkou[MENU_SIZE] = {"门口状态", "开门", "关门", "开门历史数据"};
-char *chuanghu[MENU_SIZE] = {"窗户状态", "打开", "关闭", "窗户历史数据"};
-char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
-char *onoff[2] = {"开", "关"};
+const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "报警查看"};
+const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
+const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
+const char *menkou[MENU_SIZE] = {"门口状态", "开门", "关门", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
+const char *chuanghu[MENU_SIZE] = {"窗户状态", "打开", "关闭", "窗户历史数据"};
+const char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
+const char *onoff[2] = {"开", "关"};
 // 定义当前选项
 unsigned int  order = 0;
 unsigned int  yema = 0;
@@ -217,7 +217,7 @@ void zhiwen_menkong(){
     u8g2.setCursor(64, 12);
     // 显示文字
     u8g2.print("门已开");
-    finger_flag = !finger_flag;
+    finger_flag = !finger_flag;//无法判断关门信号，需要添加
   }
   if (finger_error_flag){
     // 设置光标位置
@@ -444,6 +444,7 @@ void display_menu111(unsigned int index){//"天气预报"
         u8g2.printf("%s", Tianqi.power);
         break;
       case 2:
+        //Future1.direct="东风转西南风";
         u8g2.drawUTF8(63, 12, "|明天");
         u8g2.setCursor(0, 26);
         u8g2.printf("%s", Future1.weather);

@@ -56,7 +56,7 @@ typedef struct{
     String weather;
     unsigned int day;
     unsigned int night;
-    String direct;
+    char const *direct;
 }future;
 
 
