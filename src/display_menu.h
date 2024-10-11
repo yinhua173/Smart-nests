@@ -25,6 +25,7 @@ extern bool key5_flag;
 extern volatile bool finger_flag;
 extern volatile bool finger_error_flag;
 extern volatile bool wifi_state;
+extern String city;
 
 extern BME680 bme680;
 

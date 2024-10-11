@@ -358,9 +358,11 @@ void display_menu11(unsigned int index){//"天气状况"
     do{
       // 绘制页面内容
     u8g2.drawUTF8(0, 12, "天气概况");
+    u8g2.setCursor(63, 12);
+    u8g2.printf("%s", city);
     u8g2.drawHLine(0, 14, 128);
     u8g2.drawUTF8(0, 26, "今天:");
-    //u8g2.printf("%s", Future0.weather);
+    
     u8g2.drawUTF8(0, 38, "明天:");
     //u8g2.printf("%s", Future1.weather);
     u8g2.drawUTF8(0, 50, "后天:");
@@ -376,16 +378,16 @@ void display_menu11(unsigned int index){//"天气状况"
         u8g2.print(future_weather[i]);
         switch (i){
           case 0:
-            u8g2.printf("%s", Future0.weather);
+            u8g2.printf("%s", Future0.weather_S.c_str());
             break;
           case 1:
-            u8g2.printf("%s", Future1.weather);
+            u8g2.printf("%s", Future1.weather_S.c_str());
             break;
           case 2:
-            u8g2.printf("%s", Future2.weather);
+            u8g2.printf("%s", Future2.weather_S.c_str());
             break;
           case 3:
-            u8g2.printf("%s", Future3.weather);
+            u8g2.printf("%s", Future3.weather_S.c_str());
             break;
         }
         u8g2.print(" <<");
@@ -396,16 +398,16 @@ void display_menu11(unsigned int index){//"天气状况"
         u8g2.print(future_weather[i]);
         switch (i){
           case 0:
-            u8g2.printf("%s", Future0.weather);
+            u8g2.printf("%s", Future0.weather_S.c_str());
             break;
           case 1:
-            u8g2.printf("%s", Future1.weather);
+            u8g2.printf("%s", Future1.weather_S.c_str());
             break;
           case 2:
-            u8g2.printf("%s", Future2.weather);
+            u8g2.printf("%s", Future2.weather_S.c_str());
             break;
           case 3:
-            u8g2.printf("%s", Future3.weather);
+            u8g2.printf("%s", Future3.weather_S.c_str());
             break;
         }
       }
@@ -432,14 +434,14 @@ void display_menu111(unsigned int index){//"天气预报"
         u8g2.setCursor(72, 62);
         u8g2.printf("%d", Tianqi.aqi);
         u8g2.setCursor(0, 26);
-        u8g2.printf("%s", Future0.weather);
+        u8g2.printf("%s", Tianqi.info_S.c_str());
         u8g2.setCursor(30, 38);
         u8g2.printf("%d~%d℃,当前%d℃", Future0.temp_min, Future0.temp_max,Tianqi.temp);
         u8g2.setCursor(95, 26);
         u8g2.printf("%d",Tianqi.humi);
         u8g2.print("%");
         u8g2.setCursor(30, 50);
-        u8g2.printf("%s", Tianqi.direct);
+        u8g2.printf("%s", Tianqi.direct_S.c_str());
         u8g2.setCursor(95, 50);
         u8g2.printf("%s", Tianqi.power);
         break;
@@ -447,29 +449,29 @@ void display_menu111(unsigned int index){//"天气预报"
         //Future1.direct="东风转西南风";
         u8g2.drawUTF8(63, 12, "|明天");
         u8g2.setCursor(0, 26);
-        u8g2.printf("%s", Future1.weather);
+        u8g2.printf("%s", Future1.weather_S.c_str());
         u8g2.setCursor(30, 38);
         u8g2.printf("%d~%d℃", Future1.temp_min, Future1.temp_max);
         u8g2.setCursor(30, 50);
-        u8g2.printf("%s", Future1.direct);
+        u8g2.printf("%s", Future1.direct_S.c_str());
         break;
       case 3:
         u8g2.drawUTF8(63, 12, "|后天");
         u8g2.setCursor(0, 26);
-        u8g2.printf("%s", Future2.weather);
+        u8g2.printf("%s", Future2.weather_S.c_str());
         u8g2.setCursor(30, 38);
         u8g2.printf("%d~%d℃", Future2.temp_min, Future2.temp_max);
         u8g2.setCursor(30, 50);
-        u8g2.printf("%s", Future2.direct);
+        u8g2.printf("%s", Future2.direct_S.c_str());
         break;
       case 4:
         u8g2.drawUTF8(63, 12, "|大后天");
         u8g2.setCursor(0, 26);
-        u8g2.printf("%s", Future3.weather);
+        u8g2.printf("%s", Future3.weather_S.c_str());
         u8g2.setCursor(30, 38);
         u8g2.printf("%d~%d℃", Future3.temp_min, Future3.temp_max);
         u8g2.setCursor(30, 50);
-        u8g2.printf("%s", Future3.direct);
+        u8g2.printf("%s", Future3.direct_S.c_str());
         break;
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.

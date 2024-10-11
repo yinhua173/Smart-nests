@@ -18,8 +18,10 @@ typedef struct{
     unsigned int temp;
     unsigned int humi;
     unsigned int wid;
-    String info;
-    String direct;
+    const char * info;
+    String info_S;
+    const char * direct;
+    String direct_S;
     String power;
     int aqi;
 }tian_qi;
@@ -53,10 +55,12 @@ typedef struct{
         temp_min = atoi(p);
         temp_max = atoi(p + 3);
     }
-    String weather;
+    char const * weather;
+    String weather_S;
     unsigned int day;
     unsigned int night;
     char const *direct;
+    String direct_S;
 }future;
 
 

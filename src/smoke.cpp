@@ -19,15 +19,15 @@ void fireTask(void *parameter) {//模拟信号
   }
 }
 void rainTask(void *parameter) {//数字信号
-  rain.init(18,13);
+  rain.init(15,13);
   while (1) {
-    rain.run(18,13);
+    rain.run(15,13);
   }
 }
 void pirTask(void *parameter) {//数字信号
-  pir.init(23,14);
+  pir.init(4,14);
   while (1) {
-    pir.run(23,14);
+    pir.run(4,14);
   }
 }
 void touchTask(void *parameter) {//数字信号
