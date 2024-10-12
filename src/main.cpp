@@ -9,6 +9,7 @@
 #include "display_menu.h"
 #include "aliyun.h"
 #include "http_api.h"
+#include "datadata.h"
 // TaskHandle_t taskHandle;
 // int taskMem = 1024*2;
 /*
@@ -42,8 +43,9 @@ void setup() {
   xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 3, NULL, 1);//创建光照任务
   xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 3, NULL,1);//创建温湿度任务
   xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 2, NULL, 1, NULL,1);//创建指纹任务
-  
   xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*4, NULL, 1, NULL, 0);//创建OLED任务
+  xTaskCreatePinnedToCore(delay_test_task, "delay_test_task", 1024 * 4, NULL, 2, NULL,0);
+  xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 30, NULL, 2, NULL,1);//创建打印任务
   //xTaskCreatePinnedToCore(buttonTask, "buttonTask", 1024*2, NULL, 1, NULL, 0);//创建按键任务
   buttonTask();
   //vTaskDelay(1000); //提前先运行一秒获取第一笔数据

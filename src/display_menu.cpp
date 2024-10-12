@@ -8,10 +8,12 @@ const char *chuanghu[MENU_SIZE] = {"窗户状态", "打开", "关闭", "窗户�
 const char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
 const char *onoff[2] = {"开", "关"};
 // 定义当前选项
-unsigned int  order = 0;
-unsigned int  yema = 0;
+volatile unsigned int  order = 0;
+volatile unsigned int  order_2 = 0;
+volatile unsigned int  yema = 0;
 uint8_t on = 0;
 volatile uint8_t future_flag = 0;
+volatile bool datadata_state = false;
 void OLEDTask(void *pvParam){
     Wire1.begin(SDA, SCL);
     // 初始化 OLED 对象
@@ -40,9 +42,11 @@ void menu_key(){
     // }
 
     if(key1_flag){ //上    
+      datadata_state?order_2=--order_2%8:0;
       order = (order - 1) % 4;
       key1_flag = !key1_flag;
     }else if (key2_flag){//下    
+      datadata_state?order_2=++order_2%8:0;
       order = (order + 1) % 4;
       key2_flag = !key2_flag;
     }else if (key3_flag){//确认
@@ -153,7 +157,13 @@ void menu_key(){
     }else if (key4_flag){//返回
     yema = yema/10;
     order = 0;
+    order_2 = 0;
     key4_flag = !key4_flag;
+    
+    datadata_state=false;
+    datadata_temp=false;
+    datadata_humi=false;
+    data_stop=0;
     }
   }
 }
@@ -496,52 +506,46 @@ void display_menu12(unsigned int index){//"室内状态"
 }
 void display_menu13(unsigned int index){//"室内温度历史"
   // 进入第一页
+  datadata_temp=true;
+  datadata_state=true;
   u8g2.firstPage();
     do{
       // 绘制页面内容
     u8g2.drawUTF8(0, 12, "时间");
-    u8g2.drawUTF8(0, 30, "温度");
+    u8g2.drawUTF8(63, 12, "温度");
     u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "时间");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("%d点", order);
-    u8g2.drawUTF8(26, 26, "温度");
-    u8g2.setCursor(26, 38);
-    u8g2.printf("%d℃", order);
-    for (int i = 0; i < MENU_SIZE; i++)
+    for (int i = 0; i < 4; i++)
     {
-      if (i == index)
-      {
         // 设置光标位置
-        u8g2.setCursor(0, (i + 2) * 12 + 2);
-        u8g2.print(menu[i]);
-        u8g2.setCursor(0, (i + 2) * 12 + 2);
-        u8g2.print(menu[i]);
-        u8g2.print(" <<");
-      }
-      else
-      {
-        u8g2.setCursor(0, (i + 2) * 12 + 2);
-        u8g2.print(menu[i]);
-        u8g2.setCursor(0, (i + 2) * 12 + 2);
-        u8g2.print(menu[i]);
-      }
+        u8g2.setCursor(0, 26+i*12);
+        u8g2.printf("%d点", timedd[i+order_2*4]);
+        u8g2.setCursor(63, 26+i*12);
+        u8g2.printf("%.1f℃", datadata[i+order_2*4]);
+        u8g2.setCursor(110, 26+i*12);
+        u8g2.print(" >>>");
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu14(unsigned int index){//"室内湿度历史"
   // 进入第一页
   u8g2.firstPage();
+  datadata_humi=true;
+  datadata_state=true;
     do{
       // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "室内湿度历史数据");
+    u8g2.drawUTF8(0, 12, "时间");
+    u8g2.drawUTF8(63, 12, "湿度");
     u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "时间");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("%d点", order);
-    u8g2.drawUTF8(26, 26, "湿度");
-    u8g2.setCursor(26, 38);
-    u8g2.printf("%d %", order);
+    for (int i = 0; i < 4; i++)
+    {
+        // 设置光标位置
+        u8g2.setCursor(0, 26+i*12);
+        u8g2.printf("%d点", timedd[i+order_2*4]);
+        u8g2.setCursor(63, 26+i*12);
+        u8g2.printf("%.1f%%", datadata[i+order_2*4]);
+        u8g2.setCursor(110, 26+i*12);
+        u8g2.print(" >>>");
+    }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu24(unsigned int index){//开门历史数据

@@ -34,8 +34,6 @@ extern begin pir;
 extern begin touch;
 float  *humi = &bme680.humi;     // 读取湿度
 float  *temp = &bme680.temp;     // 读取温度
-float soil_data=*humi;
-float tep=*temp;
 
 // mqtt连接
 void mqttCheckConnect(){

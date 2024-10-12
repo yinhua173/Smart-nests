@@ -1,27 +1,39 @@
 #include <iostream>
 #include "datadata.h"
 using namespace std;
-#define Maxsize 24
+#define Maxsize 33
 volatile uint8_t n=0;
 uint8_t dd = 0;//入队标识1,出队标识2,读取标识3
-extern uint8_t humi;
-extern float temp;
+extern BME680 bme680;
+// extern uint8_t humi;
+// extern float temp;
+TickType_t lasttick = xTaskGetTickCount();//初值
+uint8_t min_one=0;
+volatile bool datadata_temp = false;
+volatile bool datadata_humi = false;
+volatile bool datadata_tra_state = false;
+volatile bool datadata_state_stop = false;
+volatile float datadata[32];
+volatile int timedd[32];
+volatile uint16_t tra=0;
+volatile uint8_t data_stop=0;
+volatile uint8_t time_size=sizeof(datadata)/sizeof(datadata[0]);
 typedef  struct SqQueue{
-  int *base; //基地址
+  float *base; //基地址
   int front,rear; //头指针,尾指针
 }SqQueue;
 
 //循环队列的初始化
 bool InitQueue(SqQueue &Q)//注意使用引用参数，否则出了函数，其改变无效
 {
-	Q.base=new int[Maxsize];//分配空间
+	Q.base=new float[Maxsize];//分配空间
 	if(!Q.base) return false;
 	Q.front=Q.rear=0; //头指针和尾指针置为零，队列为空
 	return true;
 }
 
 //循环队列的入队
-bool EnQueue(SqQueue &Q,int e)//将元素e放入Q的队尾
+bool EnQueue(SqQueue &Q,float e)//将元素e放入Q的队尾
 {
 	if((Q.rear+1)%Maxsize==Q.front) //尾指针后移一位等于头指针，表明队满
 	{ // 队列满的情况
@@ -55,43 +67,55 @@ int QueueLength(SqQueue Q)
 {
 	return (Q.rear-Q.front+Maxsize)%Maxsize;
 }
+
 // 遍历队列，不删除元素
 void TraverseQueue(SqQueue Q) {
-    if (Q.front == Q.rear) {
-        printf("Queue is empty.\n");
-        return;
-    }
-
-    int i = Q.front;
-    while (i != Q.rear) {
-        printf("%d ", Q.base[i]);
-        i = (i + 1) % Maxsize;
-    }
-    printf("\n");
+	if (Q.front == Q.rear){
+		printf("Queue is empty.\n");
+		return;
+	}
+	tra++;
+	int i = Q.front;
+	int j=0;
+	while (i != Q.rear){
+		printf("%f ", Q.base[i]);
+		tra==1?datadata[j]=Q.base[i]:timedd[j]=Q.base[i];//取出温度数组
+		j++;
+		i = (i + 1) % Maxsize;
+	}
+	printf("\n");
 }
-int data_main()
-{
-	SqQueue Q;//温度
-    SqQueue H;//湿度
+
+void datadata_task(void *parameter){
+  SqQueue Q;//温度
+  SqQueue H;//湿度
 	SqQueue time1;//温度湿度记录时间
 	SqQueue door;//门口历史
 	SqQueue time2;//门口记录时间
 	int n=0,x,a;
 	InitQueue(Q);//初始化队列(一定要初始化，否则后面存储出错)
-    InitQueue(H);
-    InitQueue(time1);
-	//while(1){
-	
-	//a"1入队，2出队，3读取，请输入1  2  3" 
-	
-	switch(a){
-		case 1: 
+  InitQueue(H);
+  InitQueue(time1);
+	while(1){
+	  if(datadata_temp||datadata_humi){
+			data_stop++;
+			if(data_stop==1){
+			  a=3;datadata_tra_state = true;
+			}
+		}
+		if(min_one==1){
+			a=1;
+			min_one=0;
+		}
+		switch(a){
+			case 1: 
 			//cout <<"入队：" <<endl;
 		       	//cin>>x;
 				n++;
-				EnQueue(Q,temp);//入队
-                EnQueue(H,humi);
+				EnQueue(Q,bme680.temp);//入队
+				EnQueue(H,bme680.humi);
 				EnQueue(time1,n);
+				a=0;
 			//cout<<endl;
 	    	break;
 	    case 2:
@@ -99,26 +123,40 @@ int data_main()
 		    //cout <<"队头元素：" <<GetHead(Q)<<endl;
 			//cout <<"元素依次出队：" <<endl;
 			while(true)//如果栈不空，则依次出栈
-		    {
-		        if(DeQueue(Q,x))
-		            cout<<x<<"\t";//出队元素
-		        else
-		            break;
-		    }
-            while(true)//如果栈不空，则依次出栈
-		    {
-		        if(DeQueue(H,x))
-		            cout<<x<<"\t";//出队元素
-		        else
-		            break;
-		    }
-		    //cout <<endl;
+			{
+				if (DeQueue(Q, x))
+					cout << x << "\t"; // 出队元素
+				else
+					break;
+			}
+			while (true) // 如果栈不空，则依次出栈
+			{
+				if (DeQueue(H, x))
+					cout << x << "\t"; // 出队元素
+				else
+					break;
+			}
+				//cout <<endl;
 		    break;
-		case 3:
-			TraverseQueue(Q);
+			case 3:
+			if(datadata_temp)
+				TraverseQueue(Q);
+			if(datadata_humi)
+				TraverseQueue(H);
+				TraverseQueue(time1);
+				tra=0,a=0;datadata_tra_state = false;
 			break;
+		}
+		vTaskDelay(100);
 	}
-	//cout <<"队列内元素个数，即长度："<<QueueLength(Q)<<endl;
-	//}
-	return 0;
+}
+//vTaskDelayUntil测试
+void delay_test_task(void *parameter){
+        
+		while(1){
+			printf("----------------------\n");
+			printf("1.lasttick:%d,\txTaskGetTickCount:%d\n", lasttick, xTaskGetTickCount());
+			vTaskDelayUntil(&lasttick, 5000);//60000ms
+			min_one++;
+		}
 }

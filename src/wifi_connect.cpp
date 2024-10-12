@@ -3,7 +3,7 @@
 // const char* password = "528528528";//WiFi密码
 const char* ssid = "FFF";//WiFi名称
 const char* password = "fjyzdshp";//WiFi密码
-volatile uint8_t unlink_state = 0;//WIFI连接超时次数
+volatile uint16_t unlink_state = 0;//WIFI连接超时次数
 volatile bool wifi_state = false;//WIFI连接状态
 void ruanjianchongqi(){
   Serial.println("软件重启");
@@ -14,7 +14,7 @@ void WiFi_connect(){//连接WiFi
   while (WiFi.status() != WL_CONNECTED) {
     unlink_state++;
     wifi_state = false;
-    if(unlink_state>=200){
+    if(unlink_state>=5000){
       ruanjianchongqi();
       unlink_state = 0;
     }

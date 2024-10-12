@@ -12,6 +12,7 @@
 #include "fingermain.h"
 #include "wifi_connect.h"
 #include "http_api.h"
+#include "datadata.h"
 
 
 #define SDA 23
@@ -25,6 +26,16 @@ extern bool key5_flag;
 extern volatile bool finger_flag;
 extern volatile bool finger_error_flag;
 extern volatile bool wifi_state;
+
+
+extern volatile bool datadata_temp;
+extern volatile bool datadata_humi;
+extern volatile uint8_t data_stop;
+
+extern volatile float datadata[];
+extern volatile int timedd[];
+extern volatile uint8_t time_size;
+
 extern String city;
 
 extern BME680 bme680;
