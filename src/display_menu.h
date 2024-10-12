@@ -23,7 +23,7 @@ extern bool key2_flag;
 extern bool key3_flag;
 extern bool key4_flag;
 extern bool key5_flag;
-extern volatile bool finger_flag;
+extern volatile bool door_flag;
 extern volatile bool finger_error_flag;
 extern volatile bool wifi_state;
 
@@ -45,6 +45,7 @@ extern begin fire;
 extern begin rain;
 extern begin pir;
 extern begin touch;
+extern begin door;
 
 extern tian_qi Tianqi;
 extern Times time_now;;

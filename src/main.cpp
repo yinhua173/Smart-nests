@@ -10,6 +10,7 @@
 #include "aliyun.h"
 #include "http_api.h"
 #include "datadata.h"
+#include "D74HC595.h"
 // TaskHandle_t taskHandle;
 // int taskMem = 1024*2;
 /*

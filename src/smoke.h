@@ -34,6 +34,27 @@ typedef struct{
   }
 }begin;
 
+// typedef struct{
+//   volatile bool status = false;
+//   volatile float value = 0;
+//   void init(int A){
+//     pinMode(A,INPUT);
+//   }
+//   void run(int A){//数字量
+//     if(!digitalRead(A)){
+//       status = false;
+//     }else{
+//       status = true;
+//     }
+//   }
+//   void Arun(float value){//模拟量
+//     if(value<3000){
+//       status = false;
+//     }else{
+//       status = true;
+//     }
+//   }
+// }begin;
 
 void smokeTask(void *parameter);
 void fireTask(void *parameter);

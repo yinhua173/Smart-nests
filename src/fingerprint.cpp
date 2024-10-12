@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Adafruit_Fingerprint.h>
 #define mySerial Serial2  
-volatile bool finger_flag = false;
+volatile bool door_flag = false;
 volatile bool finger_error_flag = false;
 Adafruit_Fingerprint finger1 = Adafruit_Fingerprint(&mySerial);
 
@@ -90,7 +90,7 @@ uint8_t getFingerprintID() {
   p = finger1.fingerSearch();
   if (p == FINGERPRINT_OK) {
     Serial.println("Found a print match!");
-    finger_flag=true;
+    door_flag=true;
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;

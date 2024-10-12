@@ -3,16 +3,17 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0,SCL,SDA,U8X8_PIN_NONE);
 const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "报警查看"};
 const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
 const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
-const char *menkou[MENU_SIZE] = {"门口状态", "开门", "关门", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
+const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
 const char *chuanghu[MENU_SIZE] = {"窗户状态", "打开", "关闭", "窗户历史数据"};
 const char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
-const char *onoff[2] = {"开", "关"};
+const char *onoff[2] = {"开启", "关闭"};
 // 定义当前选项
 volatile unsigned int  order = 0;
 volatile unsigned int  order_2 = 0;
 volatile unsigned int  yema = 0;
 uint8_t on = 0;
 volatile uint8_t future_flag = 0;
+//volatile bool door_flag = 0;
 volatile bool datadata_state = false;
 void OLEDTask(void *pvParam){
     Wire1.begin(SDA, SCL);
@@ -90,10 +91,10 @@ void menu_key(){
               //yema=21;//
               break;
             case 2:
-              on=0;
+              door_flag = !door_flag;//开关门
               break;
             case 3:
-              on=1;;
+              yema=23;//指纹设置
               break;
             case 4:
               yema=24;//历史数据
@@ -222,12 +223,12 @@ void menu_loop(){
   menu_xuan();
 }
 void zhiwen_menkong(){
-  if (finger_flag){
+  if (door_flag){
     // 设置光标位置
     u8g2.setCursor(64, 12);
     // 显示文字
     u8g2.print("门已开");
-    finger_flag = !finger_flag;//无法判断关门信号，需要添加
+    door_flag = !door_flag;//无法判断关门信号，需要添加
   }
   if (finger_error_flag){
     // 设置光标位置
@@ -315,19 +316,49 @@ void display_menu2(unsigned int index){//"门口"
     // 绘制页面内容
     u8g2.drawUTF8(0, 12, "门口控制");
     u8g2.drawHLine(0, 14, 128);
+    zhiwen_menkong();
     for (int i = 0; i < MENU_SIZE; i++)
     {
       if (i == index)
-      {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
-        u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
+      { 
+        switch(i+1){
+          case 1:
+            u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
+            u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
+            break;
+          case 2:
+            door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
+            break;
+          case 3:
+            u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            u8g2.drawStr(5+strlen(menkou[i+1])*4, (i + 2) * 12 + 2, " <<");
+            break;
+          case 4:
+            u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            u8g2.drawStr(5+strlen(menkou[i+1])*4, (i + 2) * 12 + 2, " <<");
+            break;
+        }
       }
       else
       {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
+        switch(i+1){
+          case 1:
+            u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
+            break;
+          case 2:
+            door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            break;
+          case 3:
+            u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            break;
+          case 4:
+            u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            break;
+        }
       }
     }
-    u8g2.drawUTF8(115, 26, onoff[on]);
+    u8g2.drawUTF8(103, 26, onoff[door.status]);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu3(unsigned int index){//"窗户"
@@ -557,6 +588,9 @@ void display_menu14(unsigned int index){//"室内湿度历史"
       u8g2.print(" >>>");
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
+}
+void display_menu23(unsigned int index){//"指纹设置"
+  
 }
 void display_menu24(unsigned int index){//开门历史数据
   // 进入第一页

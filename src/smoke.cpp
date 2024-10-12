@@ -4,6 +4,7 @@ begin fire;
 begin rain;
 begin pir;
 begin touch;
+begin door;
 void smokeTask(void *parameter) {//模拟信号
   smoke.init(34,2);
   while (1) {
@@ -34,5 +35,11 @@ void touchTask(void *parameter) {//数字信号
   touch.init(19,25);
   while (1) {
     touch.run(19,25);
+  }
+}
+void doorTask(void *parameter) {//数字信号
+  door.init(19,25);
+  while (1) {
+    door.run(19,25);
   }
 }
