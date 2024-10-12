@@ -47,6 +47,7 @@ extern begin pir;
 extern begin touch;
 
 extern tian_qi Tianqi;
+extern Times time_now;;
 extern future Future0;
 extern future Future1;
 extern future Future2;

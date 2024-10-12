@@ -247,6 +247,16 @@ void display_wifi(){
   u8g2.drawCircle(127, 12, 5, U8G2_DRAW_UPPER_LEFT);
   u8g2.drawCircle(127, 12, 7, U8G2_DRAW_UPPER_LEFT);
 }
+// void display_Time(){
+//   if(!wifi_state){
+//     u8g2.drawLine(120, 0, 114,6);//X
+//     u8g2.drawLine(114, 0, 120,6);
+//   }
+//   // 设置光标位置
+//   u8g2.setCursor(24, 12);
+//   // 显示文字
+//   u8g2.print("2021-03-29  12:30:50");
+// }
 void display_menu0(unsigned int index){//主页
   // 进入第一页
   u8g2.firstPage();//画wifi
@@ -256,7 +266,7 @@ void display_menu0(unsigned int index){//主页
     u8g2.setCursor(0, 12);
     // 显示文字
     u8g2.print("菜单");
-    //u8g2.print("24-03-29  12:30:50");
+    u8g2.printf(" |%.2d-%.2d|%.2d:%.2d:%.2d|",time_now.Mon,time_now.Day,time_now.Hour,time_now.Min,time_now.Second);
     zhiwen_menkong();
     u8g2.drawHLine(0, 14, 128);
     for (int i = 0; i < MENU_SIZE; i++)
@@ -538,13 +548,13 @@ void display_menu14(unsigned int index){//"室内湿度历史"
     u8g2.drawHLine(0, 14, 128);
     for (int i = 0; i < 4; i++)
     {
-        // 设置光标位置
-        u8g2.setCursor(0, 26+i*12);
-        u8g2.printf("%d点", timedd[i+order_2*4]);
-        u8g2.setCursor(63, 26+i*12);
-        u8g2.printf("%.1f%%", datadata[i+order_2*4]);
-        u8g2.setCursor(110, 26+i*12);
-        u8g2.print(" >>>");
+      // 设置光标位置
+      u8g2.setCursor(0, 26+i*12);
+      u8g2.printf("%d点", timedd[i+order_2*4]);
+      u8g2.setCursor(63, 26+i*12);
+      u8g2.printf("%.1f%%", datadata[i+order_2*4]);
+      u8g2.setCursor(110, 26+i*12);
+      u8g2.print(" >>>");
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }

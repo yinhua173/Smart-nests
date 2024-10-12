@@ -14,12 +14,12 @@ void WiFi_connect(){//连接WiFi
   while (WiFi.status() != WL_CONNECTED) {
     unlink_state++;
     wifi_state = false;
-    if(unlink_state>=5000){
+    if(unlink_state>=50000){
       ruanjianchongqi();
       unlink_state = 0;
     }
     Serial.println("Connecting to WiFi...");
-    vTaskDelay(10000);
+    vTaskDelay(1000);
   }
   wifi_state = true;
   Serial.println("Connected to WiFi");
@@ -32,7 +32,7 @@ void wifiTask(void *parameter){
     if(WiFi.status() != WL_CONNECTED){
         WiFi_connect();
     }else{
-      vTaskDelay(100);
+      vTaskDelay(1000);
     }
   }
 }

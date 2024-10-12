@@ -20,6 +20,7 @@ future Future2;
 future Future3;
 future Future4;
 Times time_now;//定义时间结构体
+
 void wid_swtich(){
   switch(Tianqi.wid){
     case 0://"weather": "晴"

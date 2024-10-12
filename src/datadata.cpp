@@ -156,7 +156,7 @@ void delay_test_task(void *parameter){
 		while(1){
 			printf("----------------------\n");
 			printf("1.lasttick:%d,\txTaskGetTickCount:%d\n", lasttick, xTaskGetTickCount());
-			vTaskDelayUntil(&lasttick, 5000);//60000ms
+			vTaskDelayUntil(&lasttick, 60000);//60000ms
 			min_one++;
 		}
 }
