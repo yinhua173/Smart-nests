@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "datadata.h"
 using namespace std;
 #define Maxsize 33

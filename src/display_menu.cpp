@@ -1,20 +1,25 @@
 #include "display_menu.h"
+#include <iostream>
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0,SCL,SDA,U8X8_PIN_NONE);
 const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "报警查看"};
 const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
 const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
 const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
-const char *chuanghu[MENU_SIZE] = {"窗户状态", "打开", "关闭", "窗户历史数据"};
+const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "打开", "关闭", "窗帘设置","窗户自动模式"};
 const char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
-const char *onoff[2] = {"开启", "关闭"};
+const char *onoff[2] = {"关闭", "开启"};
+const char *zhiwen[MENU_SIZE]={"录入指纹","删除指纹"};
+// const char *shuzi[10]={"录入指纹","删除指纹"};
 // 定义当前选项
 volatile unsigned int  order = 0;
 volatile unsigned int  order_2 = 0;
 volatile unsigned int  yema = 0;
-uint8_t on = 0;
+extern uint8_t id;
+extern volatile uint8_t id_static;
 volatile uint8_t future_flag = 0;
 //volatile bool door_flag = 0;
 volatile bool datadata_state = false;
+volatile bool clear_hang_state = false;
 void OLEDTask(void *pvParam){
     Wire1.begin(SDA, SCL);
     // 初始化 OLED 对象
@@ -95,6 +100,9 @@ void menu_key(){
               break;
             case 3:
               yema=23;//指纹设置
+              enroll_remove_flag=false;
+              enroll_success_flag=false;
+              enroll_fail_flag=false;
               break;
             case 4:
               yema=24;//历史数据
@@ -152,6 +160,37 @@ void menu_key(){
             yema = 111;
             break;
         }
+        break;
+      case 23:
+        switch(order+1){
+          case 1:
+            yema = 231;
+            enroll_flag = true;
+            break;
+          case 2:
+            yema = 232;
+            delete_flag = true;
+            break;
+          case 3:
+            yema = 231;
+            enroll_flag = true;
+            break;
+          case 4:
+            yema = 232;
+            delete_flag = true;
+            break;
+        }
+        break;
+      case 231:
+        if(enroll_flag==false){
+          //id = array_out_first();
+          enroll_flag = true;
+          enroll_remove_flag=false;
+          enroll_success_flag=false;
+          enroll_fail_flag=false;
+          clear_hang_state=true;
+        }
+        break;
       }
       order = 0;
       key3_flag = !key3_flag;
@@ -197,6 +236,9 @@ void menu_xuan(){
     case 14:
       display_menu14(order);
       break;
+    case 23:
+      display_menu23(order);
+      break;
     case 24:
       display_menu24(order);
       break;
@@ -214,6 +256,12 @@ void menu_xuan(){
       break;
     case 111:
       display_menu111(order);
+      break;
+    case 231:
+      display_menu231(order, id);
+      break;
+    case 232:
+      display_menu232(order);
       break;
   }
 }
@@ -234,7 +282,7 @@ void zhiwen_menkong(){
     // 设置光标位置
     u8g2.setCursor(64, 12);
     // 显示文字
-    u8g2.print("指纹错误");
+    u8g2.print("指纹错误");//FINGERPRINT_NOMATCH指纹不匹配
     finger_error_flag = !finger_error_flag;
   }
 }
@@ -260,6 +308,7 @@ void display_wifi(){
 // }
 void display_menu0(unsigned int index){//主页
   // 进入第一页
+  //烟雾过大，火灾发生，报警显示
   u8g2.firstPage();//画wifi
   do{
     display_wifi();
@@ -327,7 +376,7 @@ void display_menu2(unsigned int index){//"门口"
             u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
             break;
           case 2:
-            door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
             u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
             break;
           case 3:
@@ -347,7 +396,7 @@ void display_menu2(unsigned int index){//"门口"
             u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
             break;
           case 2:
-            door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+            door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
             break;
           case 3:
             u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
@@ -364,22 +413,53 @@ void display_menu2(unsigned int index){//"门口"
 void display_menu3(unsigned int index){//"窗户"
   // 进入第一页
   u8g2.firstPage();
-    do{
-    // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "窗户控制");
-    u8g2.drawHLine(0, 14, 128);
-    for (int i = 0; i < MENU_SIZE; i++)
-    {
-      if (i == index)
-      {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]);
-        u8g2.drawStr(5+strlen(chuanghu[i])*4, (i + 2) * 12 + 2, " <<");
-      }
-      else
-      {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]);
+  do{
+  // 绘制页面内容
+  u8g2.drawUTF8(0, 12, "窗户窗帘控制");
+  u8g2.drawHLine(0, 14, 128);
+  zhiwen_menkong();
+  for (int i = 0; i < MENU_SIZE; i++)
+  {
+    if (i == index)
+    { 
+      switch(i+1){
+        case 1:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
+          u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
+          break;
+        case 2:
+          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
+          break;
+        case 3:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          u8g2.drawStr(5+strlen(menkou[i+1])*4, (i + 2) * 12 + 2, " <<");
+          break;
+        case 4:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);//开启或关闭
+          u8g2.drawStr(5+strlen(menkou[i+1])*4, (i + 2) * 12 + 2, " <<");
+          break;
       }
     }
+    else
+    {
+      switch(i+1){
+        case 1:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
+          break;
+        case 2:
+          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          break;
+        case 3:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          break;
+        case 4:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          break;
+      }
+    }
+  }
+  u8g2.drawUTF8(103, 26, onoff[door.status]);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu4(unsigned int index){//"报警"
@@ -590,7 +670,90 @@ void display_menu14(unsigned int index){//"室内湿度历史"
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu23(unsigned int index){//"指纹设置"
-  
+  // 进入第一页
+  u8g2.firstPage();
+    do{
+      // 绘制页面内容
+    u8g2.drawUTF8(0, 12, "已有指纹个数");//finger1.templateCount
+    u8g2.setCursor(72, 12);
+    u8g2.printf(" %d", finger1.templateCount);
+    u8g2.setCursor(96, 12);
+    u8g2.printf(" %d", vector_out_size());
+    u8g2.drawHLine(0, 14, 128);
+    for (int i = 0; i < 2; i++)
+    {
+      if (i == (index%2))
+      {
+        u8g2.drawUTF8(5, (i + 2) * 12 + 2, zhiwen[i]);
+        u8g2.drawStr(5+strlen(zhiwen[i])*4, (i + 2) * 12 + 2, " <<");
+      }
+      else
+      {
+        u8g2.drawUTF8(5, (i + 2) * 12 + 2, zhiwen[i]);
+      }
+    }
+  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
+}
+void display_menu231(unsigned int index,uint8_t index2){//"录入指纹"
+  // 进入第一页
+  u8g2.firstPage();
+    do{
+      // 绘制页面内容
+    u8g2.drawUTF8(0, 12, "录入指纹");
+    u8g2.drawHLine(0, 14, 128);
+    u8g2.drawUTF8(0, 26, "请录入指纹");
+    u8g2.setCursor(72, 26);
+    u8g2.printf("%.2d", id);
+    u8g2.drawStr(72+12, 26, " <<");
+    //清行
+    if(clear_hang_state||enroll_flag||enroll_remove_flag||enroll_success_flag||enroll_fail_flag){
+      if(clear_hang_state){
+        u8g2.drawStr(0, 38, "                    ");
+        clear_hang_state=false;
+      }
+      if(enroll_flag){
+        u8g2.drawUTF8(0, 38, "请按手指");
+      }
+      if(enroll_remove_flag){
+        u8g2.drawUTF8(0, 38, "请重按手指");
+      }
+      if(enroll_success_flag){
+        u8g2.drawUTF8(0, 38, "录入成功指纹");
+        u8g2.setCursor(84, 38);
+        u8g2.printf("%.2d", id_static);
+        // id= array_out_first();
+        // enroll_success_flag=false;
+        // enroll_flag=false;
+        // enroll_remove_flag=false;
+      }
+      if(enroll_fail_flag){
+        u8g2.drawUTF8(0, 38, "录入失败");
+      }
+    }
+    
+  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
+}
+void display_menu232(unsigned int index){//"删除指纹"
+  // 进入第一页
+  u8g2.firstPage();
+    do{
+      // 绘制页面内容
+    u8g2.drawUTF8(0, 12, "删除指纹");
+    u8g2.drawUTF8(63, 12, "湿度");
+    u8g2.drawHLine(0, 14, 128);
+    for (int i = 0; i < 2; i++)
+    {
+      if (i == index%2)
+      {
+        u8g2.drawUTF8(5, (i + 2) * 12 + 2, zhiwen[i]);
+        u8g2.drawStr(5+strlen(zhiwen[i])*4, (i + 2) * 12 + 2, " <<");
+      }
+      else
+      {
+        u8g2.drawUTF8(5, (i + 2) * 12 + 2, zhiwen[i]);
+      }
+    }
+  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu24(unsigned int index){//开门历史数据
   // 进入第一页

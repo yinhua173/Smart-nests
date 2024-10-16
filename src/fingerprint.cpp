@@ -4,42 +4,44 @@
 volatile bool door_flag = false;
 volatile bool finger_error_flag = false;
 Adafruit_Fingerprint finger1 = Adafruit_Fingerprint(&mySerial);
+volatile uint8_t timeout=0;
 
-uint8_t Fingerprint_inti( ){
-  Serial.begin(115200);
-  while (!Serial);  // For Yun/Leo/Micro/Zero/...
-  delay(100);
-  Serial.println("\n\nAdafruit finger detect test");
+int Fingerprint_inti( ){
+  //Serial.begin(115200);
+  // while (!Serial);  // For Yun/Leo/Micro/Zero/...
+  // delay(100);
+  // Serial.println("\n\nAdafruit finger detect test");
 
   // set the data rate for the sensor serial port
   finger1.begin(57600);
   delay(5);
   if (finger1.verifyPassword()) {
-    Serial.println("Found fingerprint sensor!");
+    //Serial.println("Found fingerprint sensor!");
   } else {
-    Serial.println("Did not find fingerprint sensor :(");
+    //Serial.println("Did not find fingerprint sensor :(");
     while (1) { delay(1); }
   }
 
-  Serial.println(F("Reading sensor parameters"));
+  //Serial.println(F("Reading sensor parameters"));
   finger1.getParameters();
-  Serial.print(F("Status: 0x")); Serial.println(finger1.status_reg, HEX);
-  Serial.print(F("Sys ID: 0x")); Serial.println(finger1.system_id, HEX);
-  Serial.print(F("Capacity: ")); Serial.println(finger1.capacity);
-  Serial.print(F("Security level: ")); Serial.println(finger1.security_level);
-  Serial.print(F("Device address: ")); Serial.println(finger1.device_addr, HEX);
-  Serial.print(F("Packet len: ")); Serial.println(finger1.packet_len);
-  Serial.print(F("Baud rate: ")); Serial.println(finger1.baud_rate);
+  finger1.emptyDatabase();//清空指纹库
+  // Serial.print("Status: 0x"); Serial.println(finger1.status_reg, HEX);
+  // Serial.print("Sys ID: 0x"); Serial.println(finger1.system_id, HEX);
+  // Serial.print("Capacity: "); Serial.println(finger1.capacity);
+  // Serial.print("Security level: "); Serial.println(finger1.security_level);
+  // Serial.print("Device address: "); Serial.println(finger1.device_addr, HEX);
+  // Serial.print("Packet len: "); Serial.println(finger1.packet_len);
+  // Serial.print("Baud rate: "); Serial.println(finger1.baud_rate);
 
-  finger1.getTemplateCount();
+  // finger1.getTemplateCount();
 
-  if (finger1.templateCount == 0) {
-    Serial.print("Sensor doesn't contain any fingerprint data. Please run the 'enroll' example.");
-  }
-  else {
-    Serial.println("Waiting for valid finger...");
-      Serial.print("Sensor contains "); Serial.print(finger1.templateCount); Serial.println(" templates");
-  }
+  // if (finger1.templateCount == 0) {
+  //   Serial.println("Sensor doesn't contain any fingerprint data. Please run the 'enroll' example.");
+  // }
+  // else {
+  //   //Serial.println("Waiting for valid finger...");
+  //     Serial.println("Sensor contains "); Serial.println(finger1.templateCount); Serial.println(" templates");
+  // }
   return 0;
 }
 uint8_t getFingerprintID() {

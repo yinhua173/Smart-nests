@@ -1,5 +1,15 @@
 #include <Arduino.h>
 #include <Adafruit_Fingerprint.h>
+#include "fingerprint.h"
+#include "fingerdata.h"
+#include "TTimer.h"
+// extern TimerHandle_t xTimeHandle[2];
+// TickType_t tick_finger_enroll = xTaskGetTickCount();
+extern volatile uint8_t timeout;
+extern uint8_t min_one;
+extern volatile bool enroll_remove_flag;
+extern volatile bool enroll_success_flag;
+extern volatile bool enroll_fail_flag;
 
 //SoftwareSerial mySerial(16, 17);//esp32(rt, tx)
 #define mySerial Serial2  
@@ -7,6 +17,7 @@
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
 uint8_t id;
+volatile uint8_t id_static;
 uint8_t enroll_inti(){
   Serial.begin(115200);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
@@ -38,24 +49,33 @@ uint8_t readnumber(void) {
   uint8_t num = 0;
 
   while (num == 0) {
-    while (! Serial.available());
+    while (! Serial.available()){
+      vTaskDelay(100);
+      if(min_one!=timeout)break;
+    }
+    if(min_one!=timeout){
+      Serial.println("Ready too long, please try again");
+      enroll_fail_flag = true;
+      break;
+    }
     num = Serial.parseInt();
   }
   return num;
 }
 
 uint8_t getFingerprintEnroll() {
-
+  uint8_t num = 0;
   int p = -1;
   Serial.print("Waiting for valid finger to enroll as #"); Serial.println(id);
   while (p != FINGERPRINT_OK) {
-    p = finger.getImage();
+    num<50?p = finger.getImage():0;
     switch (p) {
     case FINGERPRINT_OK:
       Serial.println("Image taken");
       break;
     case FINGERPRINT_NOFINGER:
       Serial.print(".");
+      num++>=50?Serial.println("Ready too long, please try again"),p=100:0;
       break;
     case FINGERPRINT_PACKETRECIEVEERR:
       Serial.println("Communication error");
@@ -67,8 +87,10 @@ uint8_t getFingerprintEnroll() {
       Serial.println("Unknown error");
       break;
     }
+    if(p==100)break;
+    vTaskDelay(100);
   }
-
+  if(p==100)return 100;
   // OK success!
 
   p = finger.image2Tz(1);
@@ -94,7 +116,9 @@ uint8_t getFingerprintEnroll() {
   }
 
   Serial.println("Remove finger");
+  enroll_remove_flag = true;
   delay(2000);
+  num = 0;
   p = 0;
   while (p != FINGERPRINT_NOFINGER) {
     p = finger.getImage();
@@ -103,13 +127,14 @@ uint8_t getFingerprintEnroll() {
   p = -1;
   Serial.println("Place same finger again");
   while (p != FINGERPRINT_OK) {
-    p = finger.getImage();
+    num<50?p = finger.getImage():0;
     switch (p) {
     case FINGERPRINT_OK:
       Serial.println("Image taken");
       break;
     case FINGERPRINT_NOFINGER:
       Serial.print(".");
+      num++>=50?Serial.println("Ready too long, please try again"),p=100:0;
       break;
     case FINGERPRINT_PACKETRECIEVEERR:
       Serial.println("Communication error");
@@ -121,8 +146,10 @@ uint8_t getFingerprintEnroll() {
       Serial.println("Unknown error");
       break;
     }
+    if(p==100)break;
+    vTaskDelay(100);
   }
-
+  if(p==100)return 100;
   // OK success!
 
   p = finger.image2Tz(2);
@@ -167,7 +194,7 @@ uint8_t getFingerprintEnroll() {
   Serial.print("ID "); Serial.println(id);
   p = finger.storeModel(id);
   if (p == FINGERPRINT_OK) {
-    Serial.println("Stored!");
+    Serial.println("Stored!");enroll_success_flag = true;vector_to_add(id);
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;
@@ -182,18 +209,30 @@ uint8_t getFingerprintEnroll() {
     return p;
   }
 
-  return true;
+  return 1;
 }
 uint8_t enroll_run(){
   Serial.println("Ready to enroll a fingerprint!");
   Serial.println("Please type in the ID # (from 1 to 127) you want to save this finger as...");
-  id = readnumber();
+  //插入一个计时器清零
+  timeout=min_one;
+
+  id = array_out_first();//ID由串口输入
+  id_static = id;
   if (id == 0) {// ID #0 not allowed, try again!
      return 0;
   }
   Serial.print("Enrolling ID #");
   Serial.println(id);
+  
+  getFingerprintEnroll()==100?enroll_fail_flag=true:0;
+  
+  if(enroll_fail_flag==false){
+    vector_to_add(id);
+    laser_task();
+    xTaskCreatePinnedToCore(shell_sort_task, "shell_sort_task", 1024*2, NULL, 2, NULL, 0);
+    id = array_out_first();
+  }
 
-  while (! getFingerprintEnroll() );
   return 0;
 }

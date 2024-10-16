@@ -13,7 +13,8 @@
 #include "wifi_connect.h"
 #include "http_api.h"
 #include "datadata.h"
-
+#include "fingerdata.h"
+#include <Adafruit_Fingerprint.h>
 
 #define SDA 23
 #define SCL 18
@@ -27,6 +28,15 @@ extern volatile bool door_flag;
 extern volatile bool finger_error_flag;
 extern volatile bool wifi_state;
 
+extern volatile bool enroll_flag;
+extern volatile bool delete_flag;
+extern Adafruit_Fingerprint finger1;
+
+extern volatile bool enroll_remove_flag;
+extern volatile bool enroll_success_flag;
+extern volatile bool enroll_fail_flag;
+
+extern std::vector<int> myVector;
 
 extern volatile bool datadata_temp;
 extern volatile bool datadata_humi;
@@ -71,6 +81,9 @@ void display_menu111(unsigned int index);
 void display_menu12(unsigned int index);
 void display_menu13(unsigned int index);
 void display_menu14(unsigned int index);
+void display_menu23(unsigned int index);
+void display_menu231(unsigned int index, uint8_t index2);
+void display_menu232(unsigned int index);
 void display_menu24(unsigned int index);
 void display_menu34(unsigned int index);
 void display_menu42(unsigned int index);

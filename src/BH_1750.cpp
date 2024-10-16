@@ -23,6 +23,12 @@
 */
 BH1750 lightMeter(0x23);
 volatile float lux = 0;
+/**************************************************************************/
+/*!
+    @brief  光照采集
+    @returns True if password is correct
+*/
+/**************************************************************************/
 void BH1750Task(void *parameter) {
   //Serial.begin(9600);
   // Initialize the I2C bus (BH1750 library doesn't do this automatically)

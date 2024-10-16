@@ -23,13 +23,13 @@ void handle_interrupt7() {
 
 void buttonTask(){
     // 配置输入按键
-    pinMode(BUTTON_1, INPUT_PULLUP);
-    pinMode(BUTTON_2, INPUT_PULLUP);
+    pinMode(BUTTON_1, INPUT_PULLDOWN);
+    pinMode(BUTTON_2, INPUT_PULLDOWN);
     pinMode(BUTTON_3, INPUT_PULLDOWN);
     pinMode(BUTTON_4, INPUT_PULLDOWN);
     // 配置中断引脚
-    attachInterrupt(digitalPinToInterrupt(BUTTON_1), handle_interrupt4, FALLING);
-    attachInterrupt(digitalPinToInterrupt(BUTTON_2), handle_interrupt5, FALLING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_1), handle_interrupt4, RISING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_2), handle_interrupt5, RISING);
     attachInterrupt(digitalPinToInterrupt(BUTTON_3), handle_interrupt6, RISING);
     attachInterrupt(digitalPinToInterrupt(BUTTON_4), handle_interrupt7, FALLING);
     // while(1){

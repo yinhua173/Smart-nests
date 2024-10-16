@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Adafruit_Fingerprint.h>
 #include "fingerprint.h"
 #include "enroll.h"
 #include "delete.h"
@@ -10,6 +11,14 @@
 volatile bool fingerprint_flag = false;
 volatile bool enroll_flag = false;
 volatile bool delete_flag = false;
+volatile bool enroll_remove_flag = false;
+volatile bool enroll_success_flag = false;
+volatile bool enroll_fail_flag = false;
+
+volatile bool delete_success_flag = false;
+volatile bool delete_fail_flag = false;
+extern Adafruit_Fingerprint finger1;
+
 // 定义外部中断函数
 void handle_interrupt1() {
   fingerprint_flag = true;
@@ -42,11 +51,13 @@ uint8_t fingermain_run(){
   if(enroll_flag) {
     //enroll_inti();
     enroll_run();
+    finger1.getTemplateCount();
     enroll_flag = false;
     delete_flag = false;
   }
   if(delete_flag) {
     delete_run();
+    finger1.getTemplateCount();
     delete_flag = false;
     enroll_flag = false;
   }

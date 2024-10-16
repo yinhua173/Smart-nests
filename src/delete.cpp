@@ -1,6 +1,13 @@
 #include <Arduino.h>
 #include <Adafruit_Fingerprint.h>
-
+#include "fingerprint.h"
+TickType_t tick_finger_delete = xTaskGetTickCount();
+extern volatile uint16_t timeout;
+extern uint8_t min_one;
+extern uint8_t id;
+extern volatile uint8_t id_static;
+extern volatile bool delete_success_flag;
+extern volatile bool delete_fail_flag;
 //SoftwareSerial mySerial(16, 17);//esp32(rt, tx)
 #define mySerial Serial2  
 
@@ -27,7 +34,15 @@ uint8_t readnumber1(void) {
   uint8_t num = 0;
 
   while (num == 0) {
-    while (! Serial.available());
+    while (! Serial.available()){
+      vTaskDelay(100);
+      if(min_one!=timeout)break;
+    }
+    if(min_one!=timeout){
+      Serial.println("Ready too long, please try again");
+      delete_fail_flag = true;
+      break;
+    }
     num = Serial.parseInt();
   }
   return num;
@@ -35,7 +50,11 @@ uint8_t readnumber1(void) {
 uint8_t deleteFingerprint(uint8_t id);
 uint8_t delete_run(){
   Serial.println("Please type in the ID # (from 1 to 127) you want to delete...");
-  uint8_t id = readnumber1();
+  //插入一个计时器清零
+  timeout=min_one;
+  // uint8_t id = readnumber1();//串口输入删除
+  //id = array_out_first();//ID由屏幕输入
+  id_static = id;
   if (id == 0) {// ID #0 not allowed, try again!
      return 0;
   }

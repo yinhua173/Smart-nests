@@ -10,7 +10,13 @@
 #include "aliyun.h"
 #include "http_api.h"
 #include "datadata.h"
+#include "fingerdata.h"
 #include "D74HC595.h"
+#include "TTimer.h"
+//任务控制权柄
+extern TaskHandle_t xHandleTsak[4];
+// 定时器控制权柄
+extern TimerHandle_t xTimeHandle[2];
 // TaskHandle_t taskHandle;
 // int taskMem = 1024*2;
 /*
@@ -32,6 +38,8 @@ OLEDTask    task free memory:  2916       task used memory:  1180
 */
 void setup() {
   Serial.begin(115200);
+  // creat();
+  //xTimerStart(xTimeHandle[0], 0);
   xTaskCreatePinnedToCore(wifiTask, "wifiTask", 1024 * 4, NULL, 1, NULL, 0);//创建wifi任务
   xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*100, NULL, 1, NULL, 1);//创建http任务
   xTaskCreatePinnedToCore(aliyunTask, "aliyunTask", 1024 * 4, NULL, 1, NULL, 1);//创建阿里云任务
@@ -41,10 +49,12 @@ void setup() {
   xTaskCreatePinnedToCore(rainTask, "rainTask", 1024, NULL, 2, NULL, 1);//创建雨滴任务
   xTaskCreatePinnedToCore(pirTask, "pirTask", 1024, NULL, 2, NULL, 1);//创建人体红外任务
   xTaskCreatePinnedToCore(touchTask, "touchTask", 1024, NULL, 2, NULL, 1);//创建触摸任务
+  
   xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 3, NULL, 1);//创建光照任务
   xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 3, NULL,1);//创建温湿度任务
-  xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 2, NULL, 1, NULL,1);//创建指纹任务
-  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*4, NULL, 1, NULL, 0);//创建OLED任务
+  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*10, NULL, 1, NULL, 0);//创建OLED任务
+  xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 3, NULL, 1, NULL,1);//创建指纹任务
+  
   xTaskCreatePinnedToCore(delay_test_task, "delay_test_task", 1024 * 4, NULL, 2, NULL,0);
   xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 30, NULL, 2, NULL,1);
   //xTaskCreatePinnedToCore(buttonTask, "buttonTask", 1024*2, NULL, 1, NULL, 0);//创建按键任务
