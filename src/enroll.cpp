@@ -10,6 +10,7 @@ extern uint8_t min_one;
 extern volatile bool enroll_remove_flag;
 extern volatile bool enroll_success_flag;
 extern volatile bool enroll_fail_flag;
+extern volatile bool enroll_again_flag;
 
 //SoftwareSerial mySerial(16, 17);//esp32(rt, tx)
 #define mySerial Serial2  
@@ -116,7 +117,7 @@ uint8_t getFingerprintEnroll() {
   }
 
   Serial.println("Remove finger");
-  enroll_remove_flag = true;
+  enroll_remove_flag = true;//请移开指纹
   delay(2000);
   num = 0;
   p = 0;
@@ -125,7 +126,8 @@ uint8_t getFingerprintEnroll() {
   }
   Serial.print("ID "); Serial.println(id);
   p = -1;
-  Serial.println("Place same finger again");
+  Serial.println("Place same finger again");//请重按指纹
+  enroll_again_flag = true;enroll_remove_flag = false;
   while (p != FINGERPRINT_OK) {
     num<50?p = finger.getImage():0;
     switch (p) {
@@ -194,7 +196,7 @@ uint8_t getFingerprintEnroll() {
   Serial.print("ID "); Serial.println(id);
   p = finger.storeModel(id);
   if (p == FINGERPRINT_OK) {
-    Serial.println("Stored!");enroll_success_flag = true;vector_to_add(id);
+    Serial.println("Stored!");enroll_success_flag = true;enroll_again_flag = false;
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;
@@ -224,9 +226,8 @@ uint8_t enroll_run(){
   }
   Serial.print("Enrolling ID #");
   Serial.println(id);
-  
-  getFingerprintEnroll()==100?enroll_fail_flag=true:0;
-  
+  getFingerprintEnroll()==1?1:enroll_fail_flag=true;
+
   if(enroll_fail_flag==false){
     vector_to_add(id);
     laser_task();

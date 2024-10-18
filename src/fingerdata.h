@@ -11,5 +11,8 @@ uint8_t vector_out_size();
 void laser_task();
 uint8_t array_out_first();
 void vector_to_delete(int data);
+void laser_to_add(int data);
+void vector_out_num();
+void vector_sort();
 
 #endif

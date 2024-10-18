@@ -12,11 +12,14 @@ volatile bool fingerprint_flag = false;
 volatile bool enroll_flag = false;
 volatile bool delete_flag = false;
 volatile bool enroll_remove_flag = false;
+volatile bool enroll_again_flag = false;
 volatile bool enroll_success_flag = false;
 volatile bool enroll_fail_flag = false;
-
+volatile uint8_t delete_num0=0;
+volatile uint8_t delete_num1=0;
 volatile bool delete_success_flag = false;
 volatile bool delete_fail_flag = false;
+volatile bool clear_hang_state = false;
 extern Adafruit_Fingerprint finger1;
 
 // 定义外部中断函数

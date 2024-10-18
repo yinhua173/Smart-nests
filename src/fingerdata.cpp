@@ -83,33 +83,52 @@ void vector_task(void *parameter){
     // std::cout << "Size of the vector after clearing: " << myVector.size() << std::endl;
 }
 /*
+对向量重新排序
+*/
+void vector_sort(){
+  Serial.printf("向量排序\n");
+  for(int i=0;i<myVector.size()-1;i++){
+    for(int j=0;j<myVector.size()-1;j++){
+      if(myVector[j]>myVector[j+1]){
+        int temp = myVector[j];
+        myVector[j] = myVector[j+1];
+        myVector[j+1] = temp;
+      }
+    }
+  }
+}
+/*
 用于给向量添加数据
 输入int data
 */
 void vector_to_add(int data) {
   myVector.push_back(data);
+  vector_sort();
+  vector_out_num();
 }
 /*
 用于给向量删除数据
 输入int data
 */
 void vector_to_delete(int data) {
-  myVector.erase(myVector.begin() + data - 1);
+  myVector.erase(myVector.begin() + data);
+  vector_sort();
+  vector_out_num();
 }
 /*
 用于输出向量空间大小
 return myVector.size();
 */
 uint8_t vector_out_size() {
-	return myVector.size()/2;
+	return myVector.size();
 }
 /*
 输出向量元素
 */
 void vector_out_num(){
   for (int element : myVector) {
-        std::cout << element << " ";
-    }
+  Serial.printf("%d  ",element);
+  }
 }
 /*
 比较整数向量与数组1到30之间的元素是否相等，把相等的元素移出数组
@@ -127,9 +146,10 @@ void laser_task(){
 将数字移进数组
 */
 void laser_to_add(int data){
+  Serial.printf("将数字移进数组\n");
 	for (int i = 0; i < 30; i++){
 		if (zhiwen_data[i] == 0){
-			zhiwen_data[i] = data;
+			zhiwen_data[i] = data+1;
 			break;
 		}
 	}

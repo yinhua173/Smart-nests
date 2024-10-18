@@ -13,13 +13,18 @@ const char *zhiwen[MENU_SIZE]={"录入指纹","删除指纹"};
 // 定义当前选项
 volatile unsigned int  order = 0;
 volatile unsigned int  order_2 = 0;
+volatile uint8_t order_finger = 0;//范围0-100
 volatile unsigned int  yema = 0;
+
 extern uint8_t id;
 extern volatile uint8_t id_static;
+extern volatile uint8_t delete_num0;
+extern volatile uint8_t delete_num1;
+volatile uint8_t flash=0;
 volatile uint8_t future_flag = 0;
 //volatile bool door_flag = 0;
 volatile bool datadata_state = false;
-volatile bool clear_hang_state = false;
+extern volatile bool clear_hang_state;
 void OLEDTask(void *pvParam){
     Wire1.begin(SDA, SCL);
     // 初始化 OLED 对象
@@ -28,32 +33,36 @@ void OLEDTask(void *pvParam){
     u8g2.enableUTF8Print();
     u8g2.setFont(u8g2_font_wqy12_t_gb2312b);// 设置字体
     //xTaskCreatePinnedToCore(bme680Task, "wifiTask", 1024 * 4, NULL, 1, NULL, 1);
+    // myVector.push_back(1);
+    // myVector.push_back(2);
+    // myVector.push_back(3);
+    // myVector.push_back(4);
+    // myVector.push_back(5);
     while(1){
         menu_key();
         menu_xuan();
         vTaskDelay(10);
     }    
 }
-
+volatile uint8_t size=0;
+//固定数据
+void delete_data(){
+  size=vector_out_size();
+  Serial.printf("size:%d",size);
+}
 void menu_key(){
   if(key1_flag||key2_flag||key3_flag||key4_flag){
     vTaskDelay(10);//消抖
-    // if(digitalRead(BUTTON_1)||digitalRead(BUTTON_2)||digitalRead(BUTTON_3)||digitalRead(BUTTON_4)){
-
-    // }else{
-    //   key1_flag = false;
-    //   key2_flag = false;
-    //   key3_flag = false;
-    //   key4_flag = false;
-    // }
 
     if(key1_flag){ //上    
       datadata_state?order_2=--order_2%8:0;
+      if(++order_finger>200)order_finger=0;
       order = (order - 1) % 4;
       key1_flag = !key1_flag;
-    }else if (key2_flag){//下    
+    }else if (key2_flag){//下   
       datadata_state?order_2=++order_2%8:0;
       order = (order + 1) % 4;
+      if(--order_finger>200)order_finger=0;
       key2_flag = !key2_flag;
     }else if (key3_flag){//确认
       switch (yema){
@@ -169,7 +178,8 @@ void menu_key(){
             break;
           case 2:
             yema = 232;
-            delete_flag = true;
+            delete_data();
+            // delete_flag = true;
             break;
           case 3:
             yema = 231;
@@ -177,7 +187,8 @@ void menu_key(){
             break;
           case 4:
             yema = 232;
-            delete_flag = true;
+            delete_data();
+            // delete_flag = true;
             break;
         }
         break;
@@ -187,9 +198,24 @@ void menu_key(){
           enroll_flag = true;
           enroll_remove_flag=false;
           enroll_success_flag=false;
+          enroll_again_flag=false;
           enroll_fail_flag=false;
           clear_hang_state=true;
         }
+        break;
+      case 232:
+        if(delete_flag==false){
+          delete_data();
+          delete_flag = true;
+          delete_success_flag=false;
+          delete_fail_flag=false;
+          clear_hang_state=true;
+        }
+          // enroll_remove_flag=false;
+          // enroll_success_flag=false;
+          // enroll_fail_flag=false;
+          // clear_hang_state=true;
+        
         break;
       }
       order = 0;
@@ -200,10 +226,29 @@ void menu_key(){
     order_2 = 0;
     key4_flag = !key4_flag;
     
+    enroll_flag = false;
+    enroll_success_flag=false;
+    enroll_fail_flag=false;
+    
+    delete_flag=false;
+    delete_success_flag=false;
+    delete_fail_flag=false;
+
+    clear_hang_state=true;
     datadata_state=false;
     datadata_temp=false;
     datadata_humi=false;
     data_stop=0;
+    }
+    if(yema==232){
+      if(delete_num1>order_finger){
+        delete_num1=order_finger;
+        delete_num0--;
+      }
+      else if(delete_num1<order_finger){
+        order_finger==size?order_finger--:delete_num0++;
+        delete_num1=order_finger;
+      }
     }
   }
 }
@@ -706,7 +751,7 @@ void display_menu231(unsigned int index,uint8_t index2){//"录入指纹"
     u8g2.printf("%.2d", id);
     u8g2.drawStr(72+12, 26, " <<");
     //清行
-    if(clear_hang_state||enroll_flag||enroll_remove_flag||enroll_success_flag||enroll_fail_flag){
+    if(clear_hang_state||enroll_flag||enroll_remove_flag||enroll_success_flag||enroll_fail_flag||enroll_again_flag){
       if(clear_hang_state){
         u8g2.drawStr(0, 38, "                    ");
         clear_hang_state=false;
@@ -715,44 +760,85 @@ void display_menu231(unsigned int index,uint8_t index2){//"录入指纹"
         u8g2.drawUTF8(0, 38, "请按手指");
       }
       if(enroll_remove_flag){
+        u8g2.drawUTF8(0, 38, "请移开手指");
+      }
+      if(enroll_again_flag){
         u8g2.drawUTF8(0, 38, "请重按手指");
       }
       if(enroll_success_flag){
         u8g2.drawUTF8(0, 38, "录入成功指纹");
         u8g2.setCursor(84, 38);
         u8g2.printf("%.2d", id_static);
-        // id= array_out_first();
-        // enroll_success_flag=false;
-        // enroll_flag=false;
-        // enroll_remove_flag=false;
       }
       if(enroll_fail_flag){
-        u8g2.drawUTF8(0, 38, "录入失败");
+        u8g2.drawUTF8(0, 38, "指纹录入失败");
       }
     }
     
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+
 void display_menu232(unsigned int index){//"删除指纹"
+  
   // 进入第一页
   u8g2.firstPage();
     do{
       // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "删除指纹");
-    u8g2.drawUTF8(63, 12, "湿度");
-    u8g2.drawHLine(0, 14, 128);
-    for (int i = 0; i < 2; i++)
-    {
-      if (i == index%2)
-      {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, zhiwen[i]);
-        u8g2.drawStr(5+strlen(zhiwen[i])*4, (i + 2) * 12 + 2, " <<");
+      u8g2.drawUTF8(0, 12, "删除指纹");
+      u8g2.drawHLine(0, 14, 128);
+      u8g2.drawUTF8(0, 26, "已有指纹");//流动显示指纹
+      u8g2.drawStr(12*5-6, 26, " [[");
+      u8g2.setCursor(72, 26);//获得大小，判断循环范围，输出向量
+      //size 5 i=1 delete_num0=3,->i=2,delete_num0=4->i=3,delete_num0=5,size==delete_num0->重新
+      //size 2 i=1 size>3?delete_num0=3:delete_num0=size;    size==delete_num0?0:i++,delete_num0++;
+      if(size){
+        if(delete_num0<size){
+          u8g2.setCursor(12*6+1, 24);
+          u8g2.printf("%.2d", myVector[delete_num0]);
+          if(delete_num0+1<size){
+            u8g2.setCursor(12*7+4, 26);
+            u8g2.printf("%.2d", myVector[delete_num0+1]);
+            if(delete_num0+2<size){
+              u8g2.setCursor(12*8+8, 26);
+              u8g2.printf("%.2d", myVector[delete_num0+2]);
+            }else{
+              u8g2.drawStr(12*8+8, 26, "          ");
+            }
+          }else{
+            u8g2.drawStr(12*7+4, 26, "           ");
+          }
+        }
+        
+        u8g2.drawUTF8(0, 38, "要删除的指纹");//指着第1位
+        //u8g2.drawStr(12*6, 36, " ^");//u8g2_DrawTriangle(&u8g2,20,5, 27,50, 5,32);
+        //u8g2.drawTriangle(12*6+8, 32, 12*6, 32, 12*6+6, 24);
+        if(++flash>1){
+          u8g2.drawTriangle(12*6+9, 32, 12*6, 32, 12*6+6, 24);
+          if(flash>2){
+            flash=0;
+          }
+        }else{
+          u8g2.drawStr(12*6+1, 36, "                    ");
+        }
+      }else if(size==0){
+        u8g2.drawUTF8(12*7, 26, "暂无");
       }
-      else
-      {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, zhiwen[i]);
+      u8g2.drawStr(12*9+8, 26, "]]");
+      if(clear_hang_state||delete_flag||delete_success_flag||delete_fail_flag){
+        if(clear_hang_state){
+          u8g2.drawStr(12*6+1, 26, "                    ");
+          clear_hang_state=false;
+        }
+        if(delete_success_flag){
+          u8g2.drawUTF8(0, 50, "指纹已删除");
+          u8g2.setCursor(84, 50);
+          delete_data();
+          u8g2.printf("%.2d", id_static);
+        }
+        if(delete_fail_flag){
+          u8g2.drawUTF8(0, 50, "删除失败");
+        }
       }
-    }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 void display_menu24(unsigned int index){//开门历史数据

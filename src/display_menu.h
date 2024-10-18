@@ -35,6 +35,10 @@ extern Adafruit_Fingerprint finger1;
 extern volatile bool enroll_remove_flag;
 extern volatile bool enroll_success_flag;
 extern volatile bool enroll_fail_flag;
+extern volatile bool enroll_again_flag;
+
+extern volatile bool delete_success_flag;
+extern volatile bool delete_fail_flag;
 
 extern std::vector<int> myVector;
 
@@ -89,5 +93,7 @@ void display_menu34(unsigned int index);
 void display_menu42(unsigned int index);
 void display_menu43(unsigned int index);
 void display_menu44(unsigned int index);
+
+void delete_data();
 
 #endif

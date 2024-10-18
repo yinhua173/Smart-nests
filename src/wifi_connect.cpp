@@ -1,6 +1,6 @@
 #include "wifi_connect.h"
-// const char* ssid = "FF";//WiFi名称
-// const char* password = "528528528";//WiFi密码
+const char* ssid0 = "FF";//WiFi名称
+const char* password0 = "528528528";//WiFi密码
 const char* ssid = "FFF";//WiFi名称
 const char* password = "fjyzdshp";//WiFi密码
 volatile uint16_t unlink_state = 0;//WIFI连接超时次数
@@ -18,7 +18,7 @@ void WiFi_connect(){//连接WiFi
       ruanjianchongqi();
       unlink_state = 0;
     }
-    Serial.println("Connecting to WiFi...");
+    // Serial.println("Connecting to WiFi...");
     vTaskDelay(1000);
   }
   wifi_state = true;
