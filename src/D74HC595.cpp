@@ -5,6 +5,8 @@ volatile bool pir_wt=false;
 volatile bool rain_wt=false;
 volatile bool touch_wt=false;
 volatile bool door_wt=false;
+volatile uint8_t touch_t=0;
+
 void D74HC595_init(){
   pinMode(SHCP,OUTPUT);
   pinMode(STCP,OUTPUT);
@@ -18,6 +20,31 @@ void D74HC595(byte data){
     digitalWrite(SHCP, HIGH);
     digitalWrite(SHCP, LOW);
   }
+  // digitalWrite(DS,bitRead(data,0));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+  // digitalWrite(DS,bitRead(data,1));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+  // digitalWrite(DS,bitRead(data,2));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+  // digitalWrite(DS,bitRead(data,3));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+  // digitalWrite(DS,bitRead(data,4));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+  // digitalWrite(DS,bitRead(data,5));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+  // digitalWrite(DS,bitRead(data,6));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+  // digitalWrite(DS,bitRead(data,7));
+  // digitalWrite(SHCP, HIGH);
+  // digitalWrite(SHCP, LOW);
+
   digitalWrite(STCP, HIGH);
   digitalWrite(STCP, LOW);
 }
@@ -34,45 +61,58 @@ volatile byte data=0x00;//0000 0000
 0000 0000|0000 0001=0000 0001//通过或写入
 0000 0001^0000 0001=0000 0000//通过异或写出
 */
+/*
+门，窗，交给语音模块
+开灯(pin)，窗帘（4pin），风扇(pin)，水泵(pin)，交给74HC595
+*/
 void D74HC595_loop(){
   if(fire.status||smoke.status||pir.status||rain.status||touch.status||door_flag
       ||fire_wt||smoke_wt||pir_wt||rain_wt||touch_wt||door_wt){
-    if(fire.status&&!fire_wt){//火灾--水泵
-      data=data|0x01;
-      fire_wt=true;
-    }else if(!fire.status&&fire_wt){
-      data=data^0x01;
-    }
-    if(smoke.status&&!smoke_wt){//烟雾--开窗--风扇
-      data=data|0x02;
-      smoke_wt=true;
-    }else if(!smoke.status&&smoke_wt){
-      data=data^0x02;
-    }
+    // if(fire.status&&!fire_wt){//火灾--水泵
+    //   data=data|0x10;
+    //   fire_wt=true;
+    // }else if(!fire.status&&fire_wt){
+    //   data=data^0x10;
+    //   fire_wt=false;
+    // }
+    // if(smoke.status&&!smoke_wt){//烟雾--开窗--风扇
+    //   data=data|0x20;
+    //   smoke_wt=true;
+    // }else if(!smoke.status&&smoke_wt){
+    //   data=data^0x20;
+    //   smoke_wt=false;
+    // }
     if(pir.status&&!pir_wt){//人体感应--开灯
-      data=data|0x04;
+      data=data|0x40;//0100 0000
       pir_wt=true;
     }else if(!pir.status&&pir_wt){
-      data=data^0x04;
+      data=data^0x40;
+      pir_wt=false;
     }
-    if(rain.status&&!rain_wt){//雨水--关窗
-      data=data|0x08;
-      rain_wt=true;
-    }else if(!rain.status&&rain_wt){
-      data=data^0x08;
-    }
-    if(touch.status&&!touch_wt){//触摸--窗帘
-      data=data|0x10;
-      touch_wt=true;
+    // if(rain.status&&!rain_wt){//雨水--关窗
+    //   data=data|0x80;
+    //   rain_wt=true;
+    // }else if(!rain.status&&rain_wt){
+    //   data=data^0x80;
+    //   rain_wt=false;
+    // }
+    if(touch.status){//触摸--窗帘(4pin电机)（pin5~8）
+      if(!touch_wt){
+        touch_t==0?touch_t=1:touch_t==1?touch_t=2:touch_t=1;
+        touch_wt=true;
+      }
+      motor_mode();
     }else if(!touch.status&&touch_wt){
-      data=data^0x10;
+      motor_clear();
+      touch_wt=false;
     }
-    if(door_flag&&!door_wt){//门磁
-      data=data|0x20;
-      door_wt=true;
-    }else if(!door_flag&&door_wt){
-      data=data^0x20;
-    }
+    // if(door_flag&&!door_wt){//门磁
+    //   data=data|0x20;
+    //   door_wt=true;
+    // }else if(!door_flag&&door_wt){
+    //   data=data^0x20;
+    //   door_wt=false;
+    // }
     D74HC595(data);
   }
 }
@@ -80,6 +120,98 @@ void D74HC595Task(void *pvParam){
   D74HC595_init();
   while(1){
     D74HC595_loop();
-    vTaskDelay(100);
+    vTaskDelay(10);
   }
+}
+void motor_mode(){
+  switch (touch_t){
+  case 1:
+    motor_run();
+    //Serial.println("run");
+    break;
+  case 2:
+    motor_back();
+    //Serial.println("back");
+    break;
+  }
+}
+uint8_t delay_time=5;
+void motor_run(){
+  // 八拍模式
+  data=data|0x04;//0000 0100
+  data=data^0x04;//0000 0000
+  
+  data=data|0x08;//0000 1000
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x01;//0000 1001
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data^0x08;//0000 0001
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x02;//0000 0011
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data^0x01;//0000 0010
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x04;//0000 0110
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data^0x02;//0000 0100
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x08;//0000 1100
+  D74HC595(data);
+  delay(delay_time);
+}
+void motor_back(){
+  // 八拍模式
+  data=data|0x01;//0000 0001    IN4=1
+  data=data^0x01;//0000 0000
+
+  data=data|0x08;//0000 1000
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x04;//0000 1100
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data^0x08;//0000 0100
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x02;//0000 0110
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data^0x04;//0000 0010
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x01;//0000 0011
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data^0x02;//0000 0001
+  D74HC595(data);
+  delay(delay_time);
+
+  data=data|0x08;//0000 1001
+  D74HC595(data);
+  delay(delay_time);
+}
+void motor_clear(){
+  data=data|0x0F;//0000 1111
+  data=data^0x0F;//0000 0000
+  D74HC595(data);
 }

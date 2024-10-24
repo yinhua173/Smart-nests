@@ -21,6 +21,8 @@ future Future3;
 future Future4;
 Times time_now;//定义时间结构体
 
+volatile bool get_time_flag = false;
+
 void wid_swtich(){
   switch(Tianqi.wid){
     case 0://"weather": "晴"
@@ -232,10 +234,12 @@ void http_time(){
 
   // 从解析后的 JSON 文档中获取值
   String city = doc1["result"]["city"].as<String>();
+  String weeknum = doc1["result"]["weeknum"].as<String>();//weeknum
   String strtime = doc1["result"]["strtime"].as<String>();
 
   Serial.printf("城市: %s\n", city);
-
+  char weekn[1];
+  strcpy(weekn, weeknum.c_str());
   char p[20];
   int i, j = strtime.length();
   for (i = 0; i < j; i++){
@@ -249,12 +253,16 @@ void http_time(){
   time_now.Hour = atoi(p + 11);
   time_now.Min = atoi(p + 14);
   time_now.Second = atoi(p + 17);
+  time_now.Week= atoi(weekn);
   Serial.printf("Year: %d\n", time_now.Year);
   Serial.printf("Mon: %d\n", time_now.Mon);
   Serial.printf("Day: %d\n", time_now.Day);
   Serial.printf("Hour: %d\n", time_now.Hour);
   Serial.printf("Min: %d\n", time_now.Min);
   Serial.printf("Second: %d\n", time_now.Second);
+  Serial.printf("Week: %d\n", time_now.Week);
+  
+  get_time_flag = true;
 }
 void http_api(){
   http_api_state++;

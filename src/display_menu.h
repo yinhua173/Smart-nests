@@ -62,7 +62,7 @@ extern begin touch;
 extern begin door;
 
 extern tian_qi Tianqi;
-extern Times time_now;;
+extern Times time_now;
 extern future Future0;
 extern future Future1;
 extern future Future2;

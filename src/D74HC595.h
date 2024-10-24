@@ -20,4 +20,8 @@ void D74HC595_init();
 void D74HC595(byte data);
 void D74HC595_loop();
 void D74HC595Task(void *pvParam);
+void motor_run();
+void motor_back();
+void motor_clear();
+void motor_mode();
 #endif

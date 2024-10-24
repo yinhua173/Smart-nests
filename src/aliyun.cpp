@@ -158,15 +158,15 @@ void callback(char *topic, byte *payload, unsigned int length){
 
     if(doc["params"].containsKey("LED1")){
         Serial.println("GOT LED1 CMD");
-        digitalWrite(LED1, doc["params"]["LED1"]);//受控端读取与写入
+        //digitalWrite(LED1, doc["params"]["LED1"]);//受控端读取与写入
     }
     if(doc["params"].containsKey("LED2")){
         Serial.println("GOT LED2 CMD");
-        digitalWrite(LED2, doc["params"]["LED2"]);//受控端读取与写入
+        //digitalWrite(LED2, doc["params"]["LED2"]);//受控端读取与写入
     }
     if(doc["params"].containsKey("LED3")){
         Serial.println("GOT LED3 CMD");
-        digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
+        //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
     }
 }
 

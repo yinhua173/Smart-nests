@@ -7,12 +7,13 @@
 #ifndef HTTP_API_H
 #define HTTP_API_H
 typedef struct times{
-	int Year;
-	int Mon;
-	int Day;
-	int Hour;
-	int Min;
-	int Second;
+	uint16_t Year;
+	uint8_t Mon;
+	uint8_t Day;
+	uint8_t Hour;
+	uint8_t Min;
+	uint8_t Second;
+    uint8_t Week;
 }Times;
 typedef struct{
     unsigned int temp;
