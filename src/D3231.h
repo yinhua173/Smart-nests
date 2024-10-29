@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "http_api.h"
 #include <VL53L0X.h>
+#include "DS3232.h"
 extern Times time_now;
 #ifndef D3231_HH
 #define D3231_HH

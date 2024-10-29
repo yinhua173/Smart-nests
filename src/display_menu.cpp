@@ -6,6 +6,7 @@ const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度�
 const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
 const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
 const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "打开", "关闭", "窗帘设置","窗户自动模式"};
+const char *curtain[MENU_SIZE+1] = {"窗帘状态", "打开", "关闭", "窗帘设置","窗帘自动模式"};
 const char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
 const char *onoff[2] = {"关闭", "开启"};
 const char *zhiwen[MENU_SIZE]={"录入指纹","删除指纹"};
@@ -15,7 +16,6 @@ volatile unsigned int  order = 0;
 volatile unsigned int  order_2 = 0;
 volatile uint8_t order_finger = 0;//范围0-100
 volatile unsigned int  yema = 0;
-
 extern uint8_t id;
 extern volatile uint8_t id_static;
 extern volatile uint8_t delete_num0;
@@ -25,6 +25,12 @@ volatile uint8_t future_flag = 0;
 //volatile bool door_flag = 0;
 volatile bool datadata_state = false;
 extern volatile bool clear_hang_state;
+/**
+ * OLED显示任务
+ * 循环主体
+ * menu_key();
+ *menu_xuan();
+ */
 void OLEDTask(void *pvParam){
     Wire1.begin(SDA, SCL);
     // 初始化 OLED 对象
@@ -50,6 +56,9 @@ void delete_data(){
   size=vector_out_size();
   Serial.printf("size:%d",size);
 }
+/**
+ * 按键控制
+ */
 void menu_key(){
   if(key1_flag||key2_flag||key3_flag||key4_flag){
     vTaskDelay(10);//消抖
@@ -252,6 +261,9 @@ void menu_key(){
     }
   }
 }
+/**
+ * 选择页面显示
+ */
 void menu_xuan(){
   switch(yema){
     case 0:
@@ -315,6 +327,9 @@ void menu_loop(){
   
   menu_xuan();
 }
+/**
+ * 开门显示
+ */
 void zhiwen_menkong(){
   if (door_flag){
     // 设置光标位置
@@ -331,6 +346,9 @@ void zhiwen_menkong(){
     finger_error_flag = !finger_error_flag;
   }
 }
+/**
+ * wifi状态显示
+ */
 void display_wifi(){
   if(!wifi_state){
     u8g2.drawLine(120, 0, 114,6);//X
@@ -341,16 +359,10 @@ void display_wifi(){
   u8g2.drawCircle(127, 12, 5, U8G2_DRAW_UPPER_LEFT);
   u8g2.drawCircle(127, 12, 7, U8G2_DRAW_UPPER_LEFT);
 }
-// void display_Time(){
-//   if(!wifi_state){
-//     u8g2.drawLine(120, 0, 114,6);//X
-//     u8g2.drawLine(114, 0, 120,6);
-//   }
-//   // 设置光标位置
-//   u8g2.setCursor(24, 12);
-//   // 显示文字
-//   u8g2.print("2021-03-29  12:30:50");
-// }
+/*
+*主页，wifi，时间
+*"天气查看", "门口控制", "窗户控制", "报警查看"
+*/
 void display_menu0(unsigned int index){//主页
   // 进入第一页
   //烟雾过大，火灾发生，报警显示
@@ -361,7 +373,7 @@ void display_menu0(unsigned int index){//主页
     u8g2.setCursor(0, 12);
     // 显示文字
     u8g2.print("菜单");
-    u8g2.printf(" |%.2d-%.2d|%.2d:%.2d:%.2d|",time_now.Mon,time_now.Day,time_now.Hour,time_now.Min,time_now.Second);
+    u8g2.printf(" |%.2d-%.2d|%.2d:%.2d:%.2d|",rtc.month(),rtc.day(),rtc.hours(),rtc.minutes(),rtc.seconds());
     zhiwen_menkong();
     u8g2.drawHLine(0, 14, 128);
     for (int i = 0; i < MENU_SIZE; i++)
@@ -381,6 +393,10 @@ void display_menu0(unsigned int index){//主页
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 天气
+ * "天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"
+ */
 void display_menu1(unsigned int index){//"天气"
   // 进入第一页
   u8g2.firstPage();
@@ -403,6 +419,10 @@ void display_menu1(unsigned int index){//"天气"
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 门口
+ * "门口现状", "开门", "关门","指纹设置", "开门历史数据"
+ */
 void display_menu2(unsigned int index){//"门口"
   // 进入第一页
   u8g2.firstPage();
@@ -455,6 +475,10 @@ void display_menu2(unsigned int index){//"门口"
     u8g2.drawUTF8(103, 26, onoff[door.status]);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 窗户
+ * "窗户状态", "打开", "关闭", "窗帘设置","窗户自动模式"
+ */
 void display_menu3(unsigned int index){//"窗户"
   // 进入第一页
   u8g2.firstPage();
@@ -469,20 +493,20 @@ void display_menu3(unsigned int index){//"窗户"
     { 
       switch(i+1){
         case 1:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
-          u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]);
+          u8g2.drawStr(5+strlen(chuanghu[i])*4, (i + 2) * 12 + 2, " <<");
           break;
         case 2:
-          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
-          u8g2.drawStr(5+strlen(menkou[i])*4, (i + 2) * 12 + 2, " <<");
+          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          u8g2.drawStr(5+strlen(chuanghu[i])*4, (i + 2) * 12 + 2, " <<");
           break;
         case 3:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
-          u8g2.drawStr(5+strlen(menkou[i+1])*4, (i + 2) * 12 + 2, " <<");
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          u8g2.drawStr(5+strlen(chuanghu[i+1])*4, (i + 2) * 12 + 2, " <<");
           break;
         case 4:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);//开启或关闭
-          u8g2.drawStr(5+strlen(menkou[i+1])*4, (i + 2) * 12 + 2, " <<");
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);//开启或关闭
+          u8g2.drawStr(5+strlen(chuanghu[i+1])*4, (i + 2) * 12 + 2, " <<");
           break;
       }
     }
@@ -490,23 +514,27 @@ void display_menu3(unsigned int index){//"窗户"
     {
       switch(i+1){
         case 1:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]);
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]);
           break;
         case 2:
-          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
           break;
         case 3:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
           break;
         case 4:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, menkou[i+1]);
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
           break;
       }
     }
   }
-  u8g2.drawUTF8(103, 26, onoff[door.status]);
+  u8g2.drawUTF8(103, 26, onoff[win.status]);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 窗帘
+ * "窗帘状态", "打开", "关闭" ,"窗帘自动模式"
+ */
 void display_menu4(unsigned int index){//"报警"
   // 进入第一页
   u8g2.firstPage();
@@ -528,6 +556,10 @@ void display_menu4(unsigned int index){//"报警"
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 天气状况
+ * "今天|", "明天|", "后天|", "大后天|"
+ */
 void display_menu11(unsigned int index){//"天气状况"
   // 进入第一页
   u8g2.firstPage();
@@ -591,6 +623,11 @@ void display_menu11(unsigned int index){//"天气状况"
     future_flag=order;
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 天气预报
+ * DAY0: "今天", DAY1: "明天", DAY2: "后天", DAY3: "大后天"
+ * "温度:", "湿度:", "风向:", "风力:"
+ */
 void display_menu111(unsigned int index){//"天气预报"
   // 进入第一页
   u8g2.firstPage();
@@ -652,6 +689,10 @@ void display_menu111(unsigned int index){//"天气预报"
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 室内状况
+ * 温度，湿度，气压，海拔
+ */
 void display_menu12(unsigned int index){//"室内状态"
   // 进入第一页
   u8g2.firstPage();
@@ -670,6 +711,10 @@ void display_menu12(unsigned int index){//"室内状态"
     u8g2.printf("海拔: %.1f m", bme680.alti);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 室内温度历史
+ * 时间   温度
+ */
 void display_menu13(unsigned int index){//"室内温度历史"
   // 进入第一页
   datadata_temp=true;
@@ -692,6 +737,10 @@ void display_menu13(unsigned int index){//"室内温度历史"
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 室内湿度历史
+ * 时间   湿度
+ */
 void display_menu14(unsigned int index){//"室内湿度历史"
   // 进入第一页
   u8g2.firstPage();
@@ -714,6 +763,10 @@ void display_menu14(unsigned int index){//"室内湿度历史"
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 指纹设置  指纹个数
+ * 录入指纹，删除指纹
+ */
 void display_menu23(unsigned int index){//"指纹设置"
   // 进入第一页
   u8g2.firstPage();
@@ -739,6 +792,10 @@ void display_menu23(unsigned int index){//"指纹设置"
     }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 录入指纹
+ * 请录入指纹 * 请移开手指 * 请重按手指 * 录入成功指纹
+ */
 void display_menu231(unsigned int index,uint8_t index2){//"录入指纹"
   // 进入第一页
   u8g2.firstPage();
@@ -777,7 +834,10 @@ void display_menu231(unsigned int index,uint8_t index2){//"录入指纹"
     
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
-
+/**
+ * 删除指纹  已有指纹
+ * 选择指纹 * 删除成功
+ */
 void display_menu232(unsigned int index){//"删除指纹"
   
   // 进入第一页
@@ -841,6 +901,9 @@ void display_menu232(unsigned int index){//"删除指纹"
       }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
+/**
+ * 开门历史数据
+ */
 void display_menu24(unsigned int index){//开门历史数据
   // 进入第一页
   u8g2.firstPage();

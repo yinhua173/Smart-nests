@@ -15,6 +15,8 @@
 #include "datadata.h"
 #include "fingerdata.h"
 #include <Adafruit_Fingerprint.h>
+#include "D3231.h"
+#include "DS3232.h"
 
 #define SDA 23
 #define SCL 18
@@ -53,6 +55,7 @@ extern volatile uint8_t time_size;
 extern String city;
 
 extern BME680 bme680;
+extern DS3231 rtc;
 
 extern begin smoke;
 extern begin fire;
@@ -60,6 +63,7 @@ extern begin rain;
 extern begin pir;
 extern begin touch;
 extern begin door;
+extern begin win;
 
 extern tian_qi Tianqi;
 extern Times time_now;

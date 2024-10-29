@@ -5,6 +5,7 @@ begin rain;
 begin pir;
 begin touch;
 begin door;
+begin win;
 void smokeTask(void *parameter) {//模拟信号
   smoke.init(34);
   while (1) {
@@ -48,6 +49,13 @@ void doorTask(void *parameter) {//数字信号
     vTaskDelay(100);
   }
 }
+void winTask(void *parameter) {//数字信号
+  win.init(19);
+  while (1) {
+    win.run(19);
+    vTaskDelay(100);
+  }
+}
 void smokeprintTask(void *parameter) {
   while (1) {
     Serial.print("smoke:");
@@ -59,7 +67,11 @@ void smokeprintTask(void *parameter) {
     Serial.print("  pir:");
     Serial.print(pir.status);
     Serial.print("  touch:");
-    Serial.println(touch.status);
+    Serial.print(touch.status);
+    Serial.print("  door:");
+    Serial.print(door.status);
+    Serial.print("  win:");
+    Serial.println(win.status);
     vTaskDelay(1000);
   }
 }

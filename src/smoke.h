@@ -62,5 +62,7 @@ void rainTask(void *parameter);
 void pirTask(void *parameter);
 void touchTask(void *parameter);
 void smokeprintTask(void *parameter);
+void winTask(void *parameter);
+void doorTask(void *parameter);
 
 #endif
