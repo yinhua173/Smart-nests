@@ -95,10 +95,6 @@ void display_menu23(unsigned int index);
 void display_menu231(unsigned int index, uint8_t index2);
 void display_menu232(unsigned int index);
 void display_menu24(unsigned int index);
-void display_menu34(unsigned int index);
-void display_menu42(unsigned int index);
-void display_menu43(unsigned int index);
-void display_menu44(unsigned int index);
 
 void delete_data();
 

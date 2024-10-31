@@ -7,7 +7,6 @@ const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大�
 const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
 const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "打开", "关闭","窗户自动模式"};
 const char *curtain[MENU_SIZE+1] = {"窗帘状态", "打开", "关闭","窗帘自动模式"};
-const char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
 const char *onoff[2] = {"关闭", "开启"};
 const char *zhiwen[MENU_SIZE]={"录入指纹","删除指纹"};
 // const char *shuzi[10]={"录入指纹","删除指纹"};
@@ -133,13 +132,13 @@ void menu_key(){
               //yema=31;//
               break;
             case 2:
-              //yema=32;//
+              //yema=32;//开关
               break;
             case 3:
               //yema=33;//
               break;
             case 4:
-              yema=34;//历史数据
+              //yema=34;//历史数据
               break;
         }
         break;
@@ -149,13 +148,13 @@ void menu_key(){
               //yema=41;//
               break;
             case 2:
-              yema=42;//
+              //yema=42;//开关
               break;
             case 3:
-              yema=43;//
+              //yema=43;//
               break;
             case 4:
-              yema=44;//历史数据
+              //yema=44;//历史数据
               break;
         }
         break;
@@ -298,18 +297,6 @@ void menu_xuan(){
       break;
     case 24:
       display_menu24(order);
-      break;
-    case 34:
-      display_menu34(order);
-      break;
-    case 42:
-      display_menu42(order);
-      break;
-    case 43:
-      display_menu43(order);
-      break;
-    case 44:
-      display_menu44(order);
       break;
     case 111:
       display_menu111(order);
@@ -570,9 +557,9 @@ void display_menu4(unsigned int index){//"窗帘"
       }
     }
   }
-  u8g2.drawUTF8(103, 26, onoff[win.status]);
-  u8g2.setCursor(103+12*2, 26);
-  u8g2.printf("%s", city);
+  u8g2.drawUTF8(103, 26, onoff[TOF200Flag]);
+  u8g2.setCursor(103+12*2, 26+12);
+  u8g2.printf("%d", TOF200Distance/10);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -935,54 +922,4 @@ void display_menu24(unsigned int index){//开门历史数据
     u8g2.printf("%d点开门", order);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
-void display_menu34(unsigned int index){//开窗历史数据
-  // 进入第一页
-  u8g2.firstPage();
-    do{
-      // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "开窗历史数据");
-    u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "时间");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("%d点开窗", order);
-  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
-}
-void display_menu42(unsigned int index){//火灾报警查看
-  // 进入第一页
-  u8g2.firstPage();
-    do{
-      // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "火灾报警查看");
-    u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "时间");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("%d点报警", order);
-  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
-}
-void display_menu43(unsigned int index){//烟雾报警查看
-  // 进入第一页
-  u8g2.firstPage();
-    do{
-      // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "烟雾报警查看");
-    u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "时间");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("%d点报警", order);
-  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
-}
-void display_menu44(unsigned int index){//历史数据
-  // 进入第一页
-  u8g2.firstPage();
-    do{
-      // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "历史数据");
-    u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "时间");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("%d点报警", order);
-    u8g2.drawUTF8(26, 26, "时间");
-    u8g2.setCursor(26, 38);
-    u8g2.printf("%d点报警", order);
-  } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
-}
+

@@ -196,10 +196,10 @@ void TOF200_loop()
   Serial.print(TOF200Distance);
   if (TOF200.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
   if(TOF200Distance<50){
-    TOF200Flag = true;
+    TOF200Flag = false;
     Serial.print("距离过近");
   }else{
-    TOF200Flag = false;
+    TOF200Flag = true;
   }
   Serial.println();
 }
