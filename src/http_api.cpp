@@ -13,12 +13,12 @@ String city1 = "北京";
 String key1 = "b71e51e2f481ff8e50e23ce592bc31d4";
 HTTPClient http1;// 创建 HTTPClient 对象
 
-tian_qi Tianqi;
-future Future0;
-future Future1;
-future Future2;
-future Future3;
-future Future4;
+tian_qi Tianqi;//今天天气
+future Future0;//未来今天
+future Future1;//未来明天
+future Future2;//未来后天
+future Future3;//未来大后天
+future Future4;//未来大大后天
 Times time_now;//定义时间结构体
 
 volatile bool get_time_flag = false;

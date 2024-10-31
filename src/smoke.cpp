@@ -1,11 +1,11 @@
 #include "smoke.h"
-begin smoke;
-begin fire;
-begin rain;
-begin pir;
-begin touch;
-begin door;
-begin win;
+begin smoke;//烟雾
+begin fire;//火焰
+begin rain;//雨水
+begin pir;//红外
+begin touch;//触摸
+begin door;//门磁
+begin win;//窗户
 void smokeTask(void *parameter) {//模拟信号
   smoke.init(34);
   while (1) {
@@ -43,16 +43,16 @@ void touchTask(void *parameter) {//数字信号
   }
 }
 void doorTask(void *parameter) {//数字信号
-  door.init(19);
+  door.init(5);
   while (1) {
-    door.run(19);
+    door.run(5);
     vTaskDelay(100);
   }
 }
 void winTask(void *parameter) {//数字信号
-  win.init(19);
+  win.init(4);
   while (1) {
-    win.run(19);
+    win.run(4);
     vTaskDelay(100);
   }
 }

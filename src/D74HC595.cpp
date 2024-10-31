@@ -6,7 +6,7 @@ volatile bool rain_wt=false;
 volatile bool touch_wt=false;
 volatile bool door_wt=false;
 volatile uint8_t touch_t=0;
-
+uint8_t delay_time=5;
 void D74HC595_init(){
   pinMode(SHCP,OUTPUT);
   pinMode(STCP,OUTPUT);
@@ -20,31 +20,6 @@ void D74HC595(byte data){
     digitalWrite(SHCP, HIGH);
     digitalWrite(SHCP, LOW);
   }
-  // digitalWrite(DS,bitRead(data,0));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-  // digitalWrite(DS,bitRead(data,1));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-  // digitalWrite(DS,bitRead(data,2));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-  // digitalWrite(DS,bitRead(data,3));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-  // digitalWrite(DS,bitRead(data,4));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-  // digitalWrite(DS,bitRead(data,5));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-  // digitalWrite(DS,bitRead(data,6));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-  // digitalWrite(DS,bitRead(data,7));
-  // digitalWrite(SHCP, HIGH);
-  // digitalWrite(SHCP, LOW);
-
   digitalWrite(STCP, HIGH);
   digitalWrite(STCP, LOW);
 }
@@ -82,13 +57,13 @@ void D74HC595_loop(){
     //   data=data^0x20;
     //   smoke_wt=false;
     // }
-    if(pir.status&&!pir_wt){//人体感应--开灯
-      data=data|0x40;//0100 0000
-      pir_wt=true;
-    }else if(!pir.status&&pir_wt){
-      data=data^0x40;
-      pir_wt=false;
-    }
+    // if(pir.status&&!pir_wt){//人体感应--开灯
+    //   data=data|0x40;//0100 0000
+    //   pir_wt=true;
+    // }else if(!pir.status&&pir_wt){
+    //   data=data^0x40;
+    //   pir_wt=false;
+    // }
     // if(rain.status&&!rain_wt){//雨水--关窗
     //   data=data|0x80;
     //   rain_wt=true;
@@ -120,6 +95,7 @@ void D74HC595Task(void *pvParam){
   D74HC595_init();
   while(1){
     D74HC595_loop();
+    // motor_run();
     vTaskDelay(10);
   }
 }
@@ -127,15 +103,15 @@ void motor_mode(){
   switch (touch_t){
   case 1:
     motor_run();
-    //Serial.println("run");
+    Serial.println("run");
     break;
   case 2:
     motor_back();
-    //Serial.println("back");
+    Serial.println("back");
     break;
   }
 }
-uint8_t delay_time=5;
+
 void motor_run(){
   // 八拍模式
   data=data|0x04;//0000 0100

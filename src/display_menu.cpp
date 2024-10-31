@@ -5,8 +5,8 @@ const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "
 const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
 const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
 const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
-const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "打开", "关闭", "窗帘设置","窗户自动模式"};
-const char *curtain[MENU_SIZE+1] = {"窗帘状态", "打开", "关闭", "窗帘设置","窗帘自动模式"};
+const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "打开", "关闭","窗户自动模式"};
+const char *curtain[MENU_SIZE+1] = {"窗帘状态", "打开", "关闭","窗帘自动模式"};
 const char *baojin[MENU_SIZE] = {"报警状态", "火灾报警查看", "烟雾报警查看", "历史数据"};
 const char *onoff[2] = {"关闭", "开启"};
 const char *zhiwen[MENU_SIZE]={"录入指纹","删除指纹"};
@@ -484,7 +484,7 @@ void display_menu3(unsigned int index){//"窗户"
   u8g2.firstPage();
   do{
   // 绘制页面内容
-  u8g2.drawUTF8(0, 12, "窗户窗帘控制");
+  u8g2.drawUTF8(0, 12, "窗户控制");
   u8g2.drawHLine(0, 14, 128);
   zhiwen_menkong();
   for (int i = 0; i < MENU_SIZE; i++)
@@ -504,10 +504,6 @@ void display_menu3(unsigned int index){//"窗户"
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
           u8g2.drawStr(5+strlen(chuanghu[i+1])*4, (i + 2) * 12 + 2, " <<");
           break;
-        case 4:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);//开启或关闭
-          u8g2.drawStr(5+strlen(chuanghu[i+1])*4, (i + 2) * 12 + 2, " <<");
-          break;
       }
     }
     else
@@ -522,9 +518,6 @@ void display_menu3(unsigned int index){//"窗户"
         case 3:
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
           break;
-        case 4:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
-          break;
       }
     }
   }
@@ -535,25 +528,51 @@ void display_menu3(unsigned int index){//"窗户"
  * 窗帘
  * "窗帘状态", "打开", "关闭" ,"窗帘自动模式"
  */
-void display_menu4(unsigned int index){//"报警"
+void display_menu4(unsigned int index){//"窗帘"
   // 进入第一页
   u8g2.firstPage();
-    do{
-    // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "报警查看");
-    u8g2.drawHLine(0, 14, 128);
-    for (int i = 0; i < MENU_SIZE; i++)
-    {
-      if (i == index)
-      {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, baojin[i]);
-        u8g2.drawStr(5+strlen(baojin[i])*4, (i + 2) * 12 + 2, " <<");
-      }
-      else
-      {
-        u8g2.drawUTF8(5, (i + 2) * 12 + 2, baojin[i]);
+  do{
+  // 绘制页面内容
+  u8g2.drawUTF8(0, 12, "窗帘控制");
+  u8g2.drawHLine(0, 14, 128);
+  zhiwen_menkong();
+  for (int i = 0; i < MENU_SIZE; i++)
+  {
+    if (i == index)
+    { 
+      switch(i+1){
+        case 1:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]);
+          u8g2.drawStr(5+strlen(curtain[i])*4, (i + 2) * 12 + 2, " <<");
+          break;
+        case 2:
+          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          u8g2.drawStr(5+strlen(curtain[i])*4, (i + 2) * 12 + 2, " <<");
+          break;
+        case 3:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          u8g2.drawStr(5+strlen(curtain[i+1])*4, (i + 2) * 12 + 2, " <<");
+          break;
       }
     }
+    else
+    {
+      switch(i+1){
+        case 1:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]);
+          break;
+        case 2:
+          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          break;
+        case 3:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          break;
+      }
+    }
+  }
+  u8g2.drawUTF8(103, 26, onoff[win.status]);
+  u8g2.setCursor(103+12*2, 26);
+  u8g2.printf("%s", city);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**

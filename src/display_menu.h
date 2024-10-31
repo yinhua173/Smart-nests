@@ -21,36 +21,38 @@
 #define SDA 23
 #define SCL 18
 
-extern bool key1_flag;
-extern bool key2_flag;
-extern bool key3_flag;
-extern bool key4_flag;
-extern bool key5_flag;
-extern volatile bool door_flag;
-extern volatile bool finger_error_flag;
-extern volatile bool wifi_state;
+extern bool key1_flag;//上
+extern bool key2_flag;//下
+extern bool key3_flag;//确认
+extern bool key4_flag;//返回
+extern volatile bool door_flag;//门的状态
+extern volatile bool finger_error_flag;//指纹模块错误
+extern volatile bool wifi_state;//wifi连接状态
 
-extern volatile bool enroll_flag;
-extern volatile bool delete_flag;
-extern Adafruit_Fingerprint finger1;
+extern volatile bool enroll_flag;//指纹录入
+extern volatile bool delete_flag;//指纹删除
+extern Adafruit_Fingerprint finger1;//指纹模块
 
-extern volatile bool enroll_remove_flag;
-extern volatile bool enroll_success_flag;
-extern volatile bool enroll_fail_flag;
-extern volatile bool enroll_again_flag;
+extern volatile bool enroll_remove_flag;//指纹移开
+extern volatile bool enroll_success_flag;//指纹录入成功
+extern volatile bool enroll_fail_flag;//指纹录入失败  
+extern volatile bool enroll_again_flag;//指纹再次录入
 
-extern volatile bool delete_success_flag;
-extern volatile bool delete_fail_flag;
+extern volatile bool delete_success_flag;//指纹删除成功
+extern volatile bool delete_fail_flag;//指纹删除失败
 
-extern std::vector<int> myVector;
+extern std::vector<int> myVector;//指纹库
 
-extern volatile bool datadata_temp;
-extern volatile bool datadata_humi;
-extern volatile uint8_t data_stop;
+extern volatile bool datadata_temp;//温度数据包使用标志
+extern volatile bool datadata_humi;//湿度数据包使用标准
+extern volatile uint8_t data_stop;//数据包结束标志
 
-extern volatile float datadata[];
-extern volatile int timedd[];
-extern volatile uint8_t time_size;
+extern volatile float datadata[];//数据包
+extern volatile int timedd[];//时间数据包
+// extern volatile uint8_t time_size;
+
+extern volatile bool TOF200Flag;//窗帘开关状态判断
+extern volatile int TOF200Distance;//窗帘开启距离
 
 extern String city;
 
