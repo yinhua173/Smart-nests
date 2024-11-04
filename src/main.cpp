@@ -45,6 +45,7 @@ void setup() {
   xTaskCreatePinnedToCore(wifiTask, "wifiTask", 1024 * 4, NULL, 1, NULL, 0);//创建wifi任务
   xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*100, NULL, 1, NULL, 1);//创建http任务
   xTaskCreatePinnedToCore(aliyunTask, "aliyunTask", 1024 * 4, NULL, 1, NULL, 1);//创建阿里云任务
+
   xTaskCreatePinnedToCore(smokeTask, "smokeTask", 1024, NULL, 2, NULL, 1);//创建烟雾任务
   xTaskCreatePinnedToCore(fireTask, "fireTask", 1024*2, NULL, 2, NULL, 1);//创建火焰任务
   xTaskCreatePinnedToCore(rainTask, "rainTask", 1024, NULL, 2, NULL, 1);//创建雨滴任务
@@ -52,20 +53,22 @@ void setup() {
   xTaskCreatePinnedToCore(touchTask, "touchTask", 1024, NULL, 2, NULL, 1);//创建触摸任务
   xTaskCreatePinnedToCore(doorTask, "doorTask", 1024 * 2, NULL, 2, NULL, 1);//创建门口任务
   xTaskCreatePinnedToCore(winTask, "winTask", 1024 * 2, NULL, 2, NULL, 1);//创建窗户任务
-  // xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 3, NULL, 1);//创建光照任务
-  // xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 3, NULL,1);//创建温湿度任务
+
+  xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 3, NULL, 1);//创建光照任务
+  xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 3, NULL,1);//创建温湿度任务
   xTaskCreatePinnedToCore(D3231Task, "D3231Task", 1024*5, NULL, 1, NULL, 1);//创建RTC任务
   xTaskCreatePinnedToCore(TOF200Task, "TOF200Task", 1024*5, NULL, 1, NULL, 1);//创建TOF任务
-  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*10, NULL, 1, NULL, 0);//创建OLED任务
-  // xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 3, NULL, 1, NULL,1);//创建指纹任务
+
+  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*10, NULL, 2, NULL, 0);//创建OLED任务
+  xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 3, NULL, 1, NULL,1);//创建指纹任务
   
-  // xTaskCreatePinnedToCore(delay_test_task, "delay_test_task", 1024 * 4, NULL, 2, NULL,0);
-  // xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 30, NULL, 2, NULL,1);
+  // xTaskCreatePinnedToCore(delay_test_task, "delay_test_task", 1024 * 4, NULL, 2, NULL,0);//给指纹的判断任务
+  // xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 30, NULL, 2, NULL,1);//数据包任务
   xTaskCreatePinnedToCore(D74HC595Task, "D74HC595Task", 1024*4, NULL, 1, NULL, 1);//创建控制端任务
   //xTaskCreatePinnedToCore(buttonTask, "buttonTask", 1024*2, NULL, 1, NULL, 0);//创建按键任务
-  // buttonTask();
+  buttonTask();
   //vTaskDelay(1000); //提前先运行一秒获取第一笔数据
-  xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
+  // xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
 
   // int heapSize = ESP.getHeapSize();
   // Serial.print("Total Heap Size:  ");

@@ -5,8 +5,8 @@
 #include "delete.h"
 
 #define BUTTON_14  27//判断指纹按下
-#define BUTTON_15  15//进入录入
-#define BUTTON_13  13//删除指纹
+// #define BUTTON_15  15//进入录入
+// #define BUTTON_13  13//删除指纹
 // 定义可以在外部中断函数中使用的变量
 volatile bool fingerprint_flag = false;
 volatile bool enroll_flag = false;
@@ -26,23 +26,23 @@ extern Adafruit_Fingerprint finger1;
 void handle_interrupt1() {
   fingerprint_flag = true;
 }
-void handle_interrupt2() {
-  enroll_flag = true;
-}
-void handle_interrupt3() {
-  delete_flag = true;
-}
+// void handle_interrupt2() {
+//   enroll_flag = true;
+// }
+// void handle_interrupt3() {
+//   delete_flag = true;
+// }
 uint8_t fingermain_init(){
   Fingerprint_inti();
   Serial.begin(115200);
   pinMode(BUTTON_14, INPUT_PULLDOWN);
-  pinMode(BUTTON_15, INPUT_PULLUP);
-  pinMode(BUTTON_13, INPUT_PULLUP);
+  // pinMode(BUTTON_15, INPUT_PULLUP);
+  // pinMode(BUTTON_13, INPUT_PULLUP);
   //pinMode(BUTTON_13, INPUT_PULLDOWN);
   // 配置中断引脚
   attachInterrupt(digitalPinToInterrupt(BUTTON_14), handle_interrupt1, RISING);
-  attachInterrupt(digitalPinToInterrupt(BUTTON_15), handle_interrupt2, FALLING);
-  attachInterrupt(digitalPinToInterrupt(BUTTON_13), handle_interrupt3, FALLING);
+  // attachInterrupt(digitalPinToInterrupt(BUTTON_15), handle_interrupt2, FALLING);
+  // attachInterrupt(digitalPinToInterrupt(BUTTON_13), handle_interrupt3, FALLING);
   return 0;
 }
 

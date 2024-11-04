@@ -48,7 +48,7 @@ void D3231Task(void *parameter){
   D3231_setup();
   while (1){
     D3231_loop();
-    vTaskDelay(2000);
+    vTaskDelay(1000);
   }
 }
 void read_setup()

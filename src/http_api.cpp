@@ -4,7 +4,7 @@
 String url = "http://apis.juhe.cn/simpleWeather/query";
 String city = "南京";
 String key = "f7a00d7ed724ea602774412f227b894e";
-uint8_t http_api_state = 36;//http_api请求次数
+uint8_t http_api_state = 59;//http_api请求次数
 HTTPClient http;// 创建 HTTPClient 对象
 
 // 定义http请求
@@ -266,7 +266,7 @@ void http_time(){
 }
 void http_api(){
   http_api_state++;
-  if(http_api_state>=10){
+  if(http_api_state>=60){
     http_tianqi();
     http_time();
     http_api_state=0;
@@ -276,7 +276,8 @@ void httpTask(void *parameter){
   while(1){
     if(WiFi.status() == WL_CONNECTED){
       http_api();
-      vTaskDelay(100000);
+      vTaskDelay(100000);//60*60*60=
+      vTaskDelay(100000);//100S
     }else{
       vTaskDelay(100);
     }

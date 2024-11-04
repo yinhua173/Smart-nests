@@ -115,7 +115,7 @@ void datadata_task(void *parameter){
 				n++;
 				EnQueue(Q,bme680.temp);//入队
 				EnQueue(H,bme680.humi);
-				EnQueue(time1,n);
+				EnQueue(time1,n);//02 03 04 05
 				a=0;
 			//cout<<endl;
 	    	break;

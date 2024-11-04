@@ -103,11 +103,11 @@ void motor_mode(){
   switch (touch_t){
   case 1:
     motor_run();
-    Serial.println("run");
+    //Serial.println("run");
     break;
   case 2:
     motor_back();
-    Serial.println("back");
+    //Serial.println("back");
     break;
   }
 }

@@ -1,7 +1,7 @@
 #include "display_menu.h"
 #include <iostream>
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0,SCL,SDA,U8X8_PIN_NONE);
-const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "报警查看"};
+const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "窗帘控制"};
 const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
 const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
 const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
@@ -9,7 +9,6 @@ const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "打开", "关闭","窗户�
 const char *curtain[MENU_SIZE+1] = {"窗帘状态", "打开", "关闭","窗帘自动模式"};
 const char *onoff[2] = {"关闭", "开启"};
 const char *zhiwen[MENU_SIZE]={"录入指纹","删除指纹"};
-// const char *shuzi[10]={"录入指纹","删除指纹"};
 // 定义当前选项
 volatile unsigned int  order = 0;
 volatile unsigned int  order_2 = 0;
@@ -37,12 +36,6 @@ void OLEDTask(void *pvParam){
     // 开启中文字符集支持
     u8g2.enableUTF8Print();
     u8g2.setFont(u8g2_font_wqy12_t_gb2312b);// 设置字体
-    //xTaskCreatePinnedToCore(bme680Task, "wifiTask", 1024 * 4, NULL, 1, NULL, 1);
-    // myVector.push_back(1);
-    // myVector.push_back(2);
-    // myVector.push_back(3);
-    // myVector.push_back(4);
-    // myVector.push_back(5);
     while(1){
         menu_key();
         menu_xuan();
@@ -533,7 +526,7 @@ void display_menu4(unsigned int index){//"窗帘"
           u8g2.drawStr(5+strlen(curtain[i])*4, (i + 2) * 12 + 2, " <<");
           break;
         case 2:
-          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          TOF200Flag?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
           u8g2.drawStr(5+strlen(curtain[i])*4, (i + 2) * 12 + 2, " <<");
           break;
         case 3:
@@ -549,7 +542,7 @@ void display_menu4(unsigned int index){//"窗帘"
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]);
           break;
         case 2:
-          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          TOF200Flag?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
           break;
         case 3:
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
@@ -558,7 +551,7 @@ void display_menu4(unsigned int index){//"窗帘"
     }
   }
   u8g2.drawUTF8(103, 26, onoff[TOF200Flag]);
-  u8g2.setCursor(103+12*2, 26+12);
+  u8g2.setCursor(80, 26+12);
   u8g2.printf("%d", TOF200Distance/10);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
