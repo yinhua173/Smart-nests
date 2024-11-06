@@ -20,7 +20,6 @@ extern volatile uint8_t delete_num0;
 extern volatile uint8_t delete_num1;
 volatile uint8_t flash=0;
 volatile uint8_t future_flag = 0;
-//volatile bool door_flag = 0;
 volatile bool datadata_state = false;
 extern volatile bool clear_hang_state;
 /**
@@ -106,7 +105,7 @@ void menu_key(){
               //yema=21;//
               break;
             case 2:
-              door_flag = !door_flag;//开关门
+              door_flag = !door.status;//开关门
               break;
             case 3:
               yema=23;//指纹设置
@@ -311,12 +310,11 @@ void menu_loop(){
  * 开门显示
  */
 void zhiwen_menkong(){
-  if (door_flag){
+  if (door.status){
     // 设置光标位置
     u8g2.setCursor(64, 12);
     // 显示文字
     u8g2.print("门已开");
-    door_flag = !door_flag;//无法判断关门信号，需要添加
   }
   if (finger_error_flag){
     // 设置光标位置

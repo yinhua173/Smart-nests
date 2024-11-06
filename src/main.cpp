@@ -68,7 +68,7 @@ void setup() {
   //xTaskCreatePinnedToCore(buttonTask, "buttonTask", 1024*2, NULL, 1, NULL, 0);//创建按键任务
   buttonTask();
   //vTaskDelay(1000); //提前先运行一秒获取第一笔数据
-  // xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
+  xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
 
   // int heapSize = ESP.getHeapSize();
   // Serial.print("Total Heap Size:  ");
