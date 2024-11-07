@@ -6,12 +6,12 @@
 #define STCP 26
 #define DS 13
 
-extern begin smoke;
-extern begin fire;
-extern begin rain;
-extern begin pir;
-extern begin touch;
-extern begin door;
+extern beginn smoke;
+extern beginn fire;
+extern beginn rain;
+extern beginn pir;
+extern beginn touch;
+extern beginn door;
 
 extern volatile bool door_flag;//屏幕开锁--网络开锁--指纹开锁
 #ifndef D74HC595_h

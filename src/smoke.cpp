@@ -1,11 +1,11 @@
 #include "smoke.h"
-begin smoke;//烟雾
-begin fire;//火焰
-begin rain;//雨水
-begin pir;//红外
-begin touch;//触摸
-begin door;//门磁
-begin win;//窗户
+beginn smoke;//烟雾
+beginn fire;//火焰
+beginn rain;//雨水
+beginn pir;//红外
+beginn touch;//触摸
+beginn door;//门磁
+beginn win;//窗户
 void smokeTask(void *parameter) {//模拟信号
   smoke.init(34);
   while (1) {

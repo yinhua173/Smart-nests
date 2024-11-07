@@ -54,7 +54,7 @@ typedef struct{
       status = true;
     }
   }
-}begin;
+}beginn;
 
 void smokeTask(void *parameter);
 void fireTask(void *parameter);

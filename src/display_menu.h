@@ -44,7 +44,8 @@ extern volatile bool delete_fail_flag;//指纹删除失败
 extern std::vector<int> myVector;//指纹库
 
 extern volatile bool datadata_temp;//温度数据包使用标志
-extern volatile bool datadata_humi;//湿度数据包使用标准
+extern volatile bool datadata_humi;//湿度数据包使用标志
+extern volatile bool datadata_door;//门口数据包使用标志
 extern volatile uint8_t data_stop;//数据包结束标志
 
 extern volatile float datadata[];//数据包
@@ -59,13 +60,13 @@ extern String city;
 extern BME680 bme680;
 extern DS3231 rtc;
 
-extern begin smoke;
-extern begin fire;
-extern begin rain;
-extern begin pir;
-extern begin touch;
-extern begin door;
-extern begin win;
+extern beginn smoke;
+extern beginn fire;
+extern beginn rain;
+extern beginn pir;
+extern beginn touch;
+extern beginn door;
+extern beginn win;
 
 extern tian_qi Tianqi;
 extern Times time_now;

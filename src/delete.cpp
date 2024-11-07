@@ -6,7 +6,7 @@
 #include "fingerdata.h"
 TickType_t tick_finger_delete = xTaskGetTickCount();
 extern volatile uint16_t timeout;
-extern uint8_t min_one;
+extern volatile uint8_t min_one;
 extern uint8_t id;
 extern volatile uint8_t delete_num0;
 extern volatile uint8_t delete_num1;

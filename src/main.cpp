@@ -13,7 +13,6 @@
 #include "fingerdata.h"
 #include "D74HC595.h"
 #include "TTimer.h"
-// #include "TOF200.h"
 #include "D3231.h"
 //任务控制权柄
 extern TaskHandle_t xHandleTsak[4];
@@ -56,19 +55,21 @@ void setup() {
 
   xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 3, NULL, 1);//创建光照任务
   xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 3, NULL,1);//创建温湿度任务
+  
   xTaskCreatePinnedToCore(D3231Task, "D3231Task", 1024*5, NULL, 1, NULL, 1);//创建RTC任务
   xTaskCreatePinnedToCore(TOF200Task, "TOF200Task", 1024*5, NULL, 1, NULL, 1);//创建TOF任务
 
-  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*10, NULL, 2, NULL, 0);//创建OLED任务
   xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 3, NULL, 1, NULL,1);//创建指纹任务
+  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*10, NULL, 2, NULL, 0);//创建OLED任务
+  xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 20, NULL, 2, NULL,1);//数据包任务
   
-  // xTaskCreatePinnedToCore(delay_test_task, "delay_test_task", 1024 * 4, NULL, 2, NULL,0);//给指纹的判断任务
-  // xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 30, NULL, 2, NULL,1);//数据包任务
   xTaskCreatePinnedToCore(D74HC595Task, "D74HC595Task", 1024*4, NULL, 1, NULL, 1);//创建控制端任务
+  // xTaskCreatePinnedToCore(delay_test_task, "delay_test_task", 1024 * 4, NULL, 1, NULL,1);//给指纹的判断任务
   //xTaskCreatePinnedToCore(buttonTask, "buttonTask", 1024*2, NULL, 1, NULL, 0);//创建按键任务
   buttonTask();
+  
   //vTaskDelay(1000); //提前先运行一秒获取第一笔数据
-  xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
+  // xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
 
   // int heapSize = ESP.getHeapSize();
   // Serial.print("Total Heap Size:  ");

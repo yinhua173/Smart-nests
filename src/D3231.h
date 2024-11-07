@@ -7,7 +7,7 @@ extern Times time_now;
 #define D3231_HH
 
 extern volatile bool get_time_flag;
-
+void new_get_time();
 void read_setup();
 void read_loop();
 void write_setup();

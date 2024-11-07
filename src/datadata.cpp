@@ -1,17 +1,19 @@
 #include <iostream>
-#include <vector>
+// #include <vector>
 #include "datadata.h"
 using namespace std;
 #define Maxsize 33
 volatile uint8_t n=0;
 uint8_t dd = 0;//入队标识1,出队标识2,读取标识3
 extern BME680 bme680;
+extern beginn door;
 // extern uint8_t humi;
 // extern float temp;
 TickType_t lasttick = xTaskGetTickCount();//初值
-uint8_t min_one=0;
+volatile uint8_t min_one=0;
 volatile bool datadata_temp = false;
 volatile bool datadata_humi = false;
+volatile bool datadata_door = false;
 volatile bool datadata_tra_state = false;
 volatile bool datadata_state_stop = false;
 volatile float datadata[32];
@@ -80,7 +82,11 @@ void TraverseQueue(SqQueue Q) {
 	int j=0;
 	while (i != Q.rear){
 		printf("%f ", Q.base[i]);
-		tra==1?datadata[j]=Q.base[i]:timedd[j]=Q.base[i];//取出温度数组
+		if(tra==1){//取出温度数组
+			datadata[j]=Q.base[i];
+		}else if(tra==2){
+			timedd[j]=Q.base[i];
+		}
 		j++;
 		i = (i + 1) % Maxsize;
 	}
@@ -91,22 +97,31 @@ void datadata_task(void *parameter){
   SqQueue Q;//温度
   SqQueue H;//湿度
 	SqQueue time1;//温度湿度记录时间
-	SqQueue door;//门口历史
-	SqQueue time2;//门口记录时间
-	int n=0,x,a;
+	SqQueue doorr;//门口历史
+	SqQueue time2;//门口记录小时
+	int n=0,x,a=0;
+	uint8_t hour_in=0;
+	bool door_in=false;
 	InitQueue(Q);//初始化队列(一定要初始化，否则后面存储出错)
   InitQueue(H);
+	InitQueue(doorr);
   InitQueue(time1);
+	InitQueue(time2);
 	while(1){
-	  if(datadata_temp||datadata_humi){
+	  if(datadata_temp||datadata_humi||datadata_door){
 			data_stop++;
 			if(data_stop==1){
 			  a=3;datadata_tra_state = true;
 			}
 		}
-		if(min_one==1){
+		if(hour_in!=rtc.minutes()){//每一小时入队一次
+			hour_in=rtc.minutes();
 			a=1;
-			min_one=0;
+		}
+		if(door_in!=door.status){//门口状态改变入队
+			door_in=door.status;
+			EnQueue(doorr,door.status);
+			EnQueue(time2,rtc.hours()*100+rtc.minutes());//02 03 04 05
 		}
 		switch(a){
 			case 1: 
@@ -115,7 +130,7 @@ void datadata_task(void *parameter){
 				n++;
 				EnQueue(Q,bme680.temp);//入队
 				EnQueue(H,bme680.humi);
-				EnQueue(time1,n);//02 03 04 05
+				EnQueue(time1,hour_in);//02 03 04 05
 				a=0;
 			//cout<<endl;
 	    	break;
@@ -140,11 +155,18 @@ void datadata_task(void *parameter){
 				//cout <<endl;
 		    break;
 			case 3:
-			if(datadata_temp)
+			if(datadata_temp){
 				TraverseQueue(Q);
-			if(datadata_humi)
+				TraverseQueue(time1);
+			}
+			if(datadata_humi){
 				TraverseQueue(H);
 				TraverseQueue(time1);
+			}
+			if(datadata_door){
+				TraverseQueue(doorr);
+				TraverseQueue(time2);
+			}
 				tra=0,a=0;datadata_tra_state = false;
 			break;
 		}
@@ -157,7 +179,8 @@ void delay_test_task(void *parameter){
 		while(1){
 			printf("----------------------\n");
 			printf("1.lasttick:%d,\txTaskGetTickCount:%d\n", lasttick, xTaskGetTickCount());
-			vTaskDelayUntil(&lasttick, 60000);//60000ms
+			vTaskDelayUntil(&lasttick, 10000);//60000ms
 			min_one++;
+			printf("min_one:%d\n",min_one);
 		}
 }

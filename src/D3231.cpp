@@ -9,40 +9,56 @@ void D3231_setup(){
     Serial.println("could not connect, check wires etc");
     vTaskDelay(200);
   }
-  while(!get_time_flag){
-    Serial.println("Waiting for time to be set");
-    vTaskDelay(1000);
+  // while(!get_time_flag){
+  //   Serial.println("Waiting for time to be set");
+  // vTaskDelay(1000);
+  // }
+  vTaskDelay(1000);
+  if(get_time_flag){
+    get_time_flag = false;
+    rtc.setSeconds(time_now.Second);
+    rtc.setMinutes(time_now.Min);
+    rtc.setHours(time_now.Hour);
+    rtc.setWeekDay(time_now.Week);
+    rtc.setDay(time_now.Day);
+    rtc.setMonth(time_now.Mon);
+    rtc.setYear(time_now.Year%2000);
+    rtc.write();
   }
-  get_time_flag = false;
-  rtc.setSeconds(time_now.Second);
-  rtc.setMinutes(time_now.Min);
-  rtc.setHours(time_now.Hour);
-  rtc.setWeekDay(time_now.Week);
-  rtc.setDay(time_now.Day);
-  rtc.setMonth(time_now.Mon);
-  rtc.setYear(time_now.Year%2000);
-  rtc.write();
 }
-
+void new_get_time(){
+  if(get_time_flag){
+    get_time_flag = false;
+    rtc.setSeconds(time_now.Second);
+    rtc.setMinutes(time_now.Min);
+    rtc.setHours(time_now.Hour);
+    rtc.setWeekDay(time_now.Week);
+    rtc.setDay(time_now.Day);
+    rtc.setMonth(time_now.Mon);
+    rtc.setYear(time_now.Year%2000);
+    rtc.write();
+  }
+}
 void D3231_loop(){
+  new_get_time();
   rtc.read();
 
-  Serial.print(rtc.lastRead());
-  Serial.print("\t\t");
-  Serial.print(rtc.year());
-  Serial.print('-');
-  Serial.print(rtc.month());
-  Serial.print('-');
-  Serial.print(rtc.day());
-  Serial.print(' ');
-  Serial.print(rtc.hours());
-  Serial.print(':');
-  Serial.print(rtc.minutes());
-  Serial.print(':');
-  Serial.print(rtc.seconds());
-  Serial.print('\n');
-  Serial.print(rtc.weekDay());
-  Serial.println('\n');
+  // Serial.print(rtc.lastRead());
+  // Serial.print("\t\t");
+  // Serial.print(rtc.year());
+  // Serial.print('-');
+  // Serial.print(rtc.month());
+  // Serial.print('-');
+  // Serial.print(rtc.day());
+  // Serial.print(' ');
+  // Serial.print(rtc.hours());
+  // Serial.print(':');
+  // Serial.print(rtc.minutes());
+  // Serial.print(':');
+  // Serial.print(rtc.seconds());
+  // Serial.print('\n');
+  // Serial.print(rtc.weekDay());
+  // Serial.println('\n');
 }
 void D3231Task(void *parameter){
   D3231_setup();
@@ -193,7 +209,7 @@ void TOF200_setup()
 void TOF200_loop()
 {
   TOF200Distance=TOF200.readRangeContinuousMillimeters();
-  Serial.print(TOF200Distance);
+  // Serial.print(TOF200Distance);
   if (TOF200.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
   if(TOF200Distance<50){
     TOF200Flag = false;
@@ -201,7 +217,7 @@ void TOF200_loop()
   }else{
     TOF200Flag = true;
   }
-  Serial.println();
+  //Serial.println();
 }
 void TOF200Task(void *parameter){
   TOF200_setup();

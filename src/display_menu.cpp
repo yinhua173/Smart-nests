@@ -125,9 +125,12 @@ void menu_key(){
               break;
             case 2:
               //yema=32;//开关
+              //win_flag = !win.status;//开关门
               break;
             case 3:
               //yema=33;//
+              //下雨关窗，下雨开窗
+              //天亮开窗帘，天黑关窗帘
               break;
             case 4:
               //yema=34;//历史数据
@@ -312,13 +315,15 @@ void menu_loop(){
 void zhiwen_menkong(){
   if (door.status){
     // 设置光标位置
-    u8g2.setCursor(64, 12);
+    u8g2.setCursor(70, 26);
     // 显示文字
     u8g2.print("门已开");
+  }else{
+    u8g2.drawStr(70, 26, "                   ");
   }
   if (finger_error_flag){
     // 设置光标位置
-    u8g2.setCursor(64, 12);
+    u8g2.setCursor(70, 26);
     // 显示文字
     u8g2.print("指纹错误");//FINGERPRINT_NOMATCH指纹不匹配
     finger_error_flag = !finger_error_flag;
@@ -351,7 +356,7 @@ void display_menu0(unsigned int index){//主页
     u8g2.setCursor(0, 12);
     // 显示文字
     u8g2.print("菜单");
-    u8g2.printf(" |%.2d-%.2d|%.2d:%.2d:%.2d|",rtc.month(),rtc.day(),rtc.hours(),rtc.minutes(),rtc.seconds());
+    u8g2.printf(" |%2d-%2d|%.2d:%.2d:%.2d|",rtc.month(),rtc.day(),rtc.hours(),rtc.minutes(),rtc.seconds());
     zhiwen_menkong();
     u8g2.drawHLine(0, 14, 128);
     for (int i = 0; i < MENU_SIZE; i++)
@@ -903,14 +908,25 @@ void display_menu232(unsigned int index){//"删除指纹"
  */
 void display_menu24(unsigned int index){//开门历史数据
   // 进入第一页
+  datadata_door=true;
+  datadata_state=true;
   u8g2.firstPage();
-    do{
-      // 绘制页面内容
-    u8g2.drawUTF8(0, 12, "开门历史数据");
+  do{
+    // 绘制页面内容
+    u8g2.drawUTF8(0, 12, "时间");
+    u8g2.drawUTF8(63, 12, "门口");
     u8g2.drawHLine(0, 14, 128);
-    u8g2.drawUTF8(0, 26, "时间");
-    u8g2.setCursor(0, 38);
-    u8g2.printf("%d点开门", order);
+    for (int i = 0; i < 4; i++)
+    {
+        // 设置光标位置
+        u8g2.setCursor(0, 26+i*12);
+        u8g2.printf("%2d点%2d分", timedd[i+order_2*4]/100, timedd[i+order_2*4]%100);
+        u8g2.setCursor(63, 26+i*12);
+        // u8g2.printf("%.1f℃", datadata[i+order_2*4]);
+        u8g2.drawUTF8(63, 26+i*12, onoff[(int)datadata[i+order_2*4]]);
+        u8g2.setCursor(110, 26+i*12);
+        u8g2.print(" >>>");
+    }
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 

@@ -9,11 +9,11 @@ SemaphoreHandle_t xMutexBME680 = NULL; //创建信号量Handler
 TickType_t timeOut = 1000; //用于获取信号量的Timeout 1000 ticks
 
 BME680 bme680;
-extern begin smoke;
-extern begin fire;
-extern begin rain;
-extern begin pir;
-extern begin touch;
+extern beginn smoke;
+extern beginn fire;
+extern beginn rain;
+extern beginn pir;
+extern beginn touch;
 void bme680Task(void *pvParam) {
   xMutexBME680 = xSemaphoreCreateMutex(); //创建MUTEX信号量
   Wire.begin();

@@ -27,11 +27,11 @@ PubSubClient client(espClient);
 
 extern BME680 bme680;
 extern float lux;
-extern begin smoke;
-extern begin fire;
-extern begin rain;
-extern begin pir;
-extern begin touch;
+extern beginn smoke;
+extern beginn fire;
+extern beginn rain;
+extern beginn pir;
+extern beginn touch;
 float  *humi = &bme680.humi;     // 读取湿度
 float  *temp = &bme680.temp;     // 读取温度
 

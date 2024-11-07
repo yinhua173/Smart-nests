@@ -6,7 +6,7 @@
 // extern TimerHandle_t xTimeHandle[2];
 // TickType_t tick_finger_enroll = xTaskGetTickCount();
 extern volatile uint8_t timeout;
-extern uint8_t min_one;
+extern volatile uint8_t min_one;
 extern volatile bool enroll_remove_flag;
 extern volatile bool enroll_success_flag;
 extern volatile bool enroll_fail_flag;
