@@ -1,9 +1,9 @@
 #include "aliyun.h"
 
 /* 设备的三元组信息*/
-#define PRODUCT_KEY "a1ta4iTL0RN"
-#define DEVICE_NAME "ESPM"
-#define DEVICE_SECRET "34464ee765d5f38ed98ae4af52d19e97"
+#define PRODUCT_KEY "a1sf6CO3czA"
+#define DEVICE_NAME "ESPX"
+#define DEVICE_SECRET "1c945589620b2a64729c5548dac6965c"
 #define REGION_ID "cn-shanghai"
 
 /* 线上环境域名和端口号，不需要改 */
@@ -11,14 +11,14 @@
 #define MQTT_PORT 1883
 #define MQTT_USRNAME DEVICE_NAME "&" PRODUCT_KEY
 
-#define CLIENT_ID "a1ta4iTL0RN.ESPM|securemode=2,signmethod=hmacsha256,timestamp=1726388666641|"
-#define MQTT_PASSWD "461c4f1ea6785e203dce30cbeddb27d322aad901816a4b5ce343bc9598de2587"
+#define CLIENT_ID "a1sf6CO3czA.ESPX|securemode=2,signmethod=hmacsha256,timestamp=1731140304212|"
+#define MQTT_PASSWD "fcd8ae0978da529c15aba93d49ccca6c59135a1cbf6df9d4e850d3f3fe980104"
 
 // 宏定义订阅主题
-#define ALINK_BODY_FORMAT "{\"id\":\"ESPM\",\"version\":\"1.0\",\"method\":\"thing.event.property.post\",\"params\":%s}"
+#define ALINK_BODY_FORMAT "{\"id\":\"ESPX\",\"version\":\"1.0\",\"method\":\"thing.event.property.post\",\"params\":%s}"
 #define ALINK_TOPIC_PROP_POST "/sys/" PRODUCT_KEY "/" DEVICE_NAME "/thing/event/property/post"
 
-const char *TOPIC = "/sys/a1ta4iTL0RN/ESPM/thing/service/property/set";
+const char *TOPIC = "/sys/a1sf6CO3czA/ESPX/thing/service/property/set";
 unsigned long lastMs = 0;
 
 WiFiClient espClient;
@@ -32,6 +32,15 @@ extern beginn fire;
 extern beginn rain;
 extern beginn pir;
 extern beginn touch;
+extern beginn door;
+extern beginn win;
+extern volatile int TOF200Distance;//窗帘开启距离
+extern volatile bool door_flag;//门的状态
+extern volatile bool light_flag;//灯状态
+extern volatile bool win_flag;//窗户状态
+extern volatile bool curtain_flag;//窗帘状态
+extern volatile bool win_aoti;//oled控制窗户自动模式
+extern volatile bool curtain_aoti;//oled控制窗帘自动模式
 float  *humi = &bme680.humi;     // 读取湿度
 float  *temp = &bme680.temp;     // 读取温度
 
@@ -138,9 +147,85 @@ void mqttIntervalPost(){
     }else{
         Serial.println("publish pir fail");
     }
+}
+// 上传门口状态,灯,窗户，窗帘
+void mqttIntervalPost_1(){
+    char param[32];
+    char jsonBuf[128];
+
+    // doorback
+    //门口状态
+    sprintf(param, "{\"doorback\":%d}", door.status);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean doorback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(doorback){
+        Serial.println("publish doorback success");
+    }else{
+        Serial.println("publish doorback fail");
+    }
+
+    // lightback
+    //灯的状态
+    sprintf(param, "{\"lightback\":%d}", light_flag);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean lightback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(lightback){
+        Serial.println("publish lightback success");
+    }else{
+        Serial.println("publish lightback fail");
+    }
+
+    // winback
+    //窗户状态
+    sprintf(param, "{\"winback\":%d}", win.status);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean winback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(winback){
+        Serial.println("publish winback success");
+    }else{
+        Serial.println("publish winback fail");
+    }
+
+    // curtainback
+    //窗帘状态
+    sprintf(param, "{\"curtainback\":%d}", curtain_flag);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean curtainback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(curtainback){
+        Serial.println("publish curtainback success");
+    }else{
+        Serial.println("publish curtainback fail");
+    }
+
+    // winMode
+    //窗户模式状态
+    sprintf(param, "{\"winMode\":%d}", win_aoti);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean winMode = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(winMode){
+        Serial.println("publish winMode success");
+    }else{
+        Serial.println("publish winMode fail");
+    }
+
+    // curtainmode
+    //窗帘模式状态
+    sprintf(param, "{\"curtainmode\":%d}", curtain_aoti);
+    sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
+    Serial.println(jsonBuf);
+    boolean curtainmode = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
+    if(curtainmode){
+        Serial.println("publish curtainmode success");
+    }else{
+        Serial.println("publish curtainmode fail");
+    }
 
 }
-
 // 回调函数
 void callback(char *topic, byte *payload, unsigned int length){
     Serial.print("Message arrived [");
@@ -156,16 +241,36 @@ void callback(char *topic, byte *payload, unsigned int length){
 
     // DynamicJsonDocument params = doc["params"];
 
-    if(doc["params"].containsKey("LED1")){
-        Serial.println("GOT LED1 CMD");
+    if(doc["params"].containsKey("doorback")){
+        Serial.println("GOT doorback CMD");
+        door_flag = !door.status;//开关门
         //digitalWrite(LED1, doc["params"]["LED1"]);//受控端读取与写入
     }
-    if(doc["params"].containsKey("LED2")){
-        Serial.println("GOT LED2 CMD");
+    if(doc["params"].containsKey("lightback")){
+        Serial.println("GOT lightback CMD");
+        light_flag = !light_flag;//开关灯
+        //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
+    }
+    if(doc["params"].containsKey("winback")){
+        Serial.println("GOT winback CMD");
+        win_flag = !win.status;//开关窗
         //digitalWrite(LED2, doc["params"]["LED2"]);//受控端读取与写入
     }
-    if(doc["params"].containsKey("LED3")){
-        Serial.println("GOT LED3 CMD");
+    if(doc["params"].containsKey("curtainback")){
+        Serial.println("GOT curtainback CMD");
+        curtain_flag = !curtain_flag;//开关窗帘
+        //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
+    }
+
+    if(doc["params"].containsKey("winMode")){
+        Serial.println("GOT winmodeback CMD");
+        win_aoti = !win_aoti;//oled控制窗户自动模式
+
+        //digitalWrite(LED2, doc["params"]["LED2"]);//受控端读取与写入
+    }
+    if(doc["params"].containsKey("curtainmode")){
+        Serial.println("GOT curtainmode CMD");
+        curtain_aoti =! curtain_aoti;//oled控制窗帘自动模式
         //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
     }
 }
@@ -174,6 +279,7 @@ void callback(char *topic, byte *payload, unsigned int length){
 void aliyunTask(void *parameter){
     client.setServer(MQTT_SERVER, MQTT_PORT); /* 连接MQTT服务器 */
     client.setCallback(callback);
+    bool Post= false;
     while (1){
         if (WiFi.status() != WL_CONNECTED){
             WiFi_connect();
@@ -181,10 +287,17 @@ void aliyunTask(void *parameter){
         if (millis() - lastMs >= 5000){
             lastMs = millis();
             mqttCheckConnect();
-            /* 上报 */
-            mqttIntervalPost();
+            if(Post){
+                /* 上报 */
+                mqttIntervalPost();
+                vTaskDelay(10);
+            }else{
+                mqttIntervalPost_1();
+                vTaskDelay(10);
+            }
+            Post =! Post;
         }
         client.loop();
-        vTaskDelay(2000);
+        vTaskDelay(1000);
     }
 }

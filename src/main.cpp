@@ -42,9 +42,9 @@ void setup() {
   // creat();
   //xTimerStart(xTimeHandle[0], 0);
   xTaskCreatePinnedToCore(wifiTask, "wifiTask", 1024 * 4, NULL, 1, NULL, 0);//创建wifi任务
-  xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*100, NULL, 1, NULL, 1);//创建http任务
-  xTaskCreatePinnedToCore(aliyunTask, "aliyunTask", 1024 * 4, NULL, 1, NULL, 1);//创建阿里云任务
-
+  xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*100, NULL, 3, NULL, 1);//创建http任务
+  xTaskCreatePinnedToCore(aliyunTask, "aliyunTask", 1024 * 4, NULL, 2, NULL, 0);//创建阿里云任务
+  
   xTaskCreatePinnedToCore(smokeTask, "smokeTask", 1024, NULL, 2, NULL, 1);//创建烟雾任务
   xTaskCreatePinnedToCore(fireTask, "fireTask", 1024*2, NULL, 2, NULL, 1);//创建火焰任务
   xTaskCreatePinnedToCore(rainTask, "rainTask", 1024, NULL, 2, NULL, 1);//创建雨滴任务
