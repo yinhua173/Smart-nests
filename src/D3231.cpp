@@ -213,7 +213,7 @@ void TOF200_loop()
   if (TOF200.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
   if(TOF200Distance<50){
     TOF200Flag = false;
-    Serial.print("距离过近");
+    Serial.print("距离近,窗帘关闭");
   }else{
     TOF200Flag = true;
   }

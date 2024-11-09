@@ -5,6 +5,12 @@ volatile bool pir_wt=false;
 volatile bool rain_wt=false;
 volatile bool touch_wt=false;
 volatile bool door_wt=false;
+volatile bool win_flag=false;//oled控制窗户
+volatile bool curtain_flag=false;//oled控制窗帘
+volatile bool win_aoti=false;//oled控制窗户自动模式
+volatile bool curtain_aoti=false;//oled控制窗帘自动模式
+volatile bool light_wt=false;
+volatile bool light_flag=false;
 volatile uint8_t touch_t=0;
 uint8_t delay_time=5;
 void D74HC595_init(){
@@ -75,7 +81,7 @@ void D74HC595_loop(){
       Serial.write("$light_off$");
       vTaskDelay(1);
     }
-    if(rain.status&&!rain_wt){//雨水--关窗
+    if(rain.status&&!rain_wt&&!win_aoti){//雨水--关窗
       rain_wt=true;
       Serial.write("$win_on$");
       vTaskDelay(1);
@@ -94,6 +100,11 @@ void D74HC595_loop(){
       motor_clear();
       touch_wt=false;
     }
+    if(curtain_aoti&&lux>50&&TOF200Distance<200){//自动--窗帘--光，亮---开---距离0，停止
+      motor_run();//电机正转开窗帘
+    }else if(curtain_aoti&&lux<50&&TOF200Distance>50){
+      motor_back();//电机反转关窗帘
+    }
     if(door_flag&&!door_wt){//门磁
       door_wt=true;
       Serial.write("$door_on$");
@@ -104,6 +115,13 @@ void D74HC595_loop(){
       vTaskDelay(1);
     }
     //D74HC595(data);
+  }
+  if(light_flag&&!light_wt){//灯泡
+    data=data|0x40;
+    light_wt=true;
+  }else if(!light_flag&&light_wt){
+    data=data^0x40;
+    light_wt=false;
   }
 }
 void D74HC595Task(void *pvParam){

@@ -31,6 +31,7 @@ void wifiTask(void *parameter){
   while (true){
     if(WiFi.status() != WL_CONNECTED){
         WiFi_connect();
+        vTaskDelay(20);
     }else{
       vTaskDelay(1000);
     }

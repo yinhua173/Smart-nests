@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "smoke.h"
 #include "fingermain.h"
+#include "BH_1750.h"
+#include "D3231.h"
 
 #define SHCP 25
 #define STCP 26
@@ -12,6 +14,12 @@ extern beginn rain;
 extern beginn pir;
 extern beginn touch;
 extern beginn door;
+
+extern volatile float lux;
+
+extern VL53L0X TOF200;
+extern volatile bool TOF200Flag;
+extern volatile int TOF200Distance;
 
 extern volatile bool door_flag;//屏幕开锁--网络开锁--指纹开锁
 #ifndef D74HC595_h

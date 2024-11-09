@@ -29,6 +29,11 @@ extern volatile bool door_flag;//门的状态
 extern volatile bool finger_error_flag;//指纹模块错误
 extern volatile bool wifi_state;//wifi连接状态
 
+extern volatile bool win_flag;
+extern volatile bool curtain_flag;
+extern volatile bool win_aoti;//oled控制窗户自动模式
+extern volatile bool curtain_aoti;//oled控制窗帘自动模式
+
 extern volatile bool enroll_flag;//指纹录入
 extern volatile bool delete_flag;//指纹删除
 extern Adafruit_Fingerprint finger1;//指纹模块

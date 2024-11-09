@@ -125,9 +125,10 @@ void menu_key(){
               break;
             case 2:
               //yema=32;//开关
-              //win_flag = !win.status;//开关门
+              win_flag = !win.status;//开关窗
               break;
             case 3:
+              win_aoti = !win_aoti;//自动，手动
               //yema=33;//
               //下雨关窗，下雨开窗
               //天亮开窗帘，天黑关窗帘
@@ -144,8 +145,10 @@ void menu_key(){
               break;
             case 2:
               //yema=42;//开关
+              curtain_flag = !TOF200Flag;//开关窗帘,窗帘的状态从TF200获得
               break;
             case 3:
+              curtain_aoti = !curtain_aoti;//自动，手动
               //yema=43;//
               break;
             case 4:
@@ -469,7 +472,6 @@ void display_menu3(unsigned int index){//"窗户"
   // 绘制页面内容
   u8g2.drawUTF8(0, 12, "窗户控制");
   u8g2.drawHLine(0, 14, 128);
-  zhiwen_menkong();
   for (int i = 0; i < MENU_SIZE; i++)
   {
     if (i == index)
@@ -485,6 +487,9 @@ void display_menu3(unsigned int index){//"窗户"
           break;
         case 3:
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          if(win_aoti){
+            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
+          }
           u8g2.drawStr(5+strlen(chuanghu[i+1])*4, (i + 2) * 12 + 2, " <<");
           break;
       }
@@ -500,9 +505,14 @@ void display_menu3(unsigned int index){//"窗户"
           break;
         case 3:
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          if(win_aoti){
+            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
+          }
           break;
       }
     }
+    
+
   }
   u8g2.drawUTF8(103, 26, onoff[win.status]);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
@@ -518,7 +528,6 @@ void display_menu4(unsigned int index){//"窗帘"
   // 绘制页面内容
   u8g2.drawUTF8(0, 12, "窗帘控制");
   u8g2.drawHLine(0, 14, 128);
-  zhiwen_menkong();
   for (int i = 0; i < MENU_SIZE; i++)
   {
     if (i == index)
@@ -534,6 +543,9 @@ void display_menu4(unsigned int index){//"窗帘"
           break;
         case 3:
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          if(curtain_aoti){
+            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
+          }
           u8g2.drawStr(5+strlen(curtain[i+1])*4, (i + 2) * 12 + 2, " <<");
           break;
       }
@@ -545,10 +557,13 @@ void display_menu4(unsigned int index){//"窗帘"
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]);
           break;
         case 2:
-          TOF200Flag?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          !TOF200Flag?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
           break;
         case 3:
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          if(curtain_aoti){
+            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
+          }
           break;
       }
     }
