@@ -41,6 +41,7 @@ extern volatile bool win_flag;//窗户状态
 extern volatile bool curtain_flag;//窗帘状态
 extern volatile bool win_aoti;//oled控制窗户自动模式
 extern volatile bool curtain_aoti;//oled控制窗帘自动模式
+extern volatile uint8_t curtain_yun;
 float  *humi = &bme680.humi;     // 读取湿度
 float  *temp = &bme680.temp;     // 读取温度
 
@@ -191,7 +192,7 @@ void mqttIntervalPost_1(){
 
     // curtainback
     //窗帘状态
-    sprintf(param, "{\"curtainback\":%d}", curtain_flag);
+    sprintf(param, "{\"curtainback\":%d}", TOF200Distance);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
     Serial.println(jsonBuf);
     boolean curtainback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
@@ -257,8 +258,9 @@ void callback(char *topic, byte *payload, unsigned int length){
         //digitalWrite(LED2, doc["params"]["LED2"]);//受控端读取与写入
     }
     if(doc["params"].containsKey("curtainback")){
+        curtain_yun=doc["params"].containsKey("curtainback");
         Serial.println("GOT curtainback CMD");
-        curtain_flag = !curtain_flag;//开关窗帘
+        //curtain_flag = !curtain_flag;//开关窗帘
         //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
     }
 

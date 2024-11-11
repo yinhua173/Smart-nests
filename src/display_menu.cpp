@@ -5,8 +5,8 @@ const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "
 const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
 const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
 const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
-const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "打开", "关闭","窗户自动模式"};
-const char *curtain[MENU_SIZE+1] = {"窗帘状态", "打开", "关闭","窗帘自动模式"};
+const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "关闭", "打开","窗户自动模式"};
+const char *curtain[MENU_SIZE+1] = {"窗帘状态", "关闭", "打开","窗帘自动模式"};
 const char *onoff[2] = {"关闭", "开启"};
 const char *zhiwen[MENU_SIZE]={"录入指纹","删除指纹"};
 // 定义当前选项
@@ -52,7 +52,7 @@ void delete_data(){
  */
 void menu_key(){
   if(key1_flag||key2_flag||key3_flag||key4_flag){
-    vTaskDelay(10);//消抖
+    //vTaskDelay(20);//消抖
 
     if(key1_flag){ //上    
       datadata_state?order_2=--order_2%8:0;
@@ -128,13 +128,13 @@ void menu_key(){
               win_flag = !win.status;//开关窗
               break;
             case 3:
-              win_aoti = !win_aoti;//自动，手动
+              //win_aoti = !win_aoti;//自动，手动
               //yema=33;//
               //下雨关窗，下雨开窗
               //天亮开窗帘，天黑关窗帘
               break;
             case 4:
-              //yema=34;//历史数据
+              win_flag = !win.status;//开关窗
               break;
         }
         break;
@@ -145,7 +145,7 @@ void menu_key(){
               break;
             case 2:
               //yema=42;//开关
-              curtain_flag = !TOF200Flag;//开关窗帘,窗帘的状态从TF200获得
+              curtain_flag = !TOF200Flag;//开关窗帘,窗帘的状态从TF200获得//curtain_yun
               break;
             case 3:
               curtain_aoti = !curtain_aoti;//自动，手动
@@ -474,7 +474,7 @@ void display_menu3(unsigned int index){//"窗户"
   u8g2.drawHLine(0, 14, 128);
   for (int i = 0; i < MENU_SIZE; i++)
   {
-    if (i == index)
+    if (i == index/2)
     { 
       switch(i+1){
         case 1:
@@ -484,13 +484,6 @@ void display_menu3(unsigned int index){//"窗户"
         case 2:
           door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
           u8g2.drawStr(5+strlen(chuanghu[i])*4, (i + 2) * 12 + 2, " <<");
-          break;
-        case 3:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
-          if(win_aoti){
-            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
-          }
-          u8g2.drawStr(5+strlen(chuanghu[i+1])*4, (i + 2) * 12 + 2, " <<");
           break;
       }
     }
@@ -502,12 +495,6 @@ void display_menu3(unsigned int index){//"窗户"
           break;
         case 2:
           door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
-          break;
-        case 3:
-          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
-          if(win_aoti){
-            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
-          }
           break;
       }
     }
@@ -557,7 +544,7 @@ void display_menu4(unsigned int index){//"窗帘"
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]);
           break;
         case 2:
-          !TOF200Flag?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
+          TOF200Flag?u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);
           break;
         case 3:
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, curtain[i+1]);

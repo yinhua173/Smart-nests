@@ -9,8 +9,10 @@ volatile bool win_flag=false;//oled控制窗户
 volatile bool curtain_flag=false;//oled控制窗帘
 volatile bool win_aoti=false;//oled控制窗户自动模式
 volatile bool curtain_aoti=false;//oled控制窗帘自动模式
+volatile bool curtain_yunaoti=false;//阿里云控制窗帘自动模式
 volatile bool light_wt=false;
 volatile bool light_flag=false;
+volatile uint8_t curtain_yun=0;
 volatile uint8_t touch_t=0;
 uint8_t delay_time=5;
 void D74HC595_init(){
@@ -46,8 +48,8 @@ volatile byte data=0x00;//0000 0000
  * 0x10作为串口输入标识，0x00作为串口结束标识
  */
 /*
-门，窗，交给语音模块
-开灯(pin)，窗帘(4pin)，风扇(pin)，水泵(pin)，交给74HC595
+门，窗，交给语音模块风扇(pin)
+开灯(pin)，窗帘(4pin)，水泵(pin)，交给74HC595
 */
 void D74HC595_loop(){
   if(fire.status||smoke.status||pir.status||rain.status||touch.status||door_flag
@@ -90,20 +92,34 @@ void D74HC595_loop(){
       Serial.write("$win_off$");
       vTaskDelay(1);
     }
-    if(touch.status){//触摸--窗帘(4pin电机)（pin5~8）
-      if(!touch_wt){
-        touch_t==0?touch_t=1:touch_t==1?touch_t=2:touch_t=1;
-        touch_wt=true;
+    
+    if(!curtain_aoti){
+      if(lux>50&&TOF200Distance<200){//自动--窗帘--光，亮---开---距离0，停止
+        motor_run();//电机正转开窗帘
+      }else if(lux<50&&TOF200Distance>50){
+        motor_back();//电机反转关窗帘
+      }else if(TOF200Distance>200||TOF200Distance<50){
+        motor_clear();//电机停止
       }
-      motor_mode();
-    }else if(!touch.status&&touch_wt){
-      motor_clear();
-      touch_wt=false;
-    }
-    if(curtain_aoti&&lux>50&&TOF200Distance<200){//自动--窗帘--光，亮---开---距离0，停止
-      motor_run();//电机正转开窗帘
-    }else if(curtain_aoti&&lux<50&&TOF200Distance>50){
-      motor_back();//电机反转关窗帘
+    }else if(curtain_yunaoti){
+      if(curtain_yun>TOF200Distance){//手动，云--窗帘--光，亮---开---距离0，停止
+        motor_run();//电机正转开窗帘
+      }else if(curtain_yun<TOF200Distance){
+        motor_back();//电机反转关窗帘
+      }else if(curtain_yun==TOF200Distance||TOF200Distance>200||TOF200Distance<50){
+        motor_clear();//电机停止
+      }
+    }else if(curtain_aoti){
+      if(touch.status){//触摸--窗帘(4pin电机)（pin5~8）
+        if(!touch_wt){
+          touch_t==0?touch_t=1:touch_t==1?touch_t=2:touch_t=1;
+          touch_wt=true;
+        }
+        motor_mode();
+      }else if(!touch.status&&touch_wt){
+        motor_clear();
+        touch_wt=false;
+      }
     }
     if(door_flag&&!door_wt){//门磁
       door_wt=true;

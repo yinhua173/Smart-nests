@@ -266,9 +266,9 @@ void http_time(){
 }
 void http_api(){
   http_api_state++;
-  if(http_api_state==60){
-    //http_tianqi();
-  }else if(http_api_state==66){
+  if(http_api_state==59){
+    http_tianqi();
+  }else if(http_api_state==60){
     http_time();
     http_api_state=0;
   }
