@@ -64,7 +64,7 @@ uint8_t readnumber(void) {
   return num;
 }
 
-uint8_t getFingerprintEnroll() {
+uint8_t getFingerprintEnroll() {//指纹输入超时未补充
   uint8_t num = 0;
   int p = -1;
   Serial.print("Waiting for valid finger to enroll as #"); Serial.println(id);
