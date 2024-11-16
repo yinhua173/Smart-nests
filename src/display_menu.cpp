@@ -4,7 +4,7 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0,SCL,SDA,U8X8_PIN_NONE);
 const char *menu[MENU_SIZE] = {"天气查看", "门口控制", "窗户控制", "窗帘控制"};
 const char *tianqi[MENU_SIZE] = {"天气预报", "室内状况", "室内温度历史数据", "室内湿度历史数据"};
 const char *future_weather[MENU_SIZE] = {"今天|", "明天|", "后天|", "大后天|"};
-const char *menkou[MENU_SIZE+1] = {"门口现状", "开门", "关门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
+const char *menkou[MENU_SIZE+1] = {"门口现状",  "关门","开门","指纹设置", "开门历史数据"};//门口现状：//开关//指纹设置//门口历史
 const char *chuanghu[MENU_SIZE+1] = {"窗户状态", "关闭", "打开","窗户自动模式"};
 const char *curtain[MENU_SIZE+1] = {"窗帘状态", "关闭", "打开","窗帘自动模式"};
 const char *onoff[2] = {"关闭", "开启"};
@@ -128,7 +128,7 @@ void menu_key(){
               win_flag = !win.status;//开关窗
               break;
             case 3:
-              //win_aoti = !win_aoti;//自动，手动
+              win_aoti = !win_aoti;//自动，手动
               //yema=33;//
               //下雨关窗，下雨开窗
               //天亮开窗帘，天黑关窗帘
@@ -458,7 +458,7 @@ void display_menu2(unsigned int index){//"门口"
         }
       }
     }
-    u8g2.drawUTF8(103, 26, onoff[door.status]);
+    u8g2.drawUTF8(103, 26, onoff[!door.status]);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -474,7 +474,7 @@ void display_menu3(unsigned int index){//"窗户"
   u8g2.drawHLine(0, 14, 128);
   for (int i = 0; i < MENU_SIZE; i++)
   {
-    if (i == index/2)
+    if (i == index)
     { 
       switch(i+1){
         case 1:
@@ -482,8 +482,15 @@ void display_menu3(unsigned int index){//"窗户"
           u8g2.drawStr(5+strlen(chuanghu[i])*4, (i + 2) * 12 + 2, " <<");
           break;
         case 2:
-          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          win.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]);
           u8g2.drawStr(5+strlen(chuanghu[i])*4, (i + 2) * 12 + 2, " <<");
+          break;
+        case 3:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          if(win_aoti){
+            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
+          }
+          u8g2.drawStr(5+strlen(chuanghu[i+1])*4, (i + 2) * 12 + 2, " <<");
           break;
       }
     }
@@ -494,14 +501,20 @@ void display_menu3(unsigned int index){//"窗户"
           u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]);
           break;
         case 2:
-          door.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          win.status?u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]):u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i]);
+          break;
+        case 3:
+          u8g2.drawUTF8(5, (i + 2) * 12 + 2, chuanghu[i+1]);
+          if(win_aoti){
+            u8g2.drawUTF8(5+12*2, (i + 2) * 12 + 2, "手");
+          }
           break;
       }
     }
     
 
   }
-  u8g2.drawUTF8(103, 26, onoff[win.status]);
+  u8g2.drawUTF8(103, 26, onoff[!win.status]);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**

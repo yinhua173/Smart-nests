@@ -5,6 +5,7 @@ volatile bool pir_wt=false;
 volatile bool rain_wt=false;
 volatile bool touch_wt=false;
 volatile bool door_wt=false;
+volatile bool win_wt=false;
 volatile bool win_flag=false;//oled控制窗户
 volatile bool curtain_flag=false;//oled控制窗帘
 volatile bool win_aoti=false;//oled控制窗户自动模式
@@ -52,13 +53,13 @@ volatile byte data=0x00;//0000 0000
 开灯(pin)，窗帘(4pin)，水泵(pin)，交给74HC595
 */
 void D74HC595_loop(){
-  if(fire.status||smoke.status||pir.status||rain.status||touch.status||door_flag
-      ||fire_wt||smoke_wt||pir_wt||rain_wt||touch_wt||door_wt){
+  if(fire.status||smoke.status||pir.status||rain.status||touch.status||door_flag||win_flag||curtain_flag
+      ||fire_wt||smoke_wt||pir_wt||rain_wt||touch_wt||door_wt||win_wt){
     if(fire.status&&!fire_wt){//火灾--水泵
-      data=data|0x20;
+      data=data|0x80;
       fire_wt=true;
     }else if(!fire.status&&fire_wt){
-      data=data^0x20;
+      data=data^0x80;
       fire_wt=false;
     }
     if(smoke.status&&!smoke_wt){//烟雾--开窗--风扇
@@ -87,12 +88,29 @@ void D74HC595_loop(){
       rain_wt=true;
       Serial.write("$win_on$");
       vTaskDelay(1);
-    }else if(!rain.status&&rain_wt){
+    }else if(!rain.status&&rain_wt&&!win_aoti){
       rain_wt=false;
       Serial.write("$win_off$");
       vTaskDelay(1);
     }
-    
+    if(win_flag&&!win_wt&&win_aoti){//手动关窗
+      win_wt=true;
+      Serial.write("$win_on$");
+      vTaskDelay(1);
+    }else if(!win_flag&&win_wt&&win_aoti){
+      win_wt=false;
+      Serial.write("$win_off$");
+      vTaskDelay(1);
+    }
+    if(door_flag&&!door_wt){//门磁
+      door_wt=true;
+      Serial.write("$door_on$");
+      vTaskDelay(1);
+    }else if(!door_flag&&door_wt){
+      door_wt=false;
+      Serial.write("$door_off$");
+      vTaskDelay(1);
+    }
     if(!curtain_aoti){
       if(lux>50&&TOF200Distance<200){//自动--窗帘--光，亮---开---距离0，停止
         motor_run();//电机正转开窗帘
@@ -120,15 +138,6 @@ void D74HC595_loop(){
         motor_clear();
         touch_wt=false;
       }
-    }
-    if(door_flag&&!door_wt){//门磁
-      door_wt=true;
-      Serial.write("$door_on$");
-      vTaskDelay(1);
-    }else if(!door_flag&&door_wt){
-      door_wt=false;
-      Serial.write("$door_off$");
-      vTaskDelay(1);
     }
     //D74HC595(data);
   }
