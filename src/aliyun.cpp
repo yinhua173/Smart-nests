@@ -293,7 +293,8 @@ void aliyunTask(void *parameter){
                 /* 上报 */
                 mqttIntervalPost();
                 vTaskDelay(10);
-            }else{
+            }
+            else{
                 mqttIntervalPost_1();
                 vTaskDelay(10);
             }

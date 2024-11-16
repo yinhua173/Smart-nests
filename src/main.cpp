@@ -60,7 +60,7 @@ void setup() {
   xTaskCreatePinnedToCore(TOF200Task, "TOF200Task", 1024*5, NULL, 1, NULL, 1);//创建TOF任务
 
   xTaskCreatePinnedToCore(fingerTask, "fingerTask", 1024 * 3, NULL, 1, NULL,1);//创建指纹任务
-  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*10, NULL, 2, NULL, 0);//创建OLED任务
+  xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 1024*10, NULL, 3, NULL, 0);//创建OLED任务
   xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 20, NULL, 2, NULL,1);//数据包任务
   
   xTaskCreatePinnedToCore(D74HC595Task, "D74HC595Task", 1024*4, NULL, 1, NULL, 1);//创建控制端任务
@@ -69,7 +69,7 @@ void setup() {
   buttonTask();
   
   //vTaskDelay(1000); //提前先运行一秒获取第一笔数据
-  xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
+  // xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务
 
   // int heapSize = ESP.getHeapSize();
   // Serial.print("Total Heap Size:  ");
