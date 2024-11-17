@@ -316,7 +316,7 @@ void menu_loop(){
  * 开门显示
  */
 void zhiwen_menkong(){
-  if (door.status){
+  if (!door.status){
     // 设置光标位置
     u8g2.setCursor(70, 26);
     // 显示文字
