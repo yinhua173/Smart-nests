@@ -14,12 +14,12 @@
 #include "D74HC595.h"
 #include "TTimer.h"
 #include "D3231.h"
-//任务控制权柄
-extern TaskHandle_t xHandleTsak[4];
-// 定时器控制权柄
-extern TimerHandle_t xTimeHandle[2];
+// //任务控制权柄
+// extern TaskHandle_t xHandleTsak[4];
+// // 定时器控制权柄
+// extern TimerHandle_t xTimeHandle[2];
 // TaskHandle_t taskHandle;
-// int taskMem = 1024*2;
+// int taskMem = 1024*90;
 /*
 Total Heap Size:  317776 Bytes
 Free Heap Size:  115064 Bytes
@@ -42,7 +42,6 @@ void setup() {
   // creat();
   //xTimerStart(xTimeHandle[0], 0);
   xTaskCreatePinnedToCore(wifiTask, "wifiTask", 1024 * 4, NULL, 1, NULL, 0);//创建wifi任务
-  xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*100, NULL, 3, NULL, 1);//创建http任务
   xTaskCreatePinnedToCore(aliyunTask, "aliyunTask", 1024 * 4, NULL, 2, NULL, 0);//创建阿里云任务
   
   xTaskCreatePinnedToCore(smokeTask, "smokeTask", 1024, NULL, 2, NULL, 1);//创建烟雾任务
@@ -56,6 +55,8 @@ void setup() {
   xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 3, NULL, 1);//创建光照任务
   xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 3, NULL,1);//创建温湿度任务
   
+  xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*85, NULL, 3, NULL, 1);//创建http任务
+
   xTaskCreatePinnedToCore(D3231Task, "D3231Task", 1024*5, NULL, 1, NULL, 1);//创建RTC任务
   xTaskCreatePinnedToCore(TOF200Task, "TOF200Task", 1024*5, NULL, 1, NULL, 1);//创建TOF任务
 
@@ -84,14 +85,15 @@ void setup() {
 
 
   // Serial.println("Create Task ...");
-  // xTaskCreatePinnedToCore(fingerTask, "fingerTask", taskMem, NULL, 1, &taskHandle,1);
+  // xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*90, NULL, 3, &taskHandle, 1);//创建http任务
+  // // xTaskCreatePinnedToCore(fingerTask, "fingerTask", taskMem, NULL, 1, &taskHandle,1);
 
   // Serial.print("Free Heap Size:  ");
   // Serial.print(ESP.getFreeHeap());
   // Serial.println(" Bytes");
   // Serial.println("");
 
-  // vTaskDelay(2000);
+  // vTaskDelay(60000*3);
   // int waterMark = uxTaskGetStackHighWaterMark(taskHandle);
   // Serial.print("Task Free Memory: ");
   // Serial.print(waterMark);

@@ -39,10 +39,18 @@ void new_get_time(){
     rtc.write();
   }
 }
+//volatile uint8_t hours_flag = false;
+//extern TaskHandle_t Handlehttptask;
 void D3231_loop(){
   new_get_time();
   rtc.read();
-
+  //int Taskno=0;
+  //if(hours_flag< rtc.minutes()){
+    //hours_flag = rtc.minutes()+5;
+    //Serial.println("---******--------------******---");
+    //Taskno=xTaskCreate(httpTask, "httpTask", 1024*100, NULL, 3, &Handlehttptask);//创建http任务
+    //Serial.printf("\n-----------------%d--------------------\n",Taskno);
+  //}
   // Serial.print(rtc.lastRead());
   // Serial.print("\t\t");
   // Serial.print(rtc.year());

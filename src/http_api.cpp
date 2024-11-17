@@ -4,7 +4,7 @@
 String url = "http://apis.juhe.cn/simpleWeather/query";
 String city = "南京";
 String key = "f7a00d7ed724ea602774412f227b894e";
-uint8_t http_api_state = 58;//http_api请求次数
+volatile uint8_t http_api_state = 59;//http_api请求次数
 HTTPClient http;// 创建 HTTPClient 对象
 
 // 定义http请求
@@ -247,40 +247,49 @@ void http_time(){
   }
   p[i] = '\0';
   Serial.printf("时间: %s\n", p); // 2022-12-08 22:39:11
-  time_now.Year = atoi(p);
-  time_now.Mon = atoi(p + 5);
-  time_now.Day = atoi(p + 8);
-  time_now.Hour = atoi(p + 11);
-  time_now.Min = atoi(p + 14);
-  time_now.Second = atoi(p + 17);
-  time_now.Week= atoi(weekn);
-  Serial.printf("Year: %d\n", time_now.Year);
-  Serial.printf("Mon: %d\n", time_now.Mon);
-  Serial.printf("Day: %d\n", time_now.Day);
-  Serial.printf("Hour: %d\n", time_now.Hour);
-  Serial.printf("Min: %d\n", time_now.Min);
-  Serial.printf("Second: %d\n", time_now.Second);
-  Serial.printf("Week: %d\n", time_now.Week);
-  
-  get_time_flag = true;
+  if(atoi(p)!=0 && atoi(p + 5)!=0 && atoi(p + 8)!=0){//防止时间获取失败，值无效的导入
+    time_now.Year = atoi(p);
+    time_now.Mon = atoi(p + 5);
+    time_now.Day = atoi(p + 8);
+    time_now.Hour = atoi(p + 11);
+    time_now.Min = atoi(p + 14);
+    time_now.Second = atoi(p + 17);
+    time_now.Week= atoi(weekn);
+    Serial.printf("Year: %d\n", time_now.Year);
+    Serial.printf("Mon: %d\n", time_now.Mon);
+    Serial.printf("Day: %d\n", time_now.Day);
+    Serial.printf("Hour: %d\n", time_now.Hour);
+    Serial.printf("Min: %d\n", time_now.Min);
+    Serial.printf("Second: %d\n", time_now.Second);
+    Serial.printf("Week: %d\n", time_now.Week);
+    
+    get_time_flag = true;
+  }
 }
 void http_api(){
-  http_api_state++;
   if(http_api_state==59){
     http_tianqi();
   }else if(http_api_state==60){
     http_time();
     http_api_state=0;
   }
+  http_api_state++;
 }
+TaskHandle_t Handlehttptask;
 void httpTask(void *parameter){
+  //http_api_state==59;
+  //Serial.printf("Min: %d\n", time_now.Min);
   while(1){
     if(WiFi.status() == WL_CONNECTED){
       http_api();
-      vTaskDelay(100000);//60*60*60=
-      vTaskDelay(100000);//100S
+      // vTaskDelay(100000);//60*60*60=
+      vTaskDelay(60000);//60S
     }else{
       vTaskDelay(100);
     }
+    // if(http_api_state>60){
+    //   Serial.printf("\n\nMin: %d  Delete\n\n", time_now.Min);
+    //   //vTaskDelete(NULL); // 删除任务
+    // }
   }
 }
