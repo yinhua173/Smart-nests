@@ -86,29 +86,29 @@ void D74HC595_loop(){
     }
     if(rain.status&&!rain_wt&&!win_aoti){//雨水--关窗
       rain_wt=true;
-      Serial.write("$win_on$");
+      Serial.write("$win_off$");
       vTaskDelay(1);
     }else if(!rain.status&&rain_wt&&!win_aoti){
       rain_wt=false;
-      Serial.write("$win_off$");
+      Serial.write("$win_on$");
       vTaskDelay(1);
     }
     if(win_flag&&!win_wt&&win_aoti){//手动关窗
       win_wt=true;
-      Serial.write("$win_on$");
+      Serial.write("$win_off$");
       vTaskDelay(1);
     }else if(!win_flag&&win_wt&&win_aoti){
       win_wt=false;
-      Serial.write("$win_off$");
+      Serial.write("$win_on$");
       vTaskDelay(1);
     }
     if(door_flag&&!door_wt){//门磁
       door_wt=true;
-      Serial.write("$door_on$");
+      Serial.write("$door_off$");
       vTaskDelay(1);
     }else if(!door_flag&&door_wt){
       door_wt=false;
-      Serial.write("$door_off$");
+      Serial.write("$door_on$");
       vTaskDelay(1);
     }
     if(!curtain_aoti){
