@@ -1,5 +1,7 @@
 #include "http_api.h"
-
+#include "D3231.h"
+#include "DS3232.h"
+extern DS3231 rtc;
 // 定义http请求
 String url = "http://apis.juhe.cn/simpleWeather/query";
 String city = "南京";
@@ -227,7 +229,7 @@ void http_time(){
   http1.end();
 
   // 创建 DynamicJsonDocument 对象
-  DynamicJsonDocument doc1(1024);
+  DynamicJsonDocument doc1(521);
 
   // 解析 JSON 数据
   deserializeJson(doc1, response1);
@@ -267,9 +269,11 @@ void http_time(){
   }
 }
 void http_api(){
+  // Serial.printf("\nhours: %d    Min: %d\n",rtc.hours(),rtc.minutes());
+  // Serial.printf("http_api_state: %d\n", http_api_state);
   if(http_api_state==59){
     http_tianqi();
-  }else if(http_api_state==60){
+  }else if(http_api_state>60){
     http_time();
     http_api_state=0;
   }
@@ -283,9 +287,11 @@ void httpTask(void *parameter){
     if(WiFi.status() == WL_CONNECTED){
       http_api();
       // vTaskDelay(100000);//60*60*60=
-      vTaskDelay(60000);//60S
+    }
+    vTaskDelay(60000);//60S
+    if(http_api_state==59){
     }else{
-      vTaskDelay(100);
+      http_api_state++;
     }
     // if(http_api_state>60){
     //   Serial.printf("\n\nMin: %d  Delete\n\n", time_now.Min);

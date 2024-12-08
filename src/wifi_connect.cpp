@@ -17,6 +17,12 @@ void WiFi_connect(){//连接WiFi
     if(unlink_state>=50000){
       ruanjianchongqi();
       unlink_state = 0;
+    }else if(unlink_state%4==0){
+      WiFi.disconnect();
+      WiFi.reconnect();
+    }else if(unlink_state%4==1){
+      WiFi.disconnect();//断开连接
+      WiFi.begin(ssid, password);//重新连接
     }
     // Serial.println("Connecting to WiFi...");
     vTaskDelay(1000);
