@@ -54,7 +54,8 @@ volatile byte data=0x00;//0000 0000
 */
 void D74HC595_loop(){
   if(fire.status||smoke.status||pir.status||rain.status||touch.status||door_flag||win_flag||curtain_flag
-      ||fire_wt||smoke_wt||pir_wt||rain_wt||touch_wt||door_wt||win_wt){
+      ||fire_wt||smoke_wt||pir_wt||rain_wt||touch_wt||door_wt||win_wt
+      ||curtain_yun){
     if(fire.status&&!fire_wt){//火灾--水泵
       data=data|0x80;
       fire_wt=true;
@@ -111,32 +112,33 @@ void D74HC595_loop(){
       Serial.write("$door_on$");
       vTaskDelay(1);
     }
-    if(!curtain_aoti){
-      if(lux>50&&TOF200Distance<200){//自动--窗帘--光，亮---开---距离0，停止
+    if(touch.status){//触摸--窗帘(4pin电机)（pin5~8）
+      curtain_aoti=true;
+      if(!touch_wt){
+        touch_t==0?touch_t=1:touch_t==1?touch_t=2:touch_t=1;
+        touch_wt=true;
+      }
+      motor_mode();
+    }else if(!touch.status&&touch_wt){
+      motor_clear();
+      touch_wt=false;
+    }else if(!curtain_aoti){
+      if(lux>50&&TOF200Distance<100){//自动--窗帘--光，亮---开---距离0，停止
         motor_run();//电机正转开窗帘
       }else if(lux<50&&TOF200Distance>50){
         motor_back();//电机反转关窗帘
-      }else if(TOF200Distance>200||TOF200Distance<50){
+      }else if(TOF200Distance>100||TOF200Distance<50){
         motor_clear();//电机停止
       }
-    }else if(curtain_yunaoti){
-      if(curtain_yun>TOF200Distance){//手动，云--窗帘--光，亮---开---距离0，停止
+    }else if(curtain_yun>0){
+      curtain_aoti=true;
+      if((curtain_yun>=TOF200Distance-15&&curtain_yun<=TOF200Distance+15)||TOF200Distance>100||TOF200Distance<50){
+        motor_clear();//电机停止
+        curtain_yun=0;
+      }else if(curtain_yun>TOF200Distance){//手动，云--窗帘--光，亮---开---距离0，停止
         motor_run();//电机正转开窗帘
       }else if(curtain_yun<TOF200Distance){
         motor_back();//电机反转关窗帘
-      }else if(curtain_yun==TOF200Distance||TOF200Distance>200||TOF200Distance<50){
-        motor_clear();//电机停止
-      }
-    }else if(curtain_aoti){
-      if(touch.status){//触摸--窗帘(4pin电机)（pin5~8）
-        if(!touch_wt){
-          touch_t==0?touch_t=1:touch_t==1?touch_t=2:touch_t=1;
-          touch_wt=true;
-        }
-        motor_mode();
-      }else if(!touch.status&&touch_wt){
-        motor_clear();
-        touch_wt=false;
       }
     }
     //D74HC595(data);

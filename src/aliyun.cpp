@@ -242,16 +242,7 @@ void callback(char *topic, byte *payload, unsigned int length){
 
     // DynamicJsonDocument params = doc["params"];
 
-    if(doc["params"].containsKey("doorback")){
-        Serial.println("GOT doorback CMD");
-        door_flag = !door.status;//开关门
-        //digitalWrite(LED1, doc["params"]["LED1"]);//受控端读取与写入
-    }
-    if(doc["params"].containsKey("lightback")){
-        Serial.println("GOT lightback CMD");
-        light_flag = !light_flag;//开关灯
-        //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
-    }
+    
     if(doc["params"].containsKey("winback")){
         Serial.println("GOT winback CMD");
         win_flag = !win.status;//开关窗
@@ -273,6 +264,16 @@ void callback(char *topic, byte *payload, unsigned int length){
     if(doc["params"].containsKey("curtainmode")){
         Serial.println("GOT curtainmode CMD");
         curtain_aoti =! curtain_aoti;//oled控制窗帘自动模式
+        //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
+    }
+    if(doc["params"].containsKey("doorback")){
+        Serial.println("GOT doorback CMD");
+        door_flag = !door.status;//开关门
+        //digitalWrite(LED1, doc["params"]["LED1"]);//受控端读取与写入
+    }
+    if(doc["params"].containsKey("lightback")){
+        Serial.println("GOT lightback CMD");
+        light_flag = !light_flag;//开关灯
         //digitalWrite(LED3, doc["params"]["LED3"]);//受控端读取与写入
     }
 }
