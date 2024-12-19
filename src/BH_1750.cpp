@@ -39,11 +39,13 @@ void BH1750Task(void *parameter) {
   } else {
     //Serial.println(F("Error initialising BH1750"));
   }
+  float lux_date[10]={0};
   while (true) {
     // After setting up the sensor, you should wait a bit before
     // using it, or else you'll get a zero reading
     if (lightMeter.measurementReady()) {
-      lux = lightMeter.readLightLevel();
+      //lux = lightMeter.readLightLevel();
+      lux = GildeAverageValueFilter(lightMeter.readLightLevel(),lux_date,10);
     }
     vTaskDelay(200);
   }

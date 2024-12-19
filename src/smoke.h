@@ -1,54 +1,30 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include "BME680.h"
 
 #ifndef SMOKE_HH
 #define SMOKE_HH
 
-// typedef struct{
-//   volatile bool status = false;
-//   volatile float value = 0;
-//   void init(int A,int B){
-//     pinMode(A,INPUT);
-//     pinMode(B,OUTPUT);
-//     digitalWrite(B,HIGH);
-//   }
-//   void run(int A,int B){//数字量
-//     if(!digitalRead(A)){
-//       status = false;
-//       digitalWrite(B,HIGH);
-//     }else{
-//       status = true;
-//       digitalWrite(B,LOW);
-//     }
-//     vTaskDelay(100);
-//   }
-//   void Arun(float value,int B){//模拟量
-//     if(value<3000){
-//       status = false;
-//       digitalWrite(B,HIGH);
-//     }else{
-//       status = true;
-//       digitalWrite(B,LOW);
-//     }
-//     vTaskDelay(100);
-//   }
-// }begin;
+//lux = GildeAverageValueFilter(lightMeter.readLightLevel(),lux_date,10);
 
 typedef struct{
   volatile bool status = false;
   volatile float value = 0;
+  float date[5]={0};
+  float value_date[5]={0};
   void init(int A){
     pinMode(A,INPUT);
   }
-  void run(int A){//数字量
-    if(!digitalRead(A)){
+  void run(int A){
+    //GildeAverageValueFilter(digitalRead(A),date,5);
+    if(GildeAverageValueFilter(digitalRead(A),date,5)<1){
       status = false;
     }else{
       status = true;
     }
   }
   void Arun(float value){//模拟量
-    if(value<3000){
+    if(GildeAverageValueFilter(value,value_date,5)<3000){
       status = false;
     }else{
       status = true;

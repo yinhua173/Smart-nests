@@ -69,7 +69,7 @@ void mqttIntervalPost(){
     //soil_data = dht.readHumidity();//读取湿度
     sprintf(param, "{\"humidity\":%2f}", *humi);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean b = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(b){
         Serial.println("publish Humidity success");
@@ -81,7 +81,7 @@ void mqttIntervalPost(){
     //tep = dht.readTemperature();//读取温度
     sprintf(param, "{\"temperature\":%2f}", *temp);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean c = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(c){
         Serial.println("publish Temperature success");
@@ -93,7 +93,7 @@ void mqttIntervalPost(){
     //tep = dht.readTemperature();//读取亮度
     sprintf(param, "{\"lux\":%2f}", lux);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean d = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(d){
         Serial.println("publish lux success");
@@ -105,7 +105,7 @@ void mqttIntervalPost(){
     //烟雾
     sprintf(param, "{\"smoke\":%d}", smoke.status);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean smoke = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(smoke){
         Serial.println("publish smoke success");
@@ -117,7 +117,7 @@ void mqttIntervalPost(){
     //火焰
     sprintf(param, "{\"fire\":%d}", fire.status);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean fire = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(fire){
         Serial.println("publish fire success");
@@ -129,7 +129,7 @@ void mqttIntervalPost(){
     //雨滴
     sprintf(param, "{\"rain\":%d}", rain.status);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean rain = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(rain){
         Serial.println("publish rain success");
@@ -141,7 +141,7 @@ void mqttIntervalPost(){
     //人体红外
     sprintf(param, "{\"PIR\":%d}", pir.status);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean pir = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(pir){
         Serial.println("publish pir success");
@@ -158,7 +158,7 @@ void mqttIntervalPost_1(){
     //门口状态
     sprintf(param, "{\"doorback\":%d}", door.status);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean doorback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(doorback){
         Serial.println("publish doorback success");
@@ -170,7 +170,7 @@ void mqttIntervalPost_1(){
     //灯的状态
     sprintf(param, "{\"lightback\":%d}", light_flag);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean lightback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(lightback){
         Serial.println("publish lightback success");
@@ -182,7 +182,7 @@ void mqttIntervalPost_1(){
     //窗户状态
     sprintf(param, "{\"winback\":%d}", win.status);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean winback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(winback){
         Serial.println("publish winback success");
@@ -194,7 +194,7 @@ void mqttIntervalPost_1(){
     //窗帘状态
     sprintf(param, "{\"curtainback\":%d}", TOF200Distance);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean curtainback = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(curtainback){
         Serial.println("publish curtainback success");
@@ -206,7 +206,7 @@ void mqttIntervalPost_1(){
     //窗户模式状态
     sprintf(param, "{\"winMode\":%d}", win_aoti);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean winMode = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(winMode){
         Serial.println("publish winMode success");
@@ -218,7 +218,7 @@ void mqttIntervalPost_1(){
     //窗帘模式状态
     sprintf(param, "{\"curtainmode\":%d}", curtain_aoti);
     sprintf(jsonBuf, ALINK_BODY_FORMAT, param);
-    Serial.println(jsonBuf);
+    //Serial.println(jsonBuf);
     boolean curtainmode = client.publish(ALINK_TOPIC_PROP_POST, jsonBuf);
     if(curtainmode){
         Serial.println("publish curtainmode success");
@@ -229,9 +229,9 @@ void mqttIntervalPost_1(){
 }
 // 回调函数
 void callback(char *topic, byte *payload, unsigned int length){
-    Serial.print("Message arrived [");
-    Serial.print(topic); // 打印主题信息
-    Serial.print("] ");
+    //Serial.print("Message arrived [");
+    //Serial.print(topic); // 打印主题信息
+    //Serial.print("] ");
     for (int i = 0; i < length; i++){
         Serial.print((char)payload[i]); // 打印主题内容
     }

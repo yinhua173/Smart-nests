@@ -25,76 +25,76 @@ Times time_now;//定义时间结构体
 
 volatile bool get_time_flag = false;
 
-void wid_swtich(){
-  switch(Tianqi.wid){
-    case 0://"weather": "晴"
-      break;
-    case 1://"weather": "多云"
-      break;
-    case 2://"weather": "阴"
-      break;
-    case 3://"weather": "阵雨"
-      break;
-    case 4://"weather": "雷阵雨"
-      break;
-    case 5://"weather": "雷阵雨伴有冰雹"
-      break;
-    case 6://"weather": "雨夹雪"
-      break;
-    case 7://"weather": "小雨"
-      break;
-    case 8://"weather": "中雨"
-      break;
-    case 9://"weather": "大雨"
-      break;
-    case 10://"weather": "暴雨"
-      break;
-    case 11://"weather": "大暴雨"
-      break;
-    case 12://"weather": "特大暴雨"
-      break;
-    case 13://"weather": "阵雪"
-      break;
-    case 14://"weather": "小雪"
-      break;
-    case 15://"weather": "中雪"
-      break;
-    case 16://"weather": "大雪"
-      break;
-    case 17://"weather": "暴雪"
-      break;
-    case 18://"weather": "雾"
-      break;
-    case 19://"weather": "冻雨"
-      break;
-    case 20://"weather": "沙尘暴"
-      break;
-    case 21://"weather": "小到中雨"
-      break;
-    case 22://"weather": "中到大雨"
-      break;
-    case 23://"weather": "大到暴雨"
-      break;
-    case 24://"weather": "暴雨到大暴雨"
-      break;
-    case 25://"weather": "大暴雨到特大暴雨"
-      break;
-    case 26://"weather": "小到中雪"
-      break;
-    case 27://"weather": "中到大雪"
-      break;
-    case 28://"weather": "大到暴雪"
-      break;
-    case 29://"weather": "浮尘"
-      break;
-    case 30://"weather": "扬沙" 
-      break;
-    case 31://"weather": "强沙尘暴"
-      break;
-    case 53://"weather": "霾"
-      break;
-  }
-}
+// void wid_swtich(){
+//   switch(Tianqi.wid){
+//     case 0://"weather": "晴"
+//       break;
+//     case 1://"weather": "多云"
+//       break;
+//     case 2://"weather": "阴"
+//       break;
+//     case 3://"weather": "阵雨"
+//       break;
+//     case 4://"weather": "雷阵雨"
+//       break;
+//     case 5://"weather": "雷阵雨伴有冰雹"
+//       break;
+//     case 6://"weather": "雨夹雪"
+//       break;
+//     case 7://"weather": "小雨"
+//       break;
+//     case 8://"weather": "中雨"
+//       break;
+//     case 9://"weather": "大雨"
+//       break;
+//     case 10://"weather": "暴雨"
+//       break;
+//     case 11://"weather": "大暴雨"
+//       break;
+//     case 12://"weather": "特大暴雨"
+//       break;
+//     case 13://"weather": "阵雪"
+//       break;
+//     case 14://"weather": "小雪"
+//       break;
+//     case 15://"weather": "中雪"
+//       break;
+//     case 16://"weather": "大雪"
+//       break;
+//     case 17://"weather": "暴雪"
+//       break;
+//     case 18://"weather": "雾"
+//       break;
+//     case 19://"weather": "冻雨"
+//       break;
+//     case 20://"weather": "沙尘暴"
+//       break;
+//     case 21://"weather": "小到中雨"
+//       break;
+//     case 22://"weather": "中到大雨"
+//       break;
+//     case 23://"weather": "大到暴雨"
+//       break;
+//     case 24://"weather": "暴雨到大暴雨"
+//       break;
+//     case 25://"weather": "大暴雨到特大暴雨"
+//       break;
+//     case 26://"weather": "小到中雪"
+//       break;
+//     case 27://"weather": "中到大雪"
+//       break;
+//     case 28://"weather": "大到暴雪"
+//       break;
+//     case 29://"weather": "浮尘"
+//       break;
+//     case 30://"weather": "扬沙" 
+//       break;
+//     case 31://"weather": "强沙尘暴"
+//       break;
+//     case 53://"weather": "霾"
+//       break;
+//   }
+// }
 void http_tianqi(){
   // 发送GET请求
   http.begin(url + "?city=" + city + "&key=" + key);

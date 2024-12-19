@@ -1,5 +1,5 @@
 #include "D3231.h"
-
+#include "BME680.h"
 
 DS3231 rtc;
 
@@ -221,7 +221,7 @@ void TOF200_loop()
   if (TOF200.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
   if(TOF200Distance<50){
     TOF200Flag = false;
-    Serial.print("距离近,窗帘关闭");
+    //Serial.println("距离近,窗帘关闭");
   }else{
     TOF200Flag = true;
   }
@@ -229,8 +229,19 @@ void TOF200_loop()
 }
 void TOF200Task(void *parameter){
   TOF200_setup();
+  int TOF200_date[10]={0};
   while (1){
-    TOF200_loop();
+    //TOF200_loop();
+    //TOF200Distance=TOF200.readRangeContinuousMillimeters();
+    TOF200Distance = (int)GildeAverageValueFilter((float)TOF200.readRangeContinuousMillimeters(),(float*)TOF200_date,10);
+    // Serial.print(TOF200Distance);
+    if (TOF200.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
+    if(TOF200Distance<50){
+      TOF200Flag = false;
+      //Serial.println("距离近,窗帘关闭");
+    }else{
+      TOF200Flag = true;
+    }
     vTaskDelay(1000);
   }
 }

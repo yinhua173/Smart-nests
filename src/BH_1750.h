@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <BH1750.h>
-
+#include "BME680.h"
 #ifndef BH_1750_HH
 #define BH_1750_HH
 

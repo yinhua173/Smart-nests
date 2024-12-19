@@ -14,7 +14,8 @@
 
 extern DS3231 rtc;
 
-void delay_test_task(void *parameter);
+//void delay_test_task(void *parameter);
 void datadata_task(void *parameter);
+//float GildeAverageValueFilter(float NewValue,float *Data,unsigned short int windows);
 
 #endif

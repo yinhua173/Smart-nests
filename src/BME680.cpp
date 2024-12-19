@@ -1,6 +1,7 @@
 #include "BME680.h"
 #include "BH1750.h"
 #include "smoke.h"
+
 extern float lux;
 
 Adafruit_BME680 bme;
@@ -24,17 +25,19 @@ void bme680Task(void *pvParam) {
   bme.setPressureOversampling(BME680_OS_4X);
   bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
   bme.setGasHeater(320, 150); // 320*C for 150 ms
-
+  // uint8_t date=0;
   while (1) {
 
     if (xSemaphoreTake(xMutexBME680, timeOut) == pdPASS) {
-
-      bme680.temp = bme.temperature;//温度
-      bme680.humi = bme.humidity;//湿度
-      bme680.pres = bme.pressure / 100.0;//气压
-      //bme680.gas_res = bme.gas_resistance;//气阻
-      bme680.alti = bme.readAltitude(SEALEVELPRESSURE_HPA);//海拔
-
+      bme680.temp=GildeAverageValueFilter(bme.temperature,bme680.temp_date,8);
+      bme680.humi=GildeAverageValueFilter(bme.humidity,bme680.humi_date,8);
+      bme680.pres=GildeAverageValueFilter(bme.pressure / 100.0,bme680.pres_date,8);
+      bme680.alti=GildeAverageValueFilter(bme.readAltitude(SEALEVELPRESSURE_HPA),bme680.alti_date,8);
+      // bme680.temp_date[date] = bme.temperature;//温度
+      // bme680.humi_date[date] = bme.humidity;//湿度
+      // bme680.pres_date[date] = bme.pressure / 100.0;//气压
+      // //bme680.gas_res = bme.gas_resistance;//气阻
+      // bme680.alti_date[date] = bme.readAltitude(SEALEVELPRESSURE_HPA);//海拔
       xSemaphoreGive(xMutexBME680); //释放钥匙
     } else {
       //Unable to obtain MUTEX
@@ -63,6 +66,7 @@ void printTask(void *ptParam) {  //LCD任务主体
       Serial.println(F("Failed to complete reading :("));
       return;
     } 
+    Serial.println(F("\n-----------------------------------"));
     Serial.print(F("Temperature = "));
     Serial.print(bme680.temp);
     Serial.println(F(" *C"));
@@ -98,3 +102,24 @@ void printTask(void *ptParam) {  //LCD任务主体
   }
 }
 
+//滑动平均滤波
+float GildeAverageValueFilter(float NewValue,float *Data,unsigned short int windows){
+  float max,min;
+  float sum;
+  unsigned char i;
+  Data[0]=NewValue;
+  max=Data[0];
+  min=Data[0];
+  sum=Data[0];
+  for(i=windows-1;i!=0;i--)	//循环四次，从后往前  
+  {
+    if(Data[i]>max) max=Data[i];
+    else if(Data[i]<min) min=Data[i];
+    sum+=Data[i];
+    Data[i]=Data[i-1];	//数据右移
+  }
+  i=windows-2;
+  sum=sum-max-min;
+  sum=sum/i;
+  return(sum);
+}
