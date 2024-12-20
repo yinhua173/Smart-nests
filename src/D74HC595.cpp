@@ -11,6 +11,7 @@ volatile bool curtain_flag=false;//oled控制窗帘
 volatile bool win_aoti=false;//oled控制窗户自动模式
 volatile bool curtain_aoti=false;//oled控制窗帘自动模式
 volatile bool curtain_yunaoti=false;//阿里云控制窗帘自动模式
+volatile uint8_t curtain_new=0;//窗帘开启关闭的状态
 volatile bool light_wt=false;
 volatile bool light_flag=false;
 volatile uint8_t curtain_yun=0;
@@ -59,9 +60,13 @@ void D74HC595_loop(){
     if(fire.status&&!fire_wt){//火灾--水泵
       data=data|0x80;
       fire_wt=true;
+      Serial.write("$fire_on$");
+      vTaskDelay(1);
     }else if(!fire.status&&fire_wt){
       data=data^0x80;
       fire_wt=false;
+      Serial.write("$fire_off$");
+      vTaskDelay(1);
     }
     if(smoke.status&&!smoke_wt){//烟雾--开窗--风扇
       smoke_wt=true;
@@ -87,11 +92,15 @@ void D74HC595_loop(){
     }
     if(rain.status&&!rain_wt&&!win_aoti){//雨水--关窗
       rain_wt=true;
-      Serial.write("$win_off$");
+      Serial.write("$win_on$");
+      vTaskDelay(1);
+      Serial.write("$rain_on$");
       vTaskDelay(1);
     }else if(!rain.status&&rain_wt&&!win_aoti){
       rain_wt=false;
-      Serial.write("$win_on$");
+      Serial.write("$win_off$");
+      vTaskDelay(1);
+      Serial.write("$rain_off$");
       vTaskDelay(1);
     }
     if(win_flag&&!win_wt&&win_aoti){//手动关窗
@@ -125,10 +134,17 @@ void D74HC595_loop(){
     }else if(!curtain_aoti){
       if(lux>50&&TOF200Distance<100){//自动--窗帘--光，亮---开---距离0，停止
         motor_run();//电机正转开窗帘
+        curtain_new=10;
       }else if(lux<50&&TOF200Distance>50){
         motor_back();//电机反转关窗帘
+        curtain_new=20;
       }else if(TOF200Distance>100||TOF200Distance<50){
         motor_clear();//电机停止
+        if(curtain_new==10){
+          curtain_new=1;
+        }else if(curtain_new==20){
+          curtain_new=2;
+        }
       }
     }else if(curtain_yun>0){
       curtain_aoti=true;
@@ -140,6 +156,15 @@ void D74HC595_loop(){
       }else if(curtain_yun<TOF200Distance){
         motor_back();//电机反转关窗帘
       }
+    }
+    if(curtain_new==1){
+      Serial.write("$curtain_on$");
+      vTaskDelay(1);
+      curtain_new=0;
+    }else if(curtain_new==2){
+      Serial.write("$curtain_off$");
+      vTaskDelay(1);
+      curtain_new=0;
     }
     //D74HC595(data);
   }

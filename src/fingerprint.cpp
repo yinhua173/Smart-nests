@@ -92,7 +92,7 @@ uint8_t getFingerprintID() {
   p = finger1.fingerSearch();
   if (p == FINGERPRINT_OK) {
     Serial.println("Found a print match!");
-    door_flag=true;
+    door_flag=false;
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;
