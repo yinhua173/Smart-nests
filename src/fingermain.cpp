@@ -3,6 +3,7 @@
 #include "fingerprint.h"
 #include "enroll.h"
 #include "delete.h"
+#include "fingermain.h"
 
 #define BUTTON_14  27//判断指纹按下
 // #define BUTTON_15  15//进入录入
@@ -21,17 +22,11 @@ volatile bool delete_success_flag = false;
 volatile bool delete_fail_flag = false;
 volatile bool clear_hang_state = false;
 extern Adafruit_Fingerprint finger1;
-
+TaskHandle_t FingerHandle = NULL; 
 // 定义外部中断函数
 void handle_interrupt1() {
   fingerprint_flag = true;
 }
-// void handle_interrupt2() {
-//   enroll_flag = true;
-// }
-// void handle_interrupt3() {
-//   delete_flag = true;
-// }
 uint8_t fingermain_init(){
   Fingerprint_inti();
   Serial.begin(115200);

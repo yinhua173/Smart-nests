@@ -22,6 +22,7 @@ volatile uint8_t flash=0;
 volatile uint8_t future_flag = 0;
 volatile bool datadata_state = false;
 extern volatile bool clear_hang_state;
+TaskHandle_t oledHandle = NULL;
 /**
  * OLED显示任务
  * 循环主体

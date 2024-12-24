@@ -1,4 +1,12 @@
 #include "smoke.h"
+TaskHandle_t smokeHandle = NULL;
+TaskHandle_t fireHandle = NULL; 
+TaskHandle_t rainHandle = NULL;
+TaskHandle_t pirHandle = NULL;
+TaskHandle_t touchHandle = NULL; 
+TaskHandle_t smokeprintHandle = NULL;
+TaskHandle_t winHandle = NULL;
+TaskHandle_t doorHandle = NULL;
 beginn smoke;//烟雾
 beginn fire;//火焰
 beginn rain;//雨水

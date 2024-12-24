@@ -92,7 +92,7 @@ void TraverseQueue(SqQueue Q) {
 	}
 	printf("\n");
 }
-
+TaskHandle_t datadataHandle = NULL;
 void datadata_task(void *parameter){
   SqQueue Q;//温度
   SqQueue H;//湿度

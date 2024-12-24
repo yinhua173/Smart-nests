@@ -20,7 +20,7 @@
 
 const char *TOPIC = "/sys/a1sf6CO3czA/ESPX/thing/service/property/set";
 unsigned long lastMs = 0;
-
+TaskHandle_t aliyunHandle = NULL; //阿里云任务句柄
 WiFiClient espClient;
 PubSubClient client(espClient);
 

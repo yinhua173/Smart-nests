@@ -1,5 +1,5 @@
 #include "BH_1750.h"
-
+TaskHandle_t bh1750Handle = NULL;
 /*
   BH1750 can be physically configured to use two I2C addresses:
     - 0x23 (most common) (if ADD pin had < 0.7VCC voltage)

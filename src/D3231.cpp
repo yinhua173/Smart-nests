@@ -1,6 +1,7 @@
 #include "D3231.h"
 #include "BME680.h"
-
+TaskHandle_t d3231Handle = NULL;
+TaskHandle_t tof200Handle = NULL;
 DS3231 rtc;
 
 void D3231_setup(){

@@ -1,4 +1,5 @@
 #include "wifi_connect.h"
+TaskHandle_t wifiHandle = NULL;
 const char* ssid0 = "FF";//WiFi名称
 const char* password0 = "528528528";//WiFi密码
 const char* ssid = "FFF";//WiFi名称

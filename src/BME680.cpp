@@ -1,7 +1,7 @@
 #include "BME680.h"
 #include "BH1750.h"
 #include "smoke.h"
-
+TaskHandle_t bme680Handle = NULL; 
 extern float lux;
 
 Adafruit_BME680 bme;

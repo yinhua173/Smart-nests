@@ -280,7 +280,7 @@ void http_api(){
   }
   http_api_state++;
 }
-TaskHandle_t Handlehttptask;
+TaskHandle_t httpHandle = NULL; 
 void httpTask(void *parameter){
   //http_api_state==59;
   //Serial.printf("Min: %d\n", time_now.Min);

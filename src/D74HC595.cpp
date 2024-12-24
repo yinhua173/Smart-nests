@@ -17,6 +17,7 @@ volatile bool light_flag=false;
 volatile uint8_t curtain_yun=0;
 volatile uint8_t touch_t=0;
 uint8_t delay_time=5;
+TaskHandle_t D74HC595Handle = NULL; 
 void D74HC595_init(){
   pinMode(SHCP,OUTPUT);
   pinMode(STCP,OUTPUT);
