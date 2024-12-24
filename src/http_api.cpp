@@ -211,6 +211,7 @@ void http_tianqi(){
   Serial.printf("温度: %s\n", Future4.temp);
   Serial.printf("风向: %s\n", Future4.direct_S.c_str());
   Future4.temp_math();
+  Serial.printf("$weather789%3d789%3d$\r\n",Future0.temp_max*10,Future0.temp_min*10);
 }
 void http_time(){
   // 发送GET请求

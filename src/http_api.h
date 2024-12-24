@@ -44,8 +44,8 @@ typedef struct{
         date_day = atoi(p + 8);
     }
     String temp;
-    int8_t temp_max;
-    int8_t temp_min;
+    int temp_max;
+    int temp_min;
     void temp_math(){
         char p[9];
         int i, j = temp.length();
@@ -53,8 +53,9 @@ typedef struct{
             p[i] = temp[i];
         }
         p[i] = '\0';
-        temp_min = atoi(p);
-        temp_max = atoi(p + 3);
+        // temp_min = atoi(p);
+        // temp_max = atoi(p + 3);
+        sscanf(p, "%d\/%d", &temp_min, &temp_max);
     }
     char const * weather;
     String weather_S;

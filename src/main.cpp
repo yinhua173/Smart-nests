@@ -65,9 +65,9 @@ void setup() {
   xTaskCreatePinnedToCore(datadata_task, "datadata_task", 1024 * 20, NULL, 2, NULL,1);//数据包任务
   
   xTaskCreatePinnedToCore(D74HC595Task, "D74HC595Task", 1024*4, NULL, 1, NULL, 1);//创建控制端任务
+  buttonTask();
   // xTaskCreatePinnedToCore(delay_test_task, "delay_test_task", 1024 * 4, NULL, 1, NULL,1);//给指纹的判断任务
   //xTaskCreatePinnedToCore(buttonTask, "buttonTask", 1024*2, NULL, 1, NULL, 0);//创建按键任务
-  buttonTask();
   //xTaskCreatePinnedToCore(printTask, "printTask", 1024 * 4, NULL, 4, NULL,1);//创建打印任务
   //vTaskDelay(1000); //提前先运行一秒获取第一笔数据
   //xTaskCreatePinnedToCore(smokeprintTask, "smokeprintTask", 1024 * 4, NULL, 1, NULL,1);//创建打印任务

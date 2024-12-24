@@ -25,7 +25,7 @@ void bme680Task(void *pvParam) {
   bme.setPressureOversampling(BME680_OS_4X);
   bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
   bme.setGasHeater(320, 150); // 320*C for 150 ms
-  // uint8_t date=0;
+  uint8_t times=0;
   while (1) {
 
     if (xSemaphoreTake(xMutexBME680, timeOut) == pdPASS) {
@@ -42,7 +42,10 @@ void bme680Task(void *pvParam) {
     } else {
       //Unable to obtain MUTEX
     }
-
+    if(times++%20==0){
+      Serial.printf("$bme680%3d680%3d$\r\n",(int)(bme680.temp*10),(int)(bme680.humi*10));
+      times=1;
+    }
     vTaskDelay(500);
   }
 }
