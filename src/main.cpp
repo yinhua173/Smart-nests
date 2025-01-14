@@ -102,7 +102,6 @@ void setup() {
   // Serial.println(" Bytes");
   // Serial.println("");
 
-
   // Serial.println("Create Task ...");
   // xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*90, NULL, 3, &taskHandle, 1);//创建http任务
   // // xTaskCreatePinnedToCore(fingerTask, "fingerTask", taskMem, NULL, 1, &taskHandle,1);
