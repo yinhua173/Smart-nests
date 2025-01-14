@@ -39,7 +39,7 @@ void OLEDTask(void *pvParam){
     while(1){
         menu_key();
         menu_xuan();
-        vTaskDelay(10);
+        vTaskDelay(50);
     }    
 }
 volatile uint8_t size=0;
@@ -147,6 +147,7 @@ void menu_key(){
             case 2:
               //yema=42;//开关
               curtain_flag = !TOF200Flag;//开关窗帘,窗帘的状态从TF200获得//curtain_yun
+              curtain_oo=1;
               break;
             case 3:
               curtain_aoti = !curtain_aoti;//自动，手动
@@ -245,6 +246,7 @@ void menu_key(){
     datadata_state=false;
     datadata_temp=false;
     datadata_humi=false;
+    datadata_door=false;
     data_stop=0;
     }
     if(yema==232){
@@ -378,6 +380,7 @@ void display_menu0(unsigned int index){//主页
         u8g2.print(menu[i]);
       }
     }
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -404,6 +407,7 @@ void display_menu1(unsigned int index){//"天气"
         u8g2.drawUTF8(5, (i + 2) * 12 + 2, tianqi[i]);
       }
     }
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -460,6 +464,7 @@ void display_menu2(unsigned int index){//"门口"
       }
     }
     u8g2.drawUTF8(103, 26, onoff[!door.status]);
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -516,6 +521,7 @@ void display_menu3(unsigned int index){//"窗户"
 
   }
   u8g2.drawUTF8(103, 26, onoff[!win.status]);
+  vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -570,8 +576,11 @@ void display_menu4(unsigned int index){//"窗帘"
     }
   }
   u8g2.drawUTF8(103, 26, onoff[TOF200Flag]);
-  u8g2.setCursor(80, 26+12);
-  u8g2.printf("%d", TOF200Distance/10);
+  u8g2.setCursor(10, 26+12+12+12);
+  u8g2.printf("距离:%d", TOF200Distance/10);
+  u8g2.setCursor(60, 26+12+12+12);
+  u8g2.printf("光强:%.1f", lux);
+  vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -639,6 +648,7 @@ void display_menu11(unsigned int index){//"天气状况"
       }
     }
     future_flag=order;
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -705,6 +715,7 @@ void display_menu111(unsigned int index){//"天气预报"
         u8g2.printf("%s", Future3.direct_S.c_str());
         break;
     }
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -727,6 +738,7 @@ void display_menu12(unsigned int index){//"室内状态"
     u8g2.printf("气压: %.1f hPa", bme680.pres);
     u8g2.setCursor(0, 62);
     u8g2.printf("海拔: %.1f m", bme680.alti);
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -753,6 +765,7 @@ void display_menu13(unsigned int index){//"室内温度历史"
         u8g2.setCursor(110, 26+i*12);
         u8g2.print(" >>>");
     }
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -779,6 +792,7 @@ void display_menu14(unsigned int index){//"室内湿度历史"
       u8g2.setCursor(110, 26+i*12);
       u8g2.print(" >>>");
     }
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -808,6 +822,7 @@ void display_menu23(unsigned int index){//"指纹设置"
         u8g2.drawUTF8(5, (i + 2) * 12 + 2, zhiwen[i]);
       }
     }
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -849,7 +864,7 @@ void display_menu231(unsigned int index,uint8_t index2){//"录入指纹"
         u8g2.drawUTF8(0, 38, "指纹录入失败");
       }
     }
-    
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -917,6 +932,7 @@ void display_menu232(unsigned int index){//"删除指纹"
           u8g2.drawUTF8(0, 50, "删除失败");
         }
       }
+      vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 /**
@@ -939,10 +955,11 @@ void display_menu24(unsigned int index){//开门历史数据
         u8g2.printf("%2d点%2d分", timedd[i+order_2*4]/100, timedd[i+order_2*4]%100);
         u8g2.setCursor(63, 26+i*12);
         // u8g2.printf("%.1f℃", datadata[i+order_2*4]);
-        u8g2.drawUTF8(63, 26+i*12, onoff[(int)datadata[i+order_2*4]]);
+        u8g2.drawUTF8(63, 26+i*12, onoff[!(int)datadata[i+order_2*4]]);
         u8g2.setCursor(110, 26+i*12);
         u8g2.print(" >>>");
     }
+    vTaskDelay(1);
   } while (u8g2.nextPage()); // 进入下一页，如果还有下一页则返回 True.
 }
 

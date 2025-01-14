@@ -3,6 +3,7 @@
 #define mySerial Serial2  
 volatile bool door_flag = false;
 volatile bool finger_error_flag = false;
+extern volatile bool finger_error;
 Adafruit_Fingerprint finger1 = Adafruit_Fingerprint(&mySerial);
 volatile uint8_t timeout=0;
 
@@ -99,6 +100,7 @@ uint8_t getFingerprintID() {
   } else if (p == FINGERPRINT_NOTFOUND) {
     Serial.println("Did not find a match");
     finger_error_flag=true;
+    finger_error=true;
     return p;
   } else {
     Serial.println("Unknown error");

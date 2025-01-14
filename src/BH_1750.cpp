@@ -47,6 +47,6 @@ void BH1750Task(void *parameter) {
       //lux = lightMeter.readLightLevel();
       lux = GildeAverageValueFilter(lightMeter.readLightLevel(),lux_date,10);
     }
-    vTaskDelay(200);
+    vTaskDelay(50);
   }
 }

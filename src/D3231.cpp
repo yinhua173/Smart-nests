@@ -234,7 +234,7 @@ void TOF200Task(void *parameter){
   while (1){
     //TOF200_loop();
     //TOF200Distance=TOF200.readRangeContinuousMillimeters();
-    TOF200Distance = (int)GildeAverageValueFilter((float)TOF200.readRangeContinuousMillimeters(),(float*)TOF200_date,10);
+    TOF200Distance = (int)GildeAverageValueFilter((float)TOF200.readRangeContinuousMillimeters()-30,(float*)TOF200_date,10);
     // Serial.print(TOF200Distance);
     if (TOF200.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
     if(TOF200Distance<50){
@@ -243,6 +243,6 @@ void TOF200Task(void *parameter){
     }else{
       TOF200Flag = true;
     }
-    vTaskDelay(1000);
+    vTaskDelay(100);
   }
 }

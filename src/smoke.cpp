@@ -19,49 +19,49 @@ void smokeTask(void *parameter) {//模拟信号
   while (1) {
     smoke.value=analogRead(34)*(5000/4023);
     smoke.Arun(smoke.value);
-    vTaskDelay(100);
+    vTaskDelay(50);
   }
 }
 void fireTask(void *parameter) {//数字信号
   fire.init(35);
   while (1) {
     fire.run(35);
-    vTaskDelay(100);
+    vTaskDelay(50);
   }
 }
 void rainTask(void *parameter) {//数字信号
   rain.init(39);
   while (1) {
     rain.run(39);
-    vTaskDelay(100);
+    vTaskDelay(50);
   }
 }
 void pirTask(void *parameter) {//数字信号
   pir.init(36);
   while (1) {
     pir.run(36);
-    vTaskDelay(100);
+    vTaskDelay(500);
   }
 }
 void touchTask(void *parameter) {//数字信号
   touch.init(19);
   while (1) {
     touch.run(19);
-    vTaskDelay(100);
+    vTaskDelay(50);
   }
 }
 void doorTask(void *parameter) {//数字信号
   door.init(5);
   while (1) {
     door.run(5);
-    vTaskDelay(100);
+    vTaskDelay(50);
   }
 }
 void winTask(void *parameter) {//数字信号
   win.init(4);
   while (1) {
     win.run(4);
-    vTaskDelay(100);
+    vTaskDelay(50);
   }
 }
 void smokeprintTask(void *parameter) {

@@ -94,7 +94,7 @@ void TraverseQueue(SqQueue Q) {
 }
 TaskHandle_t datadataHandle = NULL;
 void datadata_task(void *parameter){
-  SqQueue Q;//温度
+  SqQueue T;//温度
   SqQueue H;//湿度
 	SqQueue time1;//温度湿度记录时间
 	SqQueue doorr;//门口历史
@@ -102,7 +102,7 @@ void datadata_task(void *parameter){
 	int n=0,x,a=0;
 	uint8_t hour_in=0;
 	bool door_in=false;
-	InitQueue(Q);//初始化队列(一定要初始化，否则后面存储出错)
+	InitQueue(T);//初始化队列(一定要初始化，否则后面存储出错)
   InitQueue(H);
 	InitQueue(doorr);
   InitQueue(time1);
@@ -111,6 +111,8 @@ void datadata_task(void *parameter){
 	  if(datadata_temp||datadata_humi||datadata_door){
 			data_stop++;
 			if(data_stop==1){
+				memset((void*)datadata,0,sizeof(datadata)/sizeof(datadata[0]));
+				memset((void*)timedd,0,sizeof(timedd)/sizeof(timedd[0]));
 			  a=3;datadata_tra_state = true;
 			}
 		}
@@ -128,35 +130,35 @@ void datadata_task(void *parameter){
 			//cout <<"入队：" <<endl;
 		       	//cin>>x;
 				n++;
-				EnQueue(Q,bme680.temp);//入队
+				EnQueue(T,bme680.temp);//入队
 				EnQueue(H,bme680.humi);
 				EnQueue(time1,hour_in);//02 03 04 05
 				a=0;
 			//cout<<endl;
 	    	break;
-	    case 2:
-	    	//cout <<"队列内元素个数，即长度："<<QueueLength(Q)<<endl;
-		    //cout <<"队头元素：" <<GetHead(Q)<<endl;
-			//cout <<"元素依次出队：" <<endl;
-			while(true)//如果栈不空，则依次出栈
-			{
-				if (DeQueue(Q, x))
-					cout << x << "\t"; // 出队元素
-				else
-					break;
-			}
-			while (true) // 如果栈不空，则依次出栈
-			{
-				if (DeQueue(H, x))
-					cout << x << "\t"; // 出队元素
-				else
-					break;
-			}
-				//cout <<endl;
-		    break;
+	    // case 2:
+	    // 	//cout <<"队列内元素个数，即长度："<<QueueLength(Q)<<endl;
+		  //   //cout <<"队头元素：" <<GetHead(Q)<<endl;
+			// //cout <<"元素依次出队：" <<endl;
+			// while(true)//如果栈不空，则依次出栈
+			// {
+			// 	if (DeQueue(T, x))
+			// 		cout << x << "\t"; // 出队元素
+			// 	else
+			// 		break;
+			// }
+			// while (true) // 如果栈不空，则依次出栈
+			// {
+			// 	if (DeQueue(H, x))
+			// 		cout << x << "\t"; // 出队元素
+			// 	else
+			// 		break;
+			// }
+			// 	//cout <<endl;
+		  //   break;
 			case 3:
 			if(datadata_temp){
-				TraverseQueue(Q);
+				TraverseQueue(T);
 				TraverseQueue(time1);
 			}
 			if(datadata_humi){

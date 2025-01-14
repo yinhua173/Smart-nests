@@ -302,6 +302,6 @@ void aliyunTask(void *parameter){
             Post =! Post;
         }
         client.loop();
-        vTaskDelay(1000);
+        vTaskDelay(200);
     }
 }

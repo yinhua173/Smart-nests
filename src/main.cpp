@@ -12,29 +12,29 @@
 #include "datadata.h"
 #include "fingerdata.h"
 #include "D74HC595.h"
-#include "TTimer.h"
+//#include "TTimer.h"
 #include "D3231.h"
 // //任务控制权柄
 // extern TaskHandle_t xHandleTsak[4];
 extern TaskHandle_t wifiHandle;
-extern TaskHandle_t aliyunHandle; 
+extern TaskHandle_t aliyunHandle;
 extern TaskHandle_t smokeHandle;
-extern TaskHandle_t fireHandle; 
+extern TaskHandle_t fireHandle;
 extern TaskHandle_t rainHandle;
 extern TaskHandle_t pirHandle;
-extern TaskHandle_t touchHandle ;
+extern TaskHandle_t touchHandle;
 //extern TaskHandle_t smokeprintHandle = NULL;
 extern TaskHandle_t winHandle;
-extern TaskHandle_t doorHandle ; 
-extern TaskHandle_t bh1750Handle; 
-extern TaskHandle_t bme680Handle; 
-extern TaskHandle_t httpHandle; 
+extern TaskHandle_t doorHandle;
+extern TaskHandle_t bh1750Handle;
+extern TaskHandle_t bme680Handle;
+extern TaskHandle_t httpHandle;
 extern TaskHandle_t d3231Handle;
 extern TaskHandle_t tof200Handle;
-extern TaskHandle_t FingerHandle; 
+extern TaskHandle_t FingerHandle;
 extern TaskHandle_t oledHandle;
 extern TaskHandle_t datadataHandle;
-extern TaskHandle_t D74HC595Handle;      
+extern TaskHandle_t D74HC595Handle;
 // // 定时器控制权柄
 // extern TimerHandle_t xTimeHandle[2];
 // TaskHandle_t taskHandle;
@@ -63,16 +63,16 @@ void setup() {
   xTaskCreatePinnedToCore(wifiTask, "wifiTask", 1024 * 4, NULL, 1, &wifiHandle, 0);//创建wifi任务
   xTaskCreatePinnedToCore(aliyunTask, "aliyunTask", 1024 * 4, NULL, 2, &aliyunHandle, 0);//创建阿里云任务
   
-  xTaskCreatePinnedToCore(smokeTask, "smokeTask", 1024, NULL, 2, &smokeHandle, 1);//创建烟雾任务
+  xTaskCreatePinnedToCore(smokeTask, "smokeTask", 1024*2, NULL, 2, &smokeHandle, 1);//创建烟雾任务
   xTaskCreatePinnedToCore(fireTask, "fireTask", 1024*2, NULL, 2, &fireHandle, 1);//创建火焰任务
-  xTaskCreatePinnedToCore(rainTask, "rainTask", 1024, NULL, 2, &rainHandle, 1);//创建雨滴任务
-  xTaskCreatePinnedToCore(pirTask, "pirTask", 1024, NULL, 2, &pirHandle, 1);//创建人体红外任务
-  xTaskCreatePinnedToCore(touchTask, "touchTask", 1024, NULL, 2, &touchHandle, 1);//创建触摸任务
+  xTaskCreatePinnedToCore(rainTask, "rainTask", 1024*2, NULL, 2, &rainHandle, 1);//创建雨滴任务
+  xTaskCreatePinnedToCore(pirTask, "pirTask", 1024*2, NULL, 2, &pirHandle, 1);//创建人体红外任务
+  xTaskCreatePinnedToCore(touchTask, "touchTask", 1024*2, NULL, 2, &touchHandle, 1);//创建触摸任务
   xTaskCreatePinnedToCore(doorTask, "doorTask", 1024 * 2, NULL, 2, &doorHandle, 1);//创建门口任务
   xTaskCreatePinnedToCore(winTask, "winTask", 1024 * 2, NULL, 2, &winHandle, 1);//创建窗户任务
 
-  xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 3, &bh1750Handle, 1);//创建光照任务
-  xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 3, &bme680Handle,1);//创建温湿度任务
+  xTaskCreatePinnedToCore(BH1750Task, "BH1750Task", 1024 * 2, NULL, 4, &bh1750Handle, 1);//创建光照任务
+  xTaskCreatePinnedToCore(bme680Task, "bme680Task", 1024 * 3, NULL, 4, &bme680Handle,1);//创建温湿度任务
   
   xTaskCreatePinnedToCore(httpTask, "httpTask", 1024*85, NULL, 3, &httpHandle, 1);//创建http任务
 
@@ -122,6 +122,8 @@ void setup() {
   // Serial.println(" Bytes");
   vTaskDelete(NULL); //删除setup函数创建的空闲任务
 }
+// void vApplicationleHook(void){
 
+// }
 void loop() {
 }

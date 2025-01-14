@@ -46,7 +46,7 @@ void bme680Task(void *pvParam) {
       Serial.printf("$bme680%3d680%3d$\r\n",(int)(bme680.temp*10),(int)(bme680.humi*10));
       times=1;
     }
-    vTaskDelay(500);
+    vTaskDelay(100);
   }
 }
 

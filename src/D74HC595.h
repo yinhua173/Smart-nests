@@ -7,15 +7,16 @@
 #define SHCP 25
 #define STCP 26
 #define DS 13
-
+extern DS3231 rtc;
 extern beginn smoke;
 extern beginn fire;
 extern beginn rain;
 extern beginn pir;
 extern beginn touch;
 extern beginn door;
+extern beginn win;
 
-extern volatile float lux;
+extern float lux;
 
 extern VL53L0X TOF200;
 extern volatile bool TOF200Flag;

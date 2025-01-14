@@ -4,7 +4,7 @@
 extern DS3231 rtc;
 // 定义http请求
 String url = "http://apis.juhe.cn/simpleWeather/query";
-String city = "南京";
+String city = "梧州";
 String key = "f7a00d7ed724ea602774412f227b894e";
 volatile uint8_t http_api_state = 59;//http_api请求次数
 HTTPClient http;// 创建 HTTPClient 对象

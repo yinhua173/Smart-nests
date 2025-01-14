@@ -11,6 +11,9 @@ volatile bool curtain_flag=false;//oled控制窗帘
 volatile bool win_aoti=false;//oled控制窗户自动模式
 volatile bool curtain_aoti=false;//oled控制窗帘自动模式
 volatile bool curtain_yunaoti=false;//阿里云控制窗帘自动模式
+volatile bool finger_error=false;
+volatile bool curtain_oled=false;
+volatile bool curtain_oo=false;
 volatile uint8_t curtain_new=0;//窗帘开启关闭的状态
 volatile bool light_wt=false;
 volatile bool light_flag=false;
@@ -41,8 +44,8 @@ volatile byte data=0x00;//0000 0000
 // volatile byte data_4=0x08;//0000 1000
 // volatile byte data_5=0x10;//0001 0000
 // volatile byte data_6=0x20;//0010 0000
-// volatile byte data_7=0x40;//0100 0000
-// volatile byte data_8=0x80;//1000 0000
+// volatile byte data_7=0x40;//0100 0000//喷雾
+// volatile byte data_8=0x80;//1000 0000//蜂鸣器
 /*
 0000 0000|0000 0001=0000 0001//通过或写入
 0000 0001^0000 0001=0000 0000//通过异或写出
@@ -57,25 +60,40 @@ volatile byte data=0x00;//0000 0000
 void D74HC595_loop(){
   if(fire.status||smoke.status||pir.status||rain.status||touch.status||door_flag||win_flag||curtain_flag
       ||fire_wt||smoke_wt||pir_wt||rain_wt||touch_wt||door_wt||win_wt
-      ||curtain_yun){
-    if(fire.status&&!fire_wt){//火灾--水泵
+      ||curtain_yun||light_flag||light_wt){
+    if(fire.status&&!fire_wt){//火灾--喷雾--蜂鸣器
       data=data|0x80;
+      data=data|0x40;
+      data=data|0x20;
+      data=data|0x10;
       fire_wt=true;
       Serial.write("$fire_on$");
       vTaskDelay(1);
     }else if(!fire.status&&fire_wt){
       data=data^0x80;
+      data=data^0x40;
+      data=data^0x20;
+      data=data^0x10;
       fire_wt=false;
       Serial.write("$fire_off$");
       vTaskDelay(1);
     }
-    if(smoke.status&&!smoke_wt){//烟雾--开窗--风扇
+    if(light_flag&&!light_wt){//灯泡
+      data=data|0x80;
+      light_wt=true;
+    }else if(!light_flag&&light_wt){
+      data=data^0x80;
+      light_wt=false;
+    }
+    if(smoke.status&&!smoke_wt){//烟雾--开窗--风扇--蜂鸣器
+      data=data|0x10;
       smoke_wt=true;
       Serial.write("$fan_on$");
       vTaskDelay(1);
       Serial.write("$win_on$");
       vTaskDelay(1);
     }else if(!smoke.status&&smoke_wt){
+      data=data^0x10;
       smoke_wt=false;
       Serial.write("$fan_off$");
       vTaskDelay(1);
@@ -93,13 +111,13 @@ void D74HC595_loop(){
     }
     if(rain.status&&!rain_wt&&!win_aoti){//雨水--关窗
       rain_wt=true;
-      Serial.write("$win_on$");
+      Serial.write("$win_off$");
       vTaskDelay(1);
       Serial.write("$rain_on$");
       vTaskDelay(1);
     }else if(!rain.status&&rain_wt&&!win_aoti){
       rain_wt=false;
-      Serial.write("$win_off$");
+      Serial.write("$win_on$");
       vTaskDelay(1);
       Serial.write("$rain_off$");
       vTaskDelay(1);
@@ -122,6 +140,20 @@ void D74HC595_loop(){
       Serial.write("$door_on$");
       vTaskDelay(1);
     }
+    if(door_wt==true&&door_flag!=door.status){
+      door_wt=false;
+      door_flag=false;
+    }else if(door_wt==false&&door_flag!=door.status){
+      door_wt=true;
+      door_flag=true;
+    }
+    if(win_wt==true&&win_flag!=win.status){
+      win_wt=false;
+      win_flag=false;
+    }else if(win_wt==false&&win_flag!=win.status){
+      win_wt=true;
+      win_flag=true;
+    }
     if(touch.status){//触摸--窗帘(4pin电机)（pin5~8）
       curtain_aoti=true;
       if(!touch_wt){
@@ -129,14 +161,22 @@ void D74HC595_loop(){
         touch_wt=true;
       }
       motor_mode();
-    }else if(!touch.status&&touch_wt){
+    }else if(!touch.status&&touch_wt){//手机手电筒直射lux>400,远一点大于100
       motor_clear();
       touch_wt=false;
+    }else if(curtain_flag != TOF200Flag&&curtain_aoti==true&&curtain_oo){
+      if(curtain_flag==0){
+        touch_t=2;//电机反转关窗帘
+      }else if(curtain_flag==1){
+        touch_t=1;//电机正转开窗帘
+      }
+      curtain_oled=1;
+      curtain_oo=false;
     }else if(!curtain_aoti){
-      if(lux>50&&TOF200Distance<100){//自动--窗帘--光，亮---开---距离0，停止
+      if(lux<350&&lux>30&&TOF200Distance<100&&((rtc.hours()>=6&&rtc.hours()<=8)||(rtc.hours()>=15&&rtc.hours()<=17))){//自动--窗帘--光，亮---开---距离0，停止
         motor_run();//电机正转开窗帘
         curtain_new=10;
-      }else if(lux<50&&TOF200Distance>50){
+      }else if((lux>350||lux<30)&&TOF200Distance>50&&((rtc.hours()>=11&&rtc.hours()<=14)||(rtc.hours()>=18&&rtc.hours()<=20))){
         motor_back();//电机反转关窗帘
         curtain_new=20;
       }else if(TOF200Distance>100||TOF200Distance<50){
@@ -149,13 +189,35 @@ void D74HC595_loop(){
       }
     }else if(curtain_yun>0){
       curtain_aoti=true;
-      if((curtain_yun>=TOF200Distance-15&&curtain_yun<=TOF200Distance+15)||TOF200Distance>100||TOF200Distance<50){
-        motor_clear();//电机停止
-        curtain_yun=0;
-      }else if(curtain_yun>TOF200Distance){//手动，云--窗帘--光，亮---开---距离0，停止
+      if(curtain_yun>TOF200Distance){//手动，云--窗帘--光，亮---开---距离0，停止
         motor_run();//电机正转开窗帘
       }else if(curtain_yun<TOF200Distance){
         motor_back();//电机反转关窗帘
+      }
+      // if(((curtain_yun>=(TOF200Distance-50))&&(curtain_yun<=(TOF200Distance+50)))||TOF200Distance>100||TOF200Distance<50){
+      //   motor_clear();//电机停止
+      //   curtain_yun=0;
+      // }
+      if((((TOF200Distance-curtain_yun)>=0)&&((TOF200Distance-curtain_yun)<=30))||TOF200Distance>100||TOF200Distance<50){
+        motor_clear();//电机停止
+        curtain_yun=0;
+      }
+      printf("TOF200 = %d\r\n",TOF200Distance-curtain_yun);
+    }
+    if(curtain_oled==1){
+      motor_mode();
+      if(TOF200Distance>100&&touch_t==1){
+        motor_clear();//电机停止
+        Serial.write("$curtain_on$");
+        vTaskDelay(1);
+        curtain_oled=0;
+        touch_t=0;
+      }else if(TOF200Distance<50&&touch_t==2){
+        motor_clear();//电机停止
+        Serial.write("$curtain_off$");
+        vTaskDelay(1);
+        curtain_oled=0;
+        touch_t=0;
       }
     }
     if(curtain_new==1){
@@ -167,15 +229,14 @@ void D74HC595_loop(){
       vTaskDelay(1);
       curtain_new=0;
     }
-    //D74HC595(data);
+    if(finger_error==1){
+      Serial.write("$finger_error$");
+      vTaskDelay(10);
+      finger_error = !finger_error;
+    }
+    D74HC595(data);
   }
-  if(light_flag&&!light_wt){//灯泡
-    data=data|0x40;
-    light_wt=true;
-  }else if(!light_flag&&light_wt){
-    data=data^0x40;
-    light_wt=false;
-  }
+  
 }
 void D74HC595Task(void *pvParam){
   D74HC595_init();

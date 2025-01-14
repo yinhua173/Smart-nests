@@ -22,6 +22,7 @@ volatile bool delete_success_flag = false;
 volatile bool delete_fail_flag = false;
 volatile bool clear_hang_state = false;
 extern Adafruit_Fingerprint finger1;
+extern volatile bool door_flag;
 TaskHandle_t FingerHandle = NULL; 
 // 定义外部中断函数
 void handle_interrupt1() {

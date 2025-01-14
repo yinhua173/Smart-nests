@@ -31,6 +31,7 @@ extern volatile bool wifi_state;//wifi连接状态
 
 extern volatile bool win_flag;
 extern volatile bool curtain_flag;
+extern volatile bool curtain_oo;
 extern volatile bool win_aoti;//oled控制窗户自动模式
 extern volatile bool curtain_aoti;//oled控制窗帘自动模式
 
@@ -59,7 +60,7 @@ extern volatile int timedd[];//时间数据包
 
 extern volatile bool TOF200Flag;//窗帘开关状态判断
 extern volatile int TOF200Distance;//窗帘开启距离
-
+extern float lux;
 extern String city;
 
 extern BME680 bme680;
